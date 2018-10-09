@@ -28,7 +28,7 @@ volatile uint8_t sys_probe_state;   // Probing state value.  Used to coordinate 
 volatile uint8_t sys_rt_exec_state;   // Global realtime executor bitflag variable for state management. See EXEC bitmasks.
 volatile uint8_t sys_rt_exec_alarm;   // Global realtime executor bitflag variable for setting various alarms.
 volatile uint8_t sys_rt_exec_motion_override; // Global realtime executor bitflag variable for motion-based overrides.
-volatile uint8_t sys_rt_exec_accessory_override; // Global realtime executor bitflag variable for spindle/coolant overrides.
+volatile uint8_t sys_rt_exec_accessory_override; // Global realtime executor bitflag variable for spindle overrides.
 #ifdef DEBUG
   volatile uint8_t sys_rt_exec_debug;
 #endif
@@ -45,21 +45,7 @@ void setup() {
   stepper_init();  // Configure stepper pins and interrupt timers
   system_ini();   // Configure pinout pins and pin-change interrupt (Renamed due to conflict with esp32 files)
 	
-	 
-	#ifdef ENABLE_BLUETOOTH
-	// if $I has some text, that is the bluetooth name
-	// This is a temporary convenience until a new setting is defined
-	char line[LINE_BUFFER_SIZE];
-	settings_read_build_info(line);
-	if (line[0] != '\0') {
-		// just send to serial because it is the only interface available
-		Serial.printf("Starting Bluetooth:%s", line); 
-		bluetooth_init(line);	
-	}
-	#endif
-
-  
-
+	
   memset(sys_position,0,sizeof(sys_position)); // Clear machine position.
 
   
@@ -106,7 +92,7 @@ void loop() {
   gc_init(); // Set g-code parser to default state  
   
   spindle_init();  
-  coolant_init();
+  
   limits_init();
   probe_init();
   

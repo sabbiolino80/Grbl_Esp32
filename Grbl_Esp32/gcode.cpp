@@ -272,19 +272,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
               case 5: gc_block.modal.spindle = SPINDLE_DISABLE; break;
             }
 						break;          
-          case 7: case 8: case 9:							
-							word_bit = MODAL_GROUP_M8;
-							switch(int_value) {              
-								#ifdef COOLANT_MIST_PIN
-								case 7: gc_block.modal.coolant = COOLANT_MIST_ENABLE; break;              
-								#endif
-								#ifdef COOLANT_FLOOD_PIN
-								case 8: gc_block.modal.coolant = COOLANT_FLOOD_ENABLE; break;
-								#endif
-								case 9: gc_block.modal.coolant = COOLANT_DISABLE; 	break;
-								default: FAIL(STATUS_GCODE_UNSUPPORTED_COMMAND); // [Unsupported M command]
-							} 
-							break;
 					default: 
 								FAIL(STATUS_GCODE_UNSUPPORTED_COMMAND); // [Unsupported M command]
         }
@@ -446,7 +433,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
 
   // [6. Change tool ]: N/A
   // [7. Spindle control ]: N/A
-  // [8. Coolant control ]: N/A
   // [9. Enable/disable feed rate or spindle overrides ]: NOT SUPPORTED.
 
   // [10. Dwell ]: P value missing. P is negative (done.) NOTE: See below.
@@ -862,9 +848,9 @@ uint8_t gc_execute_line(char *line, uint8_t client)
     if (command_words & ~(bit(MODAL_GROUP_G3) | bit(MODAL_GROUP_G6 | bit(MODAL_GROUP_G0))) ) { FAIL(STATUS_INVALID_JOG_COMMAND) };
     if (!(gc_block.non_modal_command == NON_MODAL_ABSOLUTE_OVERRIDE || gc_block.non_modal_command == NON_MODAL_NO_ACTION)) { FAIL(STATUS_INVALID_JOG_COMMAND); }
 
-    // Initialize planner data to current spindle and coolant modal state.
+    // Initialize planner data to current spindle modal state.
     pl_data->spindle_speed = gc_state.spindle_speed;
-    plan_data.condition = (gc_state.modal.spindle | gc_state.modal.coolant);
+    plan_data.condition = (gc_state.modal.spindle);
 
     uint8_t status = jog_execute(&plan_data, &gc_block);
     if (status == STATUS_OK) { memcpy(gc_state.position, gc_block.values.xyz, sizeof(gc_block.values.xyz)); }
@@ -954,15 +940,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
   }
   pl_data->condition |= gc_state.modal.spindle; // Set condition flag for planner use.
 
-  // [8. Coolant control ]:
-  if (gc_state.modal.coolant != gc_block.modal.coolant) {
-    // NOTE: Coolant M-codes are modal. Only one command per line is allowed. But, multiple states
-    // can exist at the same time, while coolant disable clears all states.
-    coolant_sync(gc_block.modal.coolant);
-    if (gc_block.modal.coolant == COOLANT_DISABLE) { gc_state.modal.coolant = COOLANT_DISABLE; }
-    else { gc_state.modal.coolant |= gc_block.modal.coolant; }
-  }
-  pl_data->condition |= gc_state.modal.coolant; // Set condition flag for planner use.
 
   // [9. Enable/disable feed rate or spindle overrides ]: NOT SUPPORTED. Always enabled.
 
@@ -1101,7 +1078,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
       // gc_state.modal.cutter_comp = CUTTER_COMP_DISABLE; // Not supported.
       gc_state.modal.coord_select = 0; // G54
       gc_state.modal.spindle = SPINDLE_DISABLE;
-      gc_state.modal.coolant = COOLANT_DISABLE;
       // gc_state.modal.override = OVERRIDE_DISABLE; // Not supported.
 
       #ifdef RESTORE_OVERRIDES_AFTER_PROGRAM_END
@@ -1110,12 +1086,11 @@ uint8_t gc_execute_line(char *line, uint8_t client)
         sys.spindle_speed_ovr = DEFAULT_SPINDLE_SPEED_OVERRIDE;
       #endif
 
-      // Execute coordinate change and spindle/coolant stop.
+      // Execute coordinate change and spindle stop.
       if (sys.state != STATE_CHECK_MODE) {
         if (!(settings_read_coord_data(gc_state.modal.coord_select,gc_state.coord_system))) { FAIL(STATUS_SETTING_READ_FAIL); }
         system_flag_wco_change(); // Set to refresh immediately just in case something altered.
         spindle_set_state(SPINDLE_DISABLE,0.0);
-        coolant_set_state(COOLANT_DISABLE);
       }
       report_feedback_message(MESSAGE_PROGRAM_END);
     }
@@ -1147,7 +1122,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
    group 6 = {M6} (Tool change)
    group 7 = {G41, G42} cutter radius compensation (G40 is supported)
    group 8 = {G43} tool length offset (G43.1/G49 are supported)
-   group 8 = {M7*} enable mist coolant (* Compile-option)
    group 9 = {M48, M49} enable/disable feed and speed override switches
    group 10 = {G98, G99} return mode canned cycles
    group 13 = {G61.1, G64} path control mode (G61 is supported)

@@ -52,14 +52,6 @@
 // this is a generic send function that everything should use, so interfaces could be added (Bluetooth, etc)
 void grbl_send(uint8_t client, char *text)
 {	
-#ifdef ENABLE_BLUETOOTH
-    if (SerialBT.hasClient() && ( client == CLIENT_BT || client == CLIENT_ALL ) )
-    {
-				
-        SerialBT.print(text);
-        //delay(10); // possible fix for dropped characters					
-    }
-#endif
     
 #if defined (ENABLE_WIFI) && defined(ENABLE_HTTP) && defined(ENABLE_SERIAL2SOCKET_OUT)
 		if ( client == CLIENT_WEBUI || client == CLIENT_ALL )
@@ -139,14 +131,7 @@ void report_status_message(uint8_t status_code, uint8_t client)
 {	
   switch(status_code) {
     case STATUS_OK: // STATUS_OK
-			#ifdef ENABLE_SD_CARD
-				if (get_sd_state(false) == SDCARD_BUSY_PRINTING)
-					SD_ready_next = true; // flag so system_execute_line() will send the next line
-				else				
-					grbl_send(client,"ok\r\n");
-			#else
-				grbl_send(client,"ok\r\n");
-			#endif					
+				grbl_send(client,"ok\r\n");				
 			break;			
     default:
 			grbl_sendf(client, "error:%d\r\n", status_code);
@@ -403,14 +388,6 @@ void report_gcode_modes(uint8_t client)
     case SPINDLE_DISABLE : strcat(modes_rpt, " M5"); break;
   }
 
-  //report_util_gcode_modes_M();  // optional M7 and M8 should have been dealt with by here
-	if (gc_state.modal.coolant) { // Note: Multiple coolant states may be active at the same time.
-		if (gc_state.modal.coolant & PL_COND_FLAG_COOLANT_MIST) { strcat(modes_rpt, " M7"); }      
-		if (gc_state.modal.coolant & PL_COND_FLAG_COOLANT_FLOOD) { strcat(modes_rpt, " M8"); }			
-	} 
-	else { 
-		strcat(modes_rpt, " M9"); 
-	}  
 
 	sprintf(temp, " T%d", gc_state.tool);
 	strcat(modes_rpt, temp); 
@@ -457,9 +434,6 @@ void report_build_info(char *line, uint8_t client)
   #ifdef USE_LINE_NUMBERS
     strcat(build_info,"N");
   #endif
-  #ifdef COOLANT_MIST_PIN
-    strcat(build_info,"M"); // TODO Need to deal with M8...it could be disabled
-  #endif
   #ifdef COREXY
     strcat(build_info,"C");
   #endif
@@ -478,12 +452,6 @@ void report_build_info(char *line, uint8_t client)
   #ifdef ALLOW_FEED_OVERRIDE_DURING_PROBE_CYCLES
     strcat(build_info,"A");
   #endif
-	#ifdef ENABLE_BLUETOOTH
-		strcat(build_info,"B");
-	#endif
-	#ifdef ENABLE_SD_CARD
-		strcat(build_info,"S");
-	#endif
   #ifndef ENABLE_RESTORE_EEPROM_WIPE_ALL // NOTE: Shown when disabled.
     strcat(build_info,"*");
   #endif
@@ -684,8 +652,7 @@ void report_realtime_status(uint8_t client)
       
 
       uint8_t sp_state = spindle_get_state();
-      uint8_t cl_state = coolant_get_state();
-      if (sp_state || cl_state) {
+      if (sp_state) {
         strcat(status, "|A:");
         if (sp_state) { // != SPINDLE_STATE_DISABLE
           #ifdef VARIABLE_SPINDLE 
@@ -700,23 +667,10 @@ void report_realtime_status(uint8_t client)
             else { strcat(status, "C"); } // CCW
           #endif
         }
-        if (cl_state & COOLANT_STATE_FLOOD) { strcat(status, "F"); }
-        #ifdef COOLANT_MIST_PIN // TODO Deal with M8 - Flood
-          if (cl_state & COOLANT_STATE_MIST) { strcat(status, "M"); }
-        #endif
       }  
     }
   #endif
 	
-	#ifdef ENABLE_SD_CARD
-		if (get_sd_state(false) == SDCARD_BUSY_PRINTING) {
-			sprintf(temp, "|SD:%4.2f,", sd_report_perc_complete());
-			strcat(status, temp);
-			
-			sd_get_current_filename(temp);
-			strcat(status, temp);
-		}
-	#endif
 
   strcat(status, ">\r\n");
 	

@@ -221,40 +221,7 @@ uint8_t system_execute_line(char *line, uint8_t client)
           case 'W':
           //TODO
           break;
-				#ifdef ENABLE_SD_CARD // ==================== SD Card ============================
-				case 'F':
-					char fileLine[255];
-					if ( line[char_counter+1] == 0 ) {
-						// show the files
-						//Serial.println("Show the files");
-						listDir(SD, "/", 10); // 10 directory levels should be fine
-					}
-					else if (line[char_counter+1] == 'M') {
-						sd_mount();
-					}
-					else if (line[char_counter+1] == '=') { // run a file						
-						if (sys.state != STATE_IDLE) { return(STATUS_SYSTEM_GC_LOCK); } // must be in idle to run a file
-						char_counter += 2;
-						helper_var = char_counter; // Set helper variable as counter to start of user info line.
-						// shift the user info over to the beginning of the line "$F=/FOO.NC" becomes "/FOO.NC"
-						do {
-							line[char_counter-helper_var] = line[char_counter];
-						} while (line[char_counter++] != 0);
-						
-						openFile(SD, line);
-						if (!readFileLine(fileLine)) {
-							  return(STATUS_SD_FILE_EMPTY);
-								closeFile();
-						}
-						else {
-							report_status_message(gc_execute_line(fileLine, CLIENT_SERIAL), CLIENT_SERIAL);  // execute the first line
-						}						
-					}					
-					else {
-						return(STATUS_INVALID_STATEMENT);
-					}
-				break;
-				#endif // =============================== SD Card ========================================
+				
         default :  // Storing setting methods [IDLE/ALARM]
           if(!read_float(line, &char_counter, &parameter)) { return(STATUS_BAD_NUMBER_FORMAT); }
           if(line[char_counter++] != '=') { return(STATUS_INVALID_STATEMENT); }
@@ -441,4 +408,3 @@ uint8_t get_limit_pin_mask(uint8_t axis_idx)
   if ( axis_idx == Y_AXIS ) { return((1<<Y_LIMIT_BIT)); }
   return((1<<Z_LIMIT_BIT));
 }
-

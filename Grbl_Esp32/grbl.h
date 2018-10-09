@@ -41,7 +41,7 @@
 #include "system.h"
 
 #include "planner.h"
-#include "coolant_control.h"
+
 #include "eeprom.h"
 #include "gcode.h"
 #include "limits.h"
@@ -54,11 +54,3 @@
 #include "spindle_control.h"
 #include "stepper.h"
 #include "jog.h"
-
-#ifdef ENABLE_BLUETOOTH
-	#include "grbl_bluetooth.h"
-#endif
-
-#ifdef ENABLE_SD_CARD	
-	#include "grbl_sd.h"
-#endif

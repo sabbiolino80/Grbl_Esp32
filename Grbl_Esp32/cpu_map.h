@@ -53,10 +53,6 @@
 		// OK to comment out to use pin for other features
 		#define STEPPERS_DISABLE_PIN GPIO_NUM_13		
 		
-		// *** the flood coolant feature code is activated by defining this pins
-		// *** Comment it out to use the pin for other features
-		#define COOLANT_FLOOD_PIN 	GPIO_NUM_16			
-		//#define COOLANT_MIST_PIN   	GPIO_NUM_21
 		
 		// If SPINDLE_PWM_PIN is commented out, this frees up the pin, but Grbl will still
 		// use a virtual spindle. Do not comment out the other parameters for the spindle.

@@ -52,9 +52,7 @@ Some features should not be changed. See notes below.
 // Serial baud rate
 #define BAUD_RATE 115200
 
-#define ENABLE_BLUETOOTH // enable bluetooth ... turns of if $I= something
 
-#define ENABLE_SD_CARD // enable use of SD Card to run jobs
 
 // Define realtime command special characters. These characters are 'picked-off' directly from the
 // serial read data stream and are not passed to the grbl line execution parser. Select characters
@@ -94,8 +92,7 @@ Some features should not be changed. See notes below.
 #define CMD_SPINDLE_OVR_FINE_PLUS 0x9C
 #define CMD_SPINDLE_OVR_FINE_MINUS 0x9D
 #define CMD_SPINDLE_OVR_STOP 0x9E
-#define CMD_COOLANT_FLOOD_OVR_TOGGLE 0xA0
-#define CMD_COOLANT_MIST_OVR_TOGGLE 0xA1
+
 
 // If homing is enabled, homing init lock sets Grbl into an alarm state upon power up. This forces
 // the user to perform the homing cycle (or override the locks) before doing anything else. This is
@@ -182,12 +179,7 @@ Some features should not be changed. See notes below.
 // coordinates through Grbl '$#' print parameters.
 #define MESSAGE_PROBE_COORDINATES // Enabled by default. Comment to disable.
 
-// Enables a second coolant control pin via the mist coolant g-code command M7 on the Arduino Uno
-// analog pin 4. Only use this option if you require a second coolant control pin.
-// NOTE: The M8 flood coolant control pin on analog pin 3 will still be functional regardless.
-// ESP32 NOTE! This is here for reference only. You enable both M7 and M8 by assigning them a GPIO Pin
-// in cpu_map.h
-//#define ENABLE_M7 // Don't uncomment...see above!
+
 
 // This option causes the feed hold input to act as a safety door switch. A safety door, when triggered,
 // immediately forces a feed hold and then safely de-energizes the machine. Resuming is blocked until
@@ -196,9 +188,9 @@ Some features should not be changed. See notes below.
 //#define ENABLE_SAFETY_DOOR_INPUT_PIN // ESP32 Leave this enabled for now .. code for undefined not ready
 
 // After the safety door switch has been toggled and restored, this setting sets the power-up delay
-// between restoring the spindle and coolant and resuming the cycle.
+// between restoring the spindle and resuming the cycle.
 #define SAFETY_DOOR_SPINDLE_DELAY 4.0 // Float (seconds)
-#define SAFETY_DOOR_COOLANT_DELAY 1.0 // Float (seconds)
+
 
 // Enable CoreXY kinematics. Use ONLY with CoreXY machines.
 // IMPORTANT: If homing is enabled, you must reconfigure the homing cycle #defines above to
@@ -237,10 +229,6 @@ Some features should not be changed. See notes below.
 // uncomment the config option USE_SPINDLE_DIR_AS_ENABLE_PIN below.
 // #define INVERT_SPINDLE_ENABLE_PIN // Default disabled. Uncomment to enable.
 
-// Inverts the selected coolant pin from low-disabled/high-enabled to low-enabled/high-disabled. Useful
-// for some pre-built electronic boards.
-// #define INVERT_COOLANT_FLOOD_PIN // Default disabled. Uncomment to enable.
-// #define INVERT_COOLANT_MIST_PIN // Default disabled. Note: Enable M7 mist coolant in config.h
 
 // When Grbl powers-cycles or is hard reset with the Arduino reset button, Grbl boots up with no ALARM
 // by default. This is to make it as simple as possible for new users to start using Grbl. When homing
@@ -654,4 +642,3 @@ Some features should not be changed. See notes below.
 
 
 #endif
-

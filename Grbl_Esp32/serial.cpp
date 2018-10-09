@@ -70,9 +70,6 @@ void serialCheckTask(void *pvParameters)
 	while(true) // run continuously
 	{ 		
 		while (Serial.available()
-		#ifdef ENABLE_BLUETOOTH 
-			 || (SerialBT.hasClient() && SerialBT.available())
-		#endif
         #if defined (ENABLE_WIFI) && defined(ENABLE_HTTP) && defined(ENABLE_SERIAL2SOCKET_IN)
 			|| Serial2Socket.available()
 		#endif
@@ -85,19 +82,9 @@ void serialCheckTask(void *pvParameters)
 			}	
        else
 			{   //currently is wifi or BT but better to prepare both can be live
-				#ifdef ENABLE_BLUETOOTH
-                if(SerialBT.hasClient() && SerialBT.available()){
-									client = CLIENT_BT;
-									data = SerialBT.read();					
-									//Serial.write(data);  // echo all data to serial
-                } else {		
-				#endif
                 #if defined (ENABLE_WIFI) && defined(ENABLE_HTTP)  && defined(ENABLE_SERIAL2SOCKET_IN)
 								client = CLIENT_WEBUI;
                 data = Serial2Socket.read();
-                #endif
-                #ifdef ENABLE_BLUETOOTH
-                }
                 #endif
 			}
 			
@@ -141,12 +128,6 @@ void serialCheckTask(void *pvParameters)
 							case CMD_SPINDLE_OVR_FINE_PLUS: system_set_exec_accessory_override_flag(EXEC_SPINDLE_OVR_FINE_PLUS); break;
 							case CMD_SPINDLE_OVR_FINE_MINUS: system_set_exec_accessory_override_flag(EXEC_SPINDLE_OVR_FINE_MINUS); break;
 							case CMD_SPINDLE_OVR_STOP: system_set_exec_accessory_override_flag(EXEC_SPINDLE_OVR_STOP); break;
-							#ifdef COOLANT_FLOOD_PIN
-							case CMD_COOLANT_FLOOD_OVR_TOGGLE: system_set_exec_accessory_override_flag(EXEC_COOLANT_FLOOD_OVR_TOGGLE); break;
-							#endif
-							#ifdef COOLANT_MIST_PIN
-								case CMD_COOLANT_MIST_OVR_TOGGLE: system_set_exec_accessory_override_flag(EXEC_COOLANT_MIST_OVR_TOGGLE); break;
-							#endif
 						}
 						// Throw away any unfound extended-ASCII character by not passing it to the serial buffer.
 					} else { // Write character to buffer
@@ -181,9 +162,6 @@ void serialCheck()
 	
 	 		
 		while (Serial.available()
-		#ifdef ENABLE_BLUETOOTH 
-			 || (SerialBT.hasClient() && SerialBT.available())
-		#endif
         #if defined (ENABLE_WIFI) && defined(ENABLE_HTTP) && defined(ENABLE_SERIAL2SOCKET_IN)
 			|| Serial2Socket.available()
 		#endif
@@ -196,18 +174,9 @@ void serialCheck()
 			}	
        else
 			{   //currently is wifi or BT but better to prepare both can be live				
-				#ifdef ENABLE_BLUETOOTH
-                if(SerialBT.hasClient() && SerialBT.available()){
-									client = CLIENT_BT;
-									data = SerialBT.read();
-                } else {		
-				#endif
                 #if defined (ENABLE_WIFI) && defined(ENABLE_HTTP)  && defined(ENABLE_SERIAL2SOCKET_IN)
 								client = CLIENT_WEBUI;
                 data = Serial2Socket.read();
-                #endif
-                #ifdef ENABLE_BLUETOOTH
-                }
                 #endif
 			}
 						
@@ -248,12 +217,6 @@ void serialCheck()
 							case CMD_SPINDLE_OVR_FINE_PLUS: system_set_exec_accessory_override_flag(EXEC_SPINDLE_OVR_FINE_PLUS); break;
 							case CMD_SPINDLE_OVR_FINE_MINUS: system_set_exec_accessory_override_flag(EXEC_SPINDLE_OVR_FINE_MINUS); break;
 							case CMD_SPINDLE_OVR_STOP: system_set_exec_accessory_override_flag(EXEC_SPINDLE_OVR_STOP); break;
-							#ifdef COOLANT_FLOOD_PIN
-							case CMD_COOLANT_FLOOD_OVR_TOGGLE: system_set_exec_accessory_override_flag(EXEC_COOLANT_FLOOD_OVR_TOGGLE); break;
-							#endif
-							#ifdef COOLANT_MIST_PIN
-								case CMD_COOLANT_MIST_OVR_TOGGLE: system_set_exec_accessory_override_flag(EXEC_COOLANT_MIST_OVR_TOGGLE); break;
-							#endif
 						}
 						// Throw away any unfound extended-ASCII character by not passing it to the serial buffer.
 					} else { // Write character to buffer
@@ -306,4 +269,3 @@ uint8_t serial_read(uint8_t client)
     return data;
   }
 }
-

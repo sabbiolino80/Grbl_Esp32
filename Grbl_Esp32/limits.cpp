@@ -68,7 +68,7 @@ void limits_go_home(uint8_t cycle_mask)
 {
   if (sys.abort) { return; } // Block if system reset has been issued.
 
-  // Initialize plan data struct for homing motion. Spindle and coolant are disabled.
+  // Initialize plan data struct for homing motion. Spindle are disabled.
   plan_line_data_t plan_data;
   plan_line_data_t *pl_data = &plan_data;
   memset(pl_data,0,sizeof(plan_line_data_t));
@@ -379,7 +379,7 @@ void limits_soft_check(float *target)
         if (sys.abort) { return; }
       } while ( sys.state != STATE_IDLE );
     }
-    mc_reset(); // Issue system reset and ensure spindle and coolant are shutdown.
+    mc_reset(); // Issue system reset and ensure spindle are shutdown.
     system_set_exec_alarm(EXEC_ALARM_SOFT_LIMIT); // Indicate soft limit critical event
     protocol_execute_realtime(); // Execute to enter critical event loop and system abort
     return;

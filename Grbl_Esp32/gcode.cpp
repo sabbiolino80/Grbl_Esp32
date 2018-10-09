@@ -1038,9 +1038,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
       } else {
         // NOTE: gc_block.values.xyz is returned from mc_probe_cycle with the updated position value. So
         // upon a successful probing cycle, the machine position and the returned value should be the same.
-        #ifndef ALLOW_FEED_OVERRIDE_DURING_PROBE_CYCLES
-          pl_data->condition |= PL_COND_FLAG_NO_FEED_OVERRIDE;
-        #endif
         gc_update_pos = mc_probe_cycle(gc_block.values.xyz, pl_data, gc_parser_flags);
       }  
      
@@ -1080,11 +1077,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
       gc_state.modal.spindle = SPINDLE_DISABLE;
       // gc_state.modal.override = OVERRIDE_DISABLE; // Not supported.
 
-      #ifdef RESTORE_OVERRIDES_AFTER_PROGRAM_END
-        sys.f_override = DEFAULT_FEED_OVERRIDE;
-        sys.r_override = DEFAULT_RAPID_OVERRIDE;
-        sys.spindle_speed_ovr = DEFAULT_SPINDLE_SPEED_OVERRIDE;
-      #endif
 
       // Execute coordinate change and spindle stop.
       if (sys.state != STATE_CHECK_MODE) {

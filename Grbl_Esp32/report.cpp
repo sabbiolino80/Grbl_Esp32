@@ -438,9 +438,6 @@ void report_build_info(char *line, uint8_t client)
   #ifdef LIMITS_TWO_SWITCHES_ON_AXES
     strcat(build_info,"L");
   #endif
-  #ifdef ALLOW_FEED_OVERRIDE_DURING_PROBE_CYCLES
-    strcat(build_info,"A");
-  #endif
   #ifndef ENABLE_RESTORE_EEPROM_WIPE_ALL // NOTE: Shown when disabled.
     strcat(build_info,"*");
   #endif
@@ -598,49 +595,7 @@ void report_realtime_status(uint8_t client)
     }
   #endif
 
-  #ifdef REPORT_FIELD_WORK_COORD_OFFSET
-    if (sys.report_wco_counter > 0) { sys.report_wco_counter--; }
-    else {
-      if (sys.state & (STATE_HOMING | STATE_CYCLE | STATE_HOLD | STATE_JOG)) {
-        sys.report_wco_counter = (REPORT_WCO_REFRESH_BUSY_COUNT-1); // Reset counter for slow refresh
-      } else { sys.report_wco_counter = (REPORT_WCO_REFRESH_IDLE_COUNT-1); }
-      if (sys.report_ovr_counter == 0) { sys.report_ovr_counter = 1; } // Set override on next report.
-      strcat(status, "|WCO:");
-      report_util_axis_values(wco, temp);
-			strcat(status, temp);
-    }
-  #endif
 
-  #ifdef REPORT_FIELD_OVERRIDES
-    if (sys.report_ovr_counter > 0) { sys.report_ovr_counter--; }
-    else {
-      if (sys.state & (STATE_HOMING | STATE_CYCLE | STATE_HOLD | STATE_JOG)) {
-        sys.report_ovr_counter = (REPORT_OVR_REFRESH_BUSY_COUNT-1); // Reset counter for slow refresh
-      } else { sys.report_ovr_counter = (REPORT_OVR_REFRESH_IDLE_COUNT-1); }      
-			sprintf(temp, "|Ov:%d,%d,%d", sys.f_override, sys.r_override, sys.spindle_speed_ovr);
-			strcat(status, temp);
-      
-
-      uint8_t sp_state = spindle_get_state();
-      if (sp_state) {
-        strcat(status, "|A:");
-        if (sp_state) { // != SPINDLE_STATE_DISABLE
-          #ifdef VARIABLE_SPINDLE 
-            #ifdef USE_SPINDLE_DIR_AS_ENABLE_PIN
-              strcat(status, "S"); // CW
-            #else
-              if (sp_state == SPINDLE_STATE_CW) { strcat(status, "S"); } // CW
-              else { strcat(status, "C"); } // CCW
-            #endif
-          #else
-            if (sp_state & SPINDLE_STATE_CW) { strcat(status, "S"); } // CW
-            else { strcat(status, "C"); } // CCW
-          #endif
-        }
-      }  
-    }
-  #endif
-	
 
   strcat(status, ">\r\n");
 	

@@ -32,11 +32,6 @@ typedef struct {
   uint8_t step_control;        // Governs the step segment generator depending on system state.
   uint8_t probe_succeeded;     // Tracks if last probing cycle was successful.
   uint8_t homing_axis_lock;    // Locks axes when limits engage. Used as an axis motion mask in the stepper ISR.
-  uint8_t f_override;          // Feed rate override value in percent
-  uint8_t r_override;          // Rapids override value in percent
-  uint8_t spindle_speed_ovr;   // Spindle speed value in percent
-  uint8_t spindle_stop_ovr;    // Tracks spindle stop override states
-  uint8_t report_ovr_counter;  // Tracks when to add override data to status reports.
   uint8_t report_wco_counter;  // Tracks when to add work coordinate offset data to status reports.
   
     float spindle_speed;
@@ -71,24 +66,6 @@ extern system_t sys;
 #define EXEC_ALARM_HOMING_FAIL_PULLOFF  8
 #define EXEC_ALARM_HOMING_FAIL_APPROACH 9
 
-// Override bit maps. Realtime bitflags to control feed, rapid, spindle overrides.
-// Spindle and feed/rapids are separated into two controlling flag variables.
-#define EXEC_FEED_OVR_RESET         bit(0)
-#define EXEC_FEED_OVR_COARSE_PLUS   bit(1)
-#define EXEC_FEED_OVR_COARSE_MINUS  bit(2)
-#define EXEC_FEED_OVR_FINE_PLUS     bit(3)
-#define EXEC_FEED_OVR_FINE_MINUS    bit(4)
-#define EXEC_RAPID_OVR_RESET        bit(5)
-#define EXEC_RAPID_OVR_MEDIUM       bit(6)
-#define EXEC_RAPID_OVR_LOW          bit(7)
-// #define EXEC_RAPID_OVR_EXTRA_LOW   bit(*) // *NOT SUPPORTED*
-
-#define EXEC_SPINDLE_OVR_RESET         bit(0)
-#define EXEC_SPINDLE_OVR_COARSE_PLUS   bit(1)
-#define EXEC_SPINDLE_OVR_COARSE_MINUS  bit(2)
-#define EXEC_SPINDLE_OVR_FINE_PLUS     bit(3)
-#define EXEC_SPINDLE_OVR_FINE_MINUS    bit(4)
-#define EXEC_SPINDLE_OVR_STOP          bit(5)
 
 // Define system state bit map. The state variable primarily tracks the individual functions
 // of Grbl to manage each without overlapping. It is also used as a messaging flag for
@@ -120,13 +97,6 @@ extern system_t sys;
   #define CONTROL_PIN_INDEX_RESET         bit(0)
   #define CONTROL_PIN_INDEX_FEED_HOLD     bit(1)
   #define CONTROL_PIN_INDEX_CYCLE_START   bit(2)
-
-// Define spindle stop override control states.
-#define SPINDLE_STOP_OVR_DISABLED       0  // Must be zero.
-#define SPINDLE_STOP_OVR_ENABLED        bit(0)
-#define SPINDLE_STOP_OVR_INITIATE       bit(1)
-#define SPINDLE_STOP_OVR_RESTORE        bit(2)
-#define SPINDLE_STOP_OVR_RESTORE_CYCLE  bit(3)
 
 
 

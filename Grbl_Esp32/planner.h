@@ -43,11 +43,10 @@
 // Define planner data condition flags. Used to denote running conditions of a block.
 #define PL_COND_FLAG_RAPID_MOTION      bit(0)
 #define PL_COND_FLAG_SYSTEM_MOTION     bit(1) // Single motion. Circumvents planner state. Used by home/park.
-#define PL_COND_FLAG_NO_FEED_OVERRIDE  bit(2) // Motion does not honor feed override.
 #define PL_COND_FLAG_INVERSE_TIME      bit(3) // Interprets feed rate value as inverse time when set.
 #define PL_COND_FLAG_SPINDLE_CW        bit(4)
 #define PL_COND_FLAG_SPINDLE_CCW       bit(5)
-#define PL_COND_MOTION_MASK    (PL_COND_FLAG_RAPID_MOTION|PL_COND_FLAG_SYSTEM_MOTION|PL_COND_FLAG_NO_FEED_OVERRIDE)
+#define PL_COND_MOTION_MASK    (PL_COND_FLAG_RAPID_MOTION|PL_COND_FLAG_SYSTEM_MOTION)
 #define PL_COND_ACCESSORY_MASK (PL_COND_FLAG_SPINDLE_CW|PL_COND_FLAG_SPINDLE_CCW)
  
  
@@ -61,7 +60,7 @@ typedef struct {
   uint32_t step_event_count; // The maximum step axis count and number of steps required to complete this block.
   uint8_t direction_bits;    // The direction bit set for this block (refers to *_DIRECTION_BIT in config.h)
  
-  // Block condition data to ensure correct execution depending on states and overrides.
+  // Block condition data to ensure correct execution depending on states.
   uint8_t condition;      // Block bitflag variable defining block run conditions. Copied from pl_line_data.
   #ifdef USE_LINE_NUMBERS
     int32_t line_number;  // Block line number for real-time reporting. Copied from pl_line_data.

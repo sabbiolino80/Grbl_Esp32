@@ -75,22 +75,6 @@ Some features should not be changed. See notes below.
 // #define CMD_CYCLE_START 0x82
 // #define CMD_FEED_HOLD 0x83
 #define CMD_JOG_CANCEL  0x85
-#define CMD_DEBUG_REPORT 0x86 // Only when DEBUG enabled, sends debug report in '{}' braces.
-#define CMD_FEED_OVR_RESET 0x90         // Restores feed override value to 100%.
-#define CMD_FEED_OVR_COARSE_PLUS 0x91
-#define CMD_FEED_OVR_COARSE_MINUS 0x92
-#define CMD_FEED_OVR_FINE_PLUS  0x93
-#define CMD_FEED_OVR_FINE_MINUS  0x94
-#define CMD_RAPID_OVR_RESET 0x95        // Restores rapid override value to 100%.
-#define CMD_RAPID_OVR_MEDIUM 0x96
-#define CMD_RAPID_OVR_LOW 0x97
-// #define CMD_RAPID_OVR_EXTRA_LOW 0x98 // *NOT SUPPORTED*
-#define CMD_SPINDLE_OVR_RESET 0x99      // Restores spindle override value to 100%.
-#define CMD_SPINDLE_OVR_COARSE_PLUS 0x9A
-#define CMD_SPINDLE_OVR_COARSE_MINUS 0x9B
-#define CMD_SPINDLE_OVR_FINE_PLUS 0x9C
-#define CMD_SPINDLE_OVR_FINE_MINUS 0x9D
-#define CMD_SPINDLE_OVR_STOP 0x9E
 
 
 // If homing is enabled, homing init lock sets Grbl into an alarm state upon power up. This forces
@@ -278,19 +262,6 @@ Some features should not be changed. See notes below.
 #define REPORT_FIELD_OVERRIDES // Default enabled. Comment to disable.
 #define REPORT_FIELD_LINE_NUMBERS // Default enabled. Comment to disable.
 
-// Some status report data isn't necessary for realtime, only intermittently, because the values don't
-// change often. The following macros configures how many times a status report needs to be called before
-// the associated data is refreshed and included in the status report. However, if one of these value
-// changes, Grbl will automatically include this data in the next status report, regardless of what the
-// count is at the time. This helps reduce the communication overhead involved with high frequency reporting
-// and agressive streaming. There is also a busy and an idle refresh count, which sets up Grbl to send
-// refreshes more often when its not doing anything important. With a good GUI, this data doesn't need
-// to be refreshed very often, on the order of a several seconds.
-// NOTE: WCO refresh must be 2 or greater. OVR refresh must be 1 or greater.
-#define REPORT_OVR_REFRESH_BUSY_COUNT 20  // (1-255)
-#define REPORT_OVR_REFRESH_IDLE_COUNT 10  // (1-255) Must be less than or equal to the busy count
-#define REPORT_WCO_REFRESH_BUSY_COUNT 30  // (2-255)
-#define REPORT_WCO_REFRESH_IDLE_COUNT 10  // (2-255) Must be less than or equal to the busy count
 
 // The temporal resolution of the acceleration management subsystem. A higher number gives smoother
 // acceleration, particularly noticeable on machines that run at very high feedrates, but may negatively

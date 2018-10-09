@@ -233,7 +233,7 @@ void protocol_auto_cycle_start()
 // as an interface for the interrupts to set the system realtime flags, where only the main program
 // handles them, removing the need to define more computationally-expensive volatile variables. This
 // also provides a controlled way to execute certain tasks without having two or more instances of
-// the same task, such as the planner recalculating the buffer upon a feedhold or overrides.
+// the same task, such as the planner recalculating the buffer upon a feedhold.
 // NOTE: The sys_rt_exec_state variable flags are set by any process, step or serial interrupts, pinouts,
 // limit switches, or the main program.
 void protocol_execute_realtime()
@@ -350,9 +350,7 @@ void protocol_exec_rt_system()
       if (!(rt_exec & (EXEC_FEED_HOLD | EXEC_MOTION_CANCEL ))) {
         // Cycle start only when IDLE or when a hold is complete and ready to resume.
         if ((sys.state == STATE_IDLE) || ((sys.state & STATE_HOLD) && (sys.suspend & SUSPEND_HOLD_COMPLETE))) {
-          if (sys.state == STATE_HOLD && sys.spindle_stop_ovr) {
-            sys.spindle_stop_ovr |= SPINDLE_STOP_OVR_RESTORE_CYCLE; // Set to restore in suspend routine and cycle start after.
-          } else {
+
             // Start cycle only if queued motions exist in planner buffer and the motion is not canceled.
             sys.step_control = STEP_CONTROL_NORMAL_OP; // Restore step control to normal operation
             if (plan_get_current_block() && bit_isfalse(sys.suspend, SUSPEND_MOTION_CANCEL)) {
@@ -364,7 +362,7 @@ void protocol_exec_rt_system()
               sys.suspend = SUSPEND_DISABLE; // Break suspend state.
               sys.state = STATE_IDLE;
             }
-          }
+          
         }
       }
       system_clear_exec_state_flag(EXEC_CYCLE_START);
@@ -402,101 +400,6 @@ void protocol_exec_rt_system()
     }
   }
 
-  // Execute overrides.
-  rt_exec = sys_rt_exec_motion_override; // Copy volatile sys_rt_exec_motion_override
-  if (rt_exec) {
-    system_clear_exec_motion_overrides(); // Clear all motion override flags.
-
-    uint8_t new_f_override =  sys.f_override;
-    if (rt_exec & EXEC_FEED_OVR_RESET) {
-      new_f_override = DEFAULT_FEED_OVERRIDE;
-    }
-    if (rt_exec & EXEC_FEED_OVR_COARSE_PLUS) {
-      new_f_override += FEED_OVERRIDE_COARSE_INCREMENT;
-    }
-    if (rt_exec & EXEC_FEED_OVR_COARSE_MINUS) {
-      new_f_override -= FEED_OVERRIDE_COARSE_INCREMENT;
-    }
-    if (rt_exec & EXEC_FEED_OVR_FINE_PLUS) {
-      new_f_override += FEED_OVERRIDE_FINE_INCREMENT;
-    }
-    if (rt_exec & EXEC_FEED_OVR_FINE_MINUS) {
-      new_f_override -= FEED_OVERRIDE_FINE_INCREMENT;
-    }
-    new_f_override = MIN(new_f_override, MAX_FEED_RATE_OVERRIDE);
-    new_f_override = MAX(new_f_override, MIN_FEED_RATE_OVERRIDE);
-
-    uint8_t new_r_override = sys.r_override;
-    if (rt_exec & EXEC_RAPID_OVR_RESET) {
-      new_r_override = DEFAULT_RAPID_OVERRIDE;
-    }
-    if (rt_exec & EXEC_RAPID_OVR_MEDIUM) {
-      new_r_override = RAPID_OVERRIDE_MEDIUM;
-    }
-    if (rt_exec & EXEC_RAPID_OVR_LOW) {
-      new_r_override = RAPID_OVERRIDE_LOW;
-    }
-
-    if ((new_f_override != sys.f_override) || (new_r_override != sys.r_override)) {
-      sys.f_override = new_f_override;
-      sys.r_override = new_r_override;
-      sys.report_ovr_counter = 0; // Set to report change immediately
-      plan_update_velocity_profile_parameters();
-      plan_cycle_reinitialize();
-    }
-  }
-
-  rt_exec = sys_rt_exec_accessory_override;
-  if (rt_exec) {
-    system_clear_exec_accessory_overrides(); // Clear all accessory override flags.
-
-    // NOTE: Unlike motion overrides, spindle overrides do not require a planner reinitialization.
-    uint8_t last_s_override =  sys.spindle_speed_ovr;
-    if (rt_exec & EXEC_SPINDLE_OVR_RESET) {
-      last_s_override = DEFAULT_SPINDLE_SPEED_OVERRIDE;
-    }
-    if (rt_exec & EXEC_SPINDLE_OVR_COARSE_PLUS) {
-      last_s_override += SPINDLE_OVERRIDE_COARSE_INCREMENT;
-    }
-    if (rt_exec & EXEC_SPINDLE_OVR_COARSE_MINUS) {
-      last_s_override -= SPINDLE_OVERRIDE_COARSE_INCREMENT;
-    }
-    if (rt_exec & EXEC_SPINDLE_OVR_FINE_PLUS) {
-      last_s_override += SPINDLE_OVERRIDE_FINE_INCREMENT;
-    }
-    if (rt_exec & EXEC_SPINDLE_OVR_FINE_MINUS) {
-      last_s_override -= SPINDLE_OVERRIDE_FINE_INCREMENT;
-    }
-    last_s_override = MIN(last_s_override, MAX_SPINDLE_SPEED_OVERRIDE);
-    last_s_override = MAX(last_s_override, MIN_SPINDLE_SPEED_OVERRIDE);
-
-    if (last_s_override != sys.spindle_speed_ovr) {
-      bit_true(sys.step_control, STEP_CONTROL_UPDATE_SPINDLE_PWM);
-      sys.spindle_speed_ovr = last_s_override;
-      sys.report_ovr_counter = 0; // Set to report change immediately
-    }
-
-    if (rt_exec & EXEC_SPINDLE_OVR_STOP) {
-      // Spindle stop override allowed only while in HOLD state.
-      // NOTE: Report counters are set in spindle_set_state() when spindle stop is executed.
-      if (sys.state == STATE_HOLD) {
-        if (!(sys.spindle_stop_ovr)) {
-          sys.spindle_stop_ovr = SPINDLE_STOP_OVR_INITIATE;
-        }
-        else if (sys.spindle_stop_ovr & SPINDLE_STOP_OVR_ENABLED) {
-          sys.spindle_stop_ovr |= SPINDLE_STOP_OVR_RESTORE;
-        }
-      }
-    }
-
-  }
-
-#ifdef DEBUG
-  if (sys_rt_exec_debug) {
-    report_realtime_debug();
-    sys_rt_exec_debug = 0;
-  }
-#endif
 
   // Reload step segment buffer
   if (sys.state & (STATE_CYCLE | STATE_HOLD | STATE_HOMING | STATE_SLEEP | STATE_JOG)) {

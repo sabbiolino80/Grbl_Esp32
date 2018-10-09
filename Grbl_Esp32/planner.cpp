@@ -99,7 +99,7 @@ static uint8_t plan_prev_block_index(uint8_t block_index)
   point) are all accelerating, they are all optimal and can not be altered by a new block added to the
   planner buffer, as this will only further increase the plan speed to chronological blocks until a maximum
   junction velocity is reached. However, if the operational conditions of the plan changes from infrequently
-  used feed holds or feedrate overrides, the stop-compute pointers will be reset and the entire plan is
+  used feed holds, the stop-compute pointers will be reset and the entire plan is
   recomputed as stated in the general guidelines.
 
   Planner buffer index mapping:
@@ -258,14 +258,12 @@ uint8_t plan_check_full_buffer()
 }
 
 
-// Computes and returns block nominal speed based on running condition and override values.
-// NOTE: All system motion commands, such as homing, are not subject to overrides.
+// Computes and returns block nominal speed based on running condition and values.
 float plan_compute_profile_nominal_speed(plan_block_t *block)
 {
   float nominal_speed = block->programmed_rate;
-  if (block->condition & PL_COND_FLAG_RAPID_MOTION) { nominal_speed *= (0.01*sys.r_override); }
-  else {
-    if (!(block->condition & PL_COND_FLAG_NO_FEED_OVERRIDE)) { nominal_speed *= (0.01*sys.f_override); }
+  if (!(block->condition & PL_COND_FLAG_RAPID_MOTION)) 
+ {
     if (nominal_speed > block->rapid_rate) { nominal_speed = block->rapid_rate; }
   }
   if (nominal_speed > MINIMUM_FEED_RATE) { return(nominal_speed); }

@@ -91,8 +91,6 @@ uint8_t spindle_compute_pwm_value(float rpm)
 {
 	uint8_t pwm_value;
 	
-	rpm *= (0.010*sys.spindle_speed_ovr);
-	
 	pwm_value = map(rpm, settings.rpm_min, settings.rpm_max, SPINDLE_PWM_OFF_VALUE, SPINDLE_PWM_MAX_VALUE);		  
 	// TODO_ESP32  .. make it 16 bit
 	
@@ -115,12 +113,11 @@ void spindle_set_state(uint8_t state, float rpm)
     
       // NOTE: Assumes all calls to this function is when Grbl is not moving or must remain off.
       if (settings.flags & BITFLAG_LASER_MODE) { 
-        if (state == SPINDLE_ENABLE_CCW) { rpm = 0.0; } // TODO: May need to be rpm_min*(100/MAX_SPINDLE_SPEED_OVERRIDE);
+        if (state == SPINDLE_ENABLE_CCW) { rpm = 0.0; } 
       }
 						
       spindle_set_speed(spindle_compute_pwm_value(rpm));     
   }  
-  sys.report_ovr_counter = 0; // Set to report change immediately
 }
 
 
@@ -150,4 +147,3 @@ void spindle_set_enable(bool enable)
 		#endif
 	#endif
 }
-

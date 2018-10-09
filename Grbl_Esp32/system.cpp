@@ -24,13 +24,11 @@
 void system_ini() // Renamed from system_init() due to conflict with esp32 files
 {	
 	// setup control inputs
-	pinMode(CONTROL_SAFETY_DOOR_PIN, INPUT);
   pinMode(CONTROL_RESET_PIN, INPUT);
   pinMode(CONTROL_FEED_HOLD_PIN, INPUT);
   pinMode(CONTROL_CYCLE_START_PIN, INPUT);
 
   // attach interrupt to them
-  attachInterrupt(digitalPinToInterrupt(CONTROL_SAFETY_DOOR_PIN), isr_control_inputs, CHANGE);
   attachInterrupt(digitalPinToInterrupt(CONTROL_RESET_PIN), isr_control_inputs, CHANGE);
   attachInterrupt(digitalPinToInterrupt(CONTROL_FEED_HOLD_PIN), isr_control_inputs, CHANGE);
   attachInterrupt(digitalPinToInterrupt(CONTROL_CYCLE_START_PIN), isr_control_inputs, CHANGE); 
@@ -53,11 +51,6 @@ void IRAM_ATTR isr_control_inputs()
 		else if (bit_istrue(pin,CONTROL_PIN_INDEX_FEED_HOLD)) 
 		{
         bit_true(sys_rt_exec_state, EXEC_FEED_HOLD);
-    
-    }		
-		else if (bit_istrue(pin,CONTROL_PIN_INDEX_SAFETY_DOOR)) 
-		{
-        bit_true(sys_rt_exec_state, EXEC_SAFETY_DOOR);
     
     }		
   }  
@@ -128,8 +121,6 @@ uint8_t system_execute_line(char *line, uint8_t client)
           break;
         case 'X' : // Disable alarm lock [ALARM]
           if (sys.state == STATE_ALARM) {
-            // Block if safety door is ajar.
-            if (system_check_safety_door_ajar()) { return(STATUS_CHECK_DOOR); }
             report_feedback_message(MESSAGE_ALARM_UNLOCK);
             sys.state = STATE_IDLE;
             // Don't run startup script. Prevents stored moves in startup from causing accidents.
@@ -147,7 +138,6 @@ uint8_t system_execute_line(char *line, uint8_t client)
           break;
         case 'H' : // Perform homing cycle [IDLE/ALARM]
           if (bit_isfalse(settings.flags,BITFLAG_HOMING_ENABLE)) {return(STATUS_SETTING_DISABLED); }
-          if (system_check_safety_door_ajar()) { return(STATUS_CHECK_DOOR); } // Block if safety door is ajar.
           sys.state = STATE_HOMING; // Set system state variable
           if (line[2] == 0) {
             mc_homing_cycle(HOMING_CYCLE_ALL);
@@ -249,15 +239,6 @@ uint8_t system_execute_line(char *line, uint8_t client)
 }
 
 
-// Returns if safety door is ajar(T) or closed(F), based on pin state.
-uint8_t system_check_safety_door_ajar()
-{
-  #ifdef ENABLE_SAFETY_DOOR_INPUT_PIN
-    return(system_control_get_state() & CONTROL_PIN_INDEX_SAFETY_DOOR);
-  #else
-    return(false); // Input pin not enabled, so just return that it's closed.
-  #endif
-}
 
 // Special handlers for setting and clearing Grbl's real-time execution flags.
 void system_set_exec_state_flag(uint8_t mask) {
@@ -389,7 +370,6 @@ uint8_t system_control_get_state()
 	
 	
   uint8_t control_state = 0;	
-  if (digitalRead(CONTROL_SAFETY_DOOR_PIN)) { control_state |= CONTROL_PIN_INDEX_SAFETY_DOOR; } 
   if (digitalRead(CONTROL_RESET_PIN)) { control_state |= CONTROL_PIN_INDEX_RESET; }
   if (digitalRead(CONTROL_FEED_HOLD_PIN)) { control_state |= CONTROL_PIN_INDEX_FEED_HOLD; }
   if (digitalRead(CONTROL_CYCLE_START_PIN)) { control_state |= CONTROL_PIN_INDEX_CYCLE_START; }   

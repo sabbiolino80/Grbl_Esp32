@@ -75,7 +75,6 @@
 		
 		#define PROBE_PIN       	GPIO_NUM_32  
 		
-		#define CONTROL_SAFETY_DOOR_PIN   GPIO_NUM_35  // needs external pullup
 		#define CONTROL_RESET_PIN         GPIO_NUM_34  // needs external pullup
 		#define CONTROL_FEED_HOLD_PIN     GPIO_NUM_36  // needs external pullup 
 		#define CONTROL_CYCLE_START_PIN   GPIO_NUM_39  // needs external pullup    		

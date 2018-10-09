@@ -173,12 +173,10 @@ void limits_go_home(uint8_t cycle_mask)
       st_prep_buffer(); // Check and prep segment buffer. NOTE: Should take no longer than 200us.
 
       // Exit routines: No time to run protocol_execute_realtime() in this loop.
-      if (sys_rt_exec_state & (EXEC_SAFETY_DOOR | EXEC_RESET | EXEC_CYCLE_STOP)) {
+      if (sys_rt_exec_state & (EXEC_RESET | EXEC_CYCLE_STOP)) {
         uint8_t rt_exec = sys_rt_exec_state;
         // Homing failure condition: Reset issued during cycle.
         if (rt_exec & EXEC_RESET) { system_set_exec_alarm(EXEC_ALARM_HOMING_FAIL_RESET); }
-        // Homing failure condition: Safety door was opened.
-        if (rt_exec & EXEC_SAFETY_DOOR) { system_set_exec_alarm(EXEC_ALARM_HOMING_FAIL_DOOR); }
         // Homing failure condition: Limit switch still engaged after pull-off motion
         if (!approach && (limits_get_state() & cycle_mask)) { system_set_exec_alarm(EXEC_ALARM_HOMING_FAIL_PULLOFF); }
         // Homing failure condition: Limit switch not found during approach.

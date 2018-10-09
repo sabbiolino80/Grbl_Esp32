@@ -326,32 +326,6 @@ uint8_t mc_probe_cycle(float *target, plan_line_data_t *pl_data, uint8_t parser_
 }
 
 
-// Plans and executes the single special motion case for parking. Independent of main planner buffer.
-// NOTE: Uses the always free planner ring buffer head to store motion parameters for execution.
-void mc_parking_motion(float *parking_target, plan_line_data_t *pl_data)
-{
-  if (sys.abort) { return; } // Block during abort.
-
-  uint8_t plan_status = plan_buffer_line(parking_target, pl_data);
-
-  if (plan_status) {
-		bit_true(sys.step_control, STEP_CONTROL_EXECUTE_SYS_MOTION);
-		bit_false(sys.step_control, STEP_CONTROL_END_MOTION); // Allow parking motion to execute, if feed hold is active.
-    st_parking_setup_buffer(); // Setup step segment buffer for special parking motion case
-		st_prep_buffer();
-		st_wake_up();
-		do {
-			protocol_exec_rt_system();
-			if (sys.abort) { return; }
-		} while (sys.step_control & STEP_CONTROL_EXECUTE_SYS_MOTION);
-		st_parking_restore_buffer(); // Restore step segment buffer to normal run state.
-	} else {
-    bit_false(sys.step_control, STEP_CONTROL_EXECUTE_SYS_MOTION);
-		protocol_exec_rt_system();
-  }
-
-}
-
 
 // Method to ready the system to reset by setting the realtime reset command and killing any
 // active processes in the system. This also checks if a system reset is issued while Grbl

@@ -69,24 +69,13 @@ void serialCheckTask(void *pvParameters)
 	
 	while(true) // run continuously
 	{ 		
-		while (Serial.available()
-        #if defined (ENABLE_WIFI) && defined(ENABLE_HTTP) && defined(ENABLE_SERIAL2SOCKET_IN)
-			|| Serial2Socket.available()
-		#endif
-            )
+		while (Serial.available())
 		{			
 		  if (Serial.available())
 			{
 				client = CLIENT_SERIAL;
 				data = Serial.read();
 			}	
-       else
-			{   //currently is wifi or BT but better to prepare both can be live
-                #if defined (ENABLE_WIFI) && defined(ENABLE_HTTP)  && defined(ENABLE_SERIAL2SOCKET_IN)
-								client = CLIENT_WEBUI;
-                data = Serial2Socket.read();
-                #endif
-			}
 			
 			client_idx = client - 1;  // for zero based array 
 			
@@ -105,7 +94,6 @@ void serialCheckTask(void *pvParameters)
 				default :
 					if (data > 0x7F) { // Real-time control characters are extended ACSII only.
 						switch(data) {
-							case CMD_SAFETY_DOOR:   system_set_exec_state_flag(EXEC_SAFETY_DOOR); break; // Set as true
 							case CMD_JOG_CANCEL:   
 								if (sys.state & STATE_JOG) { // Block all other states from invoking motion cancel.
 									system_set_exec_state_flag(EXEC_MOTION_CANCEL); 
@@ -161,24 +149,13 @@ void serialCheck()
 	uint8_t client_idx = 0;  // index of data buffer
 	
 	 		
-		while (Serial.available()
-        #if defined (ENABLE_WIFI) && defined(ENABLE_HTTP) && defined(ENABLE_SERIAL2SOCKET_IN)
-			|| Serial2Socket.available()
-		#endif
-            )
+		while (Serial.available())
 		{			
 		  if (Serial.available())
 			{
 				client = CLIENT_SERIAL;
 				data = Serial.read();
 			}	
-       else
-			{   //currently is wifi or BT but better to prepare both can be live				
-                #if defined (ENABLE_WIFI) && defined(ENABLE_HTTP)  && defined(ENABLE_SERIAL2SOCKET_IN)
-								client = CLIENT_WEBUI;
-                data = Serial2Socket.read();
-                #endif
-			}
 						
 			client_idx = client - 1;  // for zero based array 
 			
@@ -194,7 +171,6 @@ void serialCheck()
 				default :
 					if (data > 0x7F) { // Real-time control characters are extended ACSII only.
 						switch(data) {
-							case CMD_SAFETY_DOOR:   system_set_exec_state_flag(EXEC_SAFETY_DOOR); break; // Set as true
 							case CMD_JOG_CANCEL:   
 								if (sys.state & STATE_JOG) { // Block all other states from invoking motion cancel.
 									system_set_exec_state_flag(EXEC_MOTION_CANCEL); 

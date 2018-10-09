@@ -119,13 +119,6 @@ typedef struct {
   float step_per_mm;
   float req_mm_increment;
 
-  #ifdef PARKING_ENABLE
-    uint8_t last_st_block_index;
-    float last_steps_remaining;
-    float last_step_per_mm;
-    float last_dt_remainder;
-  #endif
-
   uint8_t ramp_type;      // Current segment ramp state
   float mm_complete;      // End of velocity profile from end of current planner block in (mm).
                           // NOTE: This value must coincide with a step(no mantissa) when converted.
@@ -525,42 +518,6 @@ void st_update_plan_block_parameters()
   }
 }
 
-#ifdef PARKING_ENABLE
-  // Changes the run state of the step segment buffer to execute the special parking motion.
-  void st_parking_setup_buffer()
-  {
-    // Store step execution data of partially completed block, if necessary.
-    if (prep.recalculate_flag & PREP_FLAG_HOLD_PARTIAL_BLOCK) {
-      prep.last_st_block_index = prep.st_block_index;
-      prep.last_steps_remaining = prep.steps_remaining;
-      prep.last_dt_remainder = prep.dt_remainder;
-      prep.last_step_per_mm = prep.step_per_mm;
-    }
-    // Set flags to execute a parking motion
-    prep.recalculate_flag |= PREP_FLAG_PARKING;
-    prep.recalculate_flag &= ~(PREP_FLAG_RECALCULATE);
-    pl_block = NULL; // Always reset parking motion to reload new block.
-  }
-
-
-  // Restores the step segment buffer to the normal run state after a parking motion.
-  void st_parking_restore_buffer()
-  {
-    // Restore step execution data and flags of partially completed block, if necessary.
-    if (prep.recalculate_flag & PREP_FLAG_HOLD_PARTIAL_BLOCK) {
-      st_prep_block = &st_block_buffer[prep.last_st_block_index];
-      prep.st_block_index = prep.last_st_block_index;
-      prep.steps_remaining = prep.last_steps_remaining;
-      prep.dt_remainder = prep.last_dt_remainder;
-      prep.step_per_mm = prep.last_step_per_mm;
-      prep.recalculate_flag = (PREP_FLAG_HOLD_PARTIAL_BLOCK | PREP_FLAG_RECALCULATE);
-      prep.req_mm_increment = REQ_MM_INCREMENT_SCALAR/prep.step_per_mm; // Recompute this value.
-    } else {
-      prep.recalculate_flag = false;
-    }
-    pl_block = NULL; // Set to reload next block.
-  }
-#endif
 
 // Generates the step and direction port invert masks used in the Stepper Interrupt Driver.
 void st_generate_step_dir_invert_masks()
@@ -618,12 +575,7 @@ void st_prep_buffer()
       // Check if we need to only recompute the velocity profile or load a new block.
       if (prep.recalculate_flag & PREP_FLAG_RECALCULATE) {
 
-        #ifdef PARKING_ENABLE
-          if (prep.recalculate_flag & PREP_FLAG_PARKING) { prep.recalculate_flag &= ~(PREP_FLAG_RECALCULATE); }
-          else { prep.recalculate_flag = false; }
-        #else
           prep.recalculate_flag = false;
-        #endif
 
       } else {
 
@@ -921,9 +873,6 @@ void st_prep_buffer()
         // Less than one step to decelerate to zero speed, but already very close. AMASS
         // requires full steps to execute. So, just bail.
         bit_true(sys.step_control,STEP_CONTROL_END_MOTION);
-        #ifdef PARKING_ENABLE
-          if (!(prep.recalculate_flag & PREP_FLAG_PARKING)) { prep.recalculate_flag |= PREP_FLAG_HOLD_PARTIAL_BLOCK; }
-        #endif
         return; // Segment not generated, but current step data still retained.
       }
     }
@@ -990,9 +939,6 @@ void st_prep_buffer()
         // the segment queue, where realtime protocol will set new state upon receiving the
         // cycle stop flag from the ISR. Prep_segment is blocked until then.
         bit_true(sys.step_control,STEP_CONTROL_END_MOTION);
-        #ifdef PARKING_ENABLE
-          if (!(prep.recalculate_flag & PREP_FLAG_PARKING)) { prep.recalculate_flag |= PREP_FLAG_HOLD_PARTIAL_BLOCK; }
-        #endif
         return; // Bail!
       } else { // End of planner block
         // The planner block is complete. All steps are set to be executed in the segment buffer.
@@ -1016,7 +962,7 @@ void st_prep_buffer()
 // divided by the ACCELERATION TICKS PER SECOND in seconds.
 float st_get_realtime_rate()
 {
-  if (sys.state & (STATE_CYCLE | STATE_HOMING | STATE_HOLD | STATE_JOG | STATE_SAFETY_DOOR)){
+  if (sys.state & (STATE_CYCLE | STATE_HOMING | STATE_HOLD | STATE_JOG)){
     return prep.current_speed;
   }
   return 0.0f;
@@ -1062,4 +1008,3 @@ void set_stepper_disable(uint8_t isOn)  // isOn = true // to disable
 
 
   
-

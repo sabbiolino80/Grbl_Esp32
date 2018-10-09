@@ -38,9 +38,6 @@ typedef struct {
   uint8_t spindle_stop_ovr;    // Tracks spindle stop override states
   uint8_t report_ovr_counter;  // Tracks when to add override data to status reports.
   uint8_t report_wco_counter;  // Tracks when to add work coordinate offset data to status reports.
-  #ifdef ENABLE_PARKING_OVERRIDE_CONTROL
-    uint8_t override_ctrl;     // Tracks override control states.
-  #endif
   
     float spindle_speed;
   
@@ -60,7 +57,6 @@ extern system_t sys;
 #define EXEC_CYCLE_STOP     bit(2) // bitmask 00000100
 #define EXEC_FEED_HOLD      bit(3) // bitmask 00001000
 #define EXEC_RESET          bit(4) // bitmask 00010000
-#define EXEC_SAFETY_DOOR    bit(5) // bitmask 00100000
 #define EXEC_MOTION_CANCEL  bit(6) // bitmask 01000000
 #define EXEC_SLEEP          bit(7) // bitmask 10000000
 
@@ -104,17 +100,11 @@ extern system_t sys;
 #define STATE_CYCLE         bit(3) // Cycle is running or motions are being executed.
 #define STATE_HOLD          bit(4) // Active feed hold
 #define STATE_JOG           bit(5) // Jogging mode.
-#define STATE_SAFETY_DOOR   bit(6) // Safety door is ajar. Feed holds and de-energizes system.
 #define STATE_SLEEP         bit(7) // Sleep state.
 
 // Define system suspend flags. Used in various ways to manage suspend states and procedures.
 #define SUSPEND_DISABLE           0      // Must be zero.
 #define SUSPEND_HOLD_COMPLETE     bit(0) // Indicates initial feed hold is complete.
-#define SUSPEND_RESTART_RETRACT   bit(1) // Flag to indicate a retract from a restore parking motion.
-#define SUSPEND_RETRACT_COMPLETE  bit(2) // (Safety door only) Indicates retraction and de-energizing is complete.
-#define SUSPEND_INITIATE_RESTORE  bit(3) // (Safety door only) Flag to initiate resume procedures from a cycle start.
-#define SUSPEND_RESTORE_COMPLETE  bit(4) // (Safety door only) Indicates ready to resume normal operation.
-#define SUSPEND_SAFETY_DOOR_AJAR  bit(5) // Tracks safety door state for resuming.
 #define SUSPEND_MOTION_CANCEL     bit(6) // Indicates a canceled resume motion. Currently used by probing routine.
 #define SUSPEND_JOG_CANCEL        bit(7) // Indicates a jog cancel in process and to reset buffers when complete.
 
@@ -126,18 +116,10 @@ extern system_t sys;
 #define STEP_CONTROL_UPDATE_SPINDLE_PWM   bit(3)
 
 // Define control pin index for Grbl internal use. Pin maps may change, but these values don't.
-//#ifdef ENABLE_SAFETY_DOOR_INPUT_PIN
-  #define N_CONTROL_PIN 4
-  #define CONTROL_PIN_INDEX_SAFETY_DOOR   bit(0)
-  #define CONTROL_PIN_INDEX_RESET         bit(1)
-  #define CONTROL_PIN_INDEX_FEED_HOLD     bit(2)
-  #define CONTROL_PIN_INDEX_CYCLE_START   bit(3)
-//#else
-  //#define N_CONTROL_PIN 3
-  //#define CONTROL_PIN_INDEX_RESET         bit(0)
-  //#define CONTROL_PIN_INDEX_FEED_HOLD     bit(1)
-  //#define CONTROL_PIN_INDEX_CYCLE_START   bit(2)
-//#endif
+  #define N_CONTROL_PIN 3
+  #define CONTROL_PIN_INDEX_RESET         bit(0)
+  #define CONTROL_PIN_INDEX_FEED_HOLD     bit(1)
+  #define CONTROL_PIN_INDEX_CYCLE_START   bit(2)
 
 // Define spindle stop override control states.
 #define SPINDLE_STOP_OVR_DISABLED       0  // Must be zero.
@@ -170,8 +152,6 @@ void system_ini(); // Renamed from system_init() due to conflict with esp32 file
 // Returns bitfield of control pin states, organized by CONTROL_PIN_INDEX. (1=triggered, 0=not triggered).
 uint8_t system_control_get_state();
 
-// Returns if safety door is ajar(T) or closed(F), based on pin state.
-uint8_t system_check_safety_door_ajar();
 
 void isr_control_inputs();
 

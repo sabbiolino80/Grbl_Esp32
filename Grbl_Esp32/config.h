@@ -74,7 +74,6 @@ Some features should not be changed. See notes below.
 // #define CMD_STATUS_REPORT 0x81
 // #define CMD_CYCLE_START 0x82
 // #define CMD_FEED_HOLD 0x83
-#define CMD_SAFETY_DOOR 0x84
 #define CMD_JOG_CANCEL  0x85
 #define CMD_DEBUG_REPORT 0x86 // Only when DEBUG enabled, sends debug report in '{}' braces.
 #define CMD_FEED_OVR_RESET 0x90         // Restores feed override value to 100%.
@@ -181,15 +180,6 @@ Some features should not be changed. See notes below.
 
 
 
-// This option causes the feed hold input to act as a safety door switch. A safety door, when triggered,
-// immediately forces a feed hold and then safely de-energizes the machine. Resuming is blocked until
-// the safety door is re-engaged. When it is, Grbl will re-energize the machine and then resume on the
-// previous tool path, as if nothing happened.
-//#define ENABLE_SAFETY_DOOR_INPUT_PIN // ESP32 Leave this enabled for now .. code for undefined not ready
-
-// After the safety door switch has been toggled and restored, this setting sets the power-up delay
-// between restoring the spindle and resuming the cycle.
-#define SAFETY_DOOR_SPINDLE_DELAY 4.0 // Float (seconds)
 
 
 // Enable CoreXY kinematics. Use ONLY with CoreXY machines.
@@ -564,37 +554,7 @@ Some features should not be changed. See notes below.
 // repeatable. If needed, you can disable this behavior by uncommenting the define below.
 // #define ALLOW_FEED_OVERRIDE_DURING_PROBE_CYCLES // Default disabled. Uncomment to enable.
 
-// Enables and configures parking motion methods upon a safety door state. Primarily for OEMs
-// that desire this feature for their integrated machines. At the moment, Grbl assumes that
-// the parking motion only involves one axis, although the parking implementation was written
-// to be easily refactored for any number of motions on different axes by altering the parking
-// source code. At this time, Grbl only supports parking one axis (typically the Z-axis) that
-// moves in the positive direction upon retracting and negative direction upon restoring position.
-// The motion executes with a slow pull-out retraction motion, power-down, and a fast park.
-// Restoring to the resume position follows these set motions in reverse: fast restore to
-// pull-out position, power-up with a time-out, and plunge back to the original position at the
-// slower pull-out rate.
-// NOTE: Still a work-in-progress. Machine coordinates must be in all negative space and
-// does not work with HOMING_FORCE_SET_ORIGIN enabled. Parking motion also moves only in
-// positive direction.
-//#define PARKING_ENABLE  // Default disabled. Uncomment to enable
 
-// Configure options for the parking motion, if enabled.
-#define PARKING_AXIS Z_AXIS // Define which axis that performs the parking motion
-#define PARKING_TARGET -5.0 // Parking axis target. In mm, as machine coordinate [-max_travel,0].
-#define PARKING_RATE 500.0 // Parking fast rate after pull-out in mm/min.
-#define PARKING_PULLOUT_RATE 100.0 // Pull-out/plunge slow feed rate in mm/min.
-#define PARKING_PULLOUT_INCREMENT 5.0 // Spindle pull-out and plunge distance in mm. Incremental distance.
-                                      // Must be positive value or equal to zero.
-
-// Enables a special set of M-code commands that enables and disables the parking motion. 
-// These are controlled by `M56`, `M56 P1`, or `M56 Px` to enable and `M56 P0` to disable. 
-// The command is modal and will be set after a planner sync. Since it is g-code, it is 
-// executed in sync with g-code commands. It is not a real-time command.
-// NOTE: PARKING_ENABLE is required. By default, M56 is active upon initialization. Use 
-// DEACTIVATE_PARKING_UPON_INIT to set M56 P0 as the power-up default.
-// #define ENABLE_PARKING_OVERRIDE_CONTROL   // Default disabled. Uncomment to enable
-// #define DEACTIVATE_PARKING_UPON_INIT // Default disabled. Uncomment to enable.
 
 // This option will automatically disable the laser during a feed hold by invoking a spindle stop
 // override immediately after coming to a stop. However, this also means that the laser still may

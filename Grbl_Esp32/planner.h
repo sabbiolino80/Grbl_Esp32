@@ -112,7 +112,7 @@ uint8_t plan_buffer_line(float *target, plan_line_data_t *pl_data);
 // availible for new blocks.
 void plan_discard_current_block();
  
-// Gets the planner block for the special system motion cases. (Parking/Homing)
+// Gets the planner block for the special system motion cases. (Homing)
 plan_block_t *plan_get_system_motion_block();
  
 // Gets the current block. Returns NULL if buffer empty

@@ -259,7 +259,7 @@ uint8_t plan_check_full_buffer()
 
 
 // Computes and returns block nominal speed based on running condition and override values.
-// NOTE: All system motion commands, such as homing/parking, are not subject to overrides.
+// NOTE: All system motion commands, such as homing, are not subject to overrides.
 float plan_compute_profile_nominal_speed(plan_block_t *block)
 {
   float nominal_speed = block->programmed_rate;

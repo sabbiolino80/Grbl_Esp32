@@ -52,11 +52,6 @@
 // this is a generic send function that everything should use, so interfaces could be added (Bluetooth, etc)
 void grbl_send(uint8_t client, char *text)
 {	
-    
-#if defined (ENABLE_WIFI) && defined(ENABLE_HTTP) && defined(ENABLE_SERIAL2SOCKET_OUT)
-		if ( client == CLIENT_WEBUI || client == CLIENT_ALL )
-			Serial2Socket.write((const uint8_t*)text, strlen(text));
-#endif
 	
 	if ( client == CLIENT_SERIAL || client == CLIENT_ALL )
 		Serial.print(text);	
@@ -116,7 +111,6 @@ void get_state(char *foo)
     case STATE_HOMING: strcpy(foo," Home "); break;
     case STATE_ALARM: strcpy(foo," Alarm"); break;
     case STATE_CHECK_MODE: strcpy(foo," Check"); break;
-    case STATE_SAFETY_DOOR: strcpy(foo," Door "); break;
     default:strcpy(foo,"  ?  "); break;
   }
 }
@@ -165,8 +159,6 @@ void report_feedback_message(uint8_t message_code)  // OK to send to all clients
       grbl_send(CLIENT_ALL, "[MSG:Enabled]\r\n"); break;
     case MESSAGE_DISABLED:
       grbl_send(CLIENT_ALL, "[MSG:Disabled]\r\n"); break;
-    case MESSAGE_SAFETY_DOOR_AJAR:
-      grbl_send(CLIENT_ALL, "[MSG:Check Door]\r\n"); break;
     case MESSAGE_CHECK_LIMITS:
       grbl_send(CLIENT_ALL, "[MSG:Check Limits]\r\n"); break;
     case MESSAGE_PROGRAM_END:
@@ -437,9 +429,6 @@ void report_build_info(char *line, uint8_t client)
   #ifdef COREXY
     strcat(build_info,"C");
   #endif
-  #ifdef PARKING_ENABLE
-    strcat(build_info,"P");
-  #endif
   #ifdef HOMING_FORCE_SET_ORIGIN
     strcat(build_info,"Z");
   #endif
@@ -521,22 +510,6 @@ void report_realtime_status(uint8_t client)
     case STATE_HOMING: strcat(status, "Home"); break;
     case STATE_ALARM: strcat(status, "Alarm"); break;
     case STATE_CHECK_MODE: strcat(status, "Check"); break;
-    case STATE_SAFETY_DOOR:
-      strcat(status, "Door:");
-      if (sys.suspend & SUSPEND_INITIATE_RESTORE) {
-        strcat(status, "3"); // Restoring
-      } else {
-        if (sys.suspend & SUSPEND_RETRACT_COMPLETE) {
-          if (sys.suspend & SUSPEND_SAFETY_DOOR_AJAR) {
-            strcat(status, "1"); // Door ajar
-          } else {
-            strcat(status, "0");
-          } // Door closed and ready to resume
-        } else {
-          strcat(status, "2"); // Retracting
-        }
-      }
-      break;
     case STATE_SLEEP: strcat(status, "Sleep"); break;
   }
 
@@ -618,9 +591,6 @@ void report_realtime_status(uint8_t client)
         #endif
       }
       if (ctrl_pin_state) {
-        #ifdef ENABLE_SAFETY_DOOR_INPUT_PIN
-          if (bit_istrue(ctrl_pin_state,CONTROL_PIN_INDEX_SAFETY_DOOR)) { strcat(status, "D"); }
-        #endif
         if (bit_istrue(ctrl_pin_state,CONTROL_PIN_INDEX_RESET)) { strcat(status, "R"); }
         if (bit_istrue(ctrl_pin_state,CONTROL_PIN_INDEX_FEED_HOLD)) { strcat(status, "H"); }
         if (bit_istrue(ctrl_pin_state,CONTROL_PIN_INDEX_CYCLE_START)) { strcat(status, "S"); }
@@ -631,7 +601,7 @@ void report_realtime_status(uint8_t client)
   #ifdef REPORT_FIELD_WORK_COORD_OFFSET
     if (sys.report_wco_counter > 0) { sys.report_wco_counter--; }
     else {
-      if (sys.state & (STATE_HOMING | STATE_CYCLE | STATE_HOLD | STATE_JOG | STATE_SAFETY_DOOR)) {
+      if (sys.state & (STATE_HOMING | STATE_CYCLE | STATE_HOLD | STATE_JOG)) {
         sys.report_wco_counter = (REPORT_WCO_REFRESH_BUSY_COUNT-1); // Reset counter for slow refresh
       } else { sys.report_wco_counter = (REPORT_WCO_REFRESH_IDLE_COUNT-1); }
       if (sys.report_ovr_counter == 0) { sys.report_ovr_counter = 1; } // Set override on next report.
@@ -644,7 +614,7 @@ void report_realtime_status(uint8_t client)
   #ifdef REPORT_FIELD_OVERRIDES
     if (sys.report_ovr_counter > 0) { sys.report_ovr_counter--; }
     else {
-      if (sys.state & (STATE_HOMING | STATE_CYCLE | STATE_HOLD | STATE_JOG | STATE_SAFETY_DOOR)) {
+      if (sys.state & (STATE_HOMING | STATE_CYCLE | STATE_HOLD | STATE_JOG)) {
         sys.report_ovr_counter = (REPORT_OVR_REFRESH_BUSY_COUNT-1); // Reset counter for slow refresh
       } else { sys.report_ovr_counter = (REPORT_OVR_REFRESH_IDLE_COUNT-1); }      
 			sprintf(temp, "|Ov:%d,%d,%d", sys.f_override, sys.r_override, sys.spindle_speed_ovr);

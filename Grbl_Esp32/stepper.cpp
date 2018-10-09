@@ -390,10 +390,6 @@ void stepper_init()
 // enabled. Startup init and limits call this function but shouldn't start the cycle.
 void st_wake_up()
 {
-
-  #ifdef ESP_DEBUG
-    //Serial.println("st_wake_up()");
-  #endif
   
   // Enable stepper drivers.
   set_stepper_disable(false);
@@ -420,10 +416,6 @@ void st_wake_up()
 // Reset and clear stepper subsystem variables
 void st_reset()
 {
-
-  #ifdef ESP_DEBUG
-    //Serial.println("st_reset()");
-  #endif
   // Initialize stepper driver idle state.
   st_go_idle();
 
@@ -975,9 +967,6 @@ void IRAM_ATTR Stepper_Timer_WritePeriod(uint64_t alarm_val)
 
 void IRAM_ATTR Stepper_Timer_Start()
 {  	
-	#ifdef ESP_DEBUG
-		//Serial.println("ST Start");
-	#endif
 
   timer_set_counter_value(STEP_TIMER_GROUP, STEP_TIMER_INDEX, 0x00000000ULL);
 	
@@ -988,9 +977,6 @@ void IRAM_ATTR Stepper_Timer_Start()
 
 void IRAM_ATTR Stepper_Timer_Stop()
 {		
-	#ifdef ESP_DEBUG
-		//Serial.println("ST Stop");
-	#endif
 	
 	timer_pause(STEP_TIMER_GROUP, STEP_TIMER_INDEX);
 	

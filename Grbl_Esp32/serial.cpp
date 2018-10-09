@@ -99,9 +99,7 @@ void serialCheckTask(void *pvParameters)
 									system_set_exec_state_flag(EXEC_MOTION_CANCEL); 
 								}
 								break; 
-							#ifdef DEBUG
-								case CMD_DEBUG_REPORT: {uint8_t sreg = SREG; cli(); bit_true(sys_rt_exec_debug,EXEC_DEBUG_REPORT); SREG = sreg;} break;
-							#endif
+
 						}
 						// Throw away any unfound extended-ASCII character by not passing it to the serial buffer.
 					} else { // Write character to buffer
@@ -162,9 +160,6 @@ void serialCheck()
 									system_set_exec_state_flag(EXEC_MOTION_CANCEL); 
 								}
 								break; 
-							#ifdef DEBUG
-								case CMD_DEBUG_REPORT: {uint8_t sreg = SREG; cli(); bit_true(sys_rt_exec_debug,EXEC_DEBUG_REPORT); SREG = sreg;} break;
-							#endif
 						}
 						// Throw away any unfound extended-ASCII character by not passing it to the serial buffer.
 					} else { // Write character to buffer

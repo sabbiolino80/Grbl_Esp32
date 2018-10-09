@@ -601,11 +601,3 @@ void report_realtime_status(uint8_t client)
 	
 	grbl_send(client, status);
 }
-
-void report_realtime_steps()
-{
-	uint8_t idx;
-	for (idx=0; idx< N_AXIS; idx++) {
-		grbl_sendf(CLIENT_ALL, "%ld\n", sys_position[idx]);  // OK to send to all ... debug stuff
-	}
-}

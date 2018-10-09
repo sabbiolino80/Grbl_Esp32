@@ -108,7 +108,7 @@ void grbl_sendf(uint8_t client, const char *format, ...);
 
 // Prints system status messages.
 void report_status_message(uint8_t status_code, uint8_t client);
-void report_realtime_steps();
+
 
 // Prints system alarm messages.
 void report_alarm_message(uint8_t alarm_code);
@@ -147,9 +147,7 @@ void report_execute_startup_message(char *line, uint8_t status_code, uint8_t cli
 // Prints build info and user info
 void report_build_info(char *line, uint8_t client);
 
-#ifdef DEBUG
-  void report_realtime_debug();
-#endif
+
 
 
 

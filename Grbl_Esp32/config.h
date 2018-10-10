@@ -79,10 +79,10 @@
 #define HOMING_CYCLE_2 (1<<Y_AXIS)
 
 // NOTE: The following are two examples to setup homing for 2-axis machines.
-// #define HOMING_CYCLE_0 ((1<<X_AXIS)|(1<<Y_AXIS))  // NOT COMPATIBLE WITH COREXY: Homes both X-Y in one cycle. 
+// #define HOMING_CYCLE_0 ((1<<X_AXIS)|(1<<Y_AXIS))  // Homes both X-Y in one cycle. 
 
-// #define HOMING_CYCLE_0 (1<<X_AXIS)  // COREXY COMPATIBLE: First home X
-// #define HOMING_CYCLE_1 (1<<Y_AXIS)  // COREXY COMPATIBLE: Then home Y
+// #define HOMING_CYCLE_0 (1<<X_AXIS)  // First home X
+// #define HOMING_CYCLE_1 (1<<Y_AXIS)  //Then home Y
 
 // Number of homing cycles performed after when the machine initially jogs to limit switches.
 // This help in preventing overshoot and should improve repeatability. This value should be one or
@@ -137,16 +137,6 @@
 
 
 
-
-
-// Enable CoreXY kinematics. Use ONLY with CoreXY machines.
-// IMPORTANT: If homing is enabled, you must reconfigure the homing cycle #defines above to
-// #define HOMING_CYCLE_0 (1<<X_AXIS) and #define HOMING_CYCLE_1 (1<<Y_AXIS)
-// NOTE: This configuration option alters the motion of the X and Y axes to principle of operation
-// defined at (http://corexy.com/theory.html). Motors are assumed to positioned and wired exactly as
-// described, if not, motions may move in strange directions. Grbl requires the CoreXY A and B motors
-// have the same steps per mm internally.
-// #define COREXY // Default disabled. Uncomment to enable.
 
 // Inverts pin logic of the control command pins based on a mask. This essentially means you can use
 // normally-closed switches on the specified pins, rather than the default normally-open switches.

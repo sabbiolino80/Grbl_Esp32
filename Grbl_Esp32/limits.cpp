@@ -71,9 +71,6 @@ void limits_go_home(uint8_t cycle_mask)
   for (idx=0; idx<N_AXIS; idx++) {
     // Initialize step pin masks
     step_pin[idx] = get_step_pin_mask(idx);
-    #ifdef COREXY
-      if ((idx==A_MOTOR)||(idx==B_MOTOR)) { step_pin[idx] = (get_step_pin_mask(X_AXIS)|get_step_pin_mask(Y_AXIS)); }
-    #endif
 
     if (bit_istrue(cycle_mask,bit(idx))) {
       // Set target based on max_travel setting. Ensure homing switches engaged with search scalar.
@@ -98,20 +95,7 @@ void limits_go_home(uint8_t cycle_mask)
       // Set target location for active axes and setup computation for homing rate.
       if (bit_istrue(cycle_mask,bit(idx))) {
         n_active_axis++;
-        #ifdef COREXY
-          if (idx == X_AXIS) {
-            int32_t axis_position = system_convert_corexy_to_y_axis_steps(sys_position);
-            sys_position[A_MOTOR] = axis_position;
-            sys_position[B_MOTOR] = -axis_position;
-          } else if (idx == Y_AXIS) {
-            int32_t axis_position = system_convert_corexy_to_x_axis_steps(sys_position);
-            sys_position[A_MOTOR] = sys_position[B_MOTOR] = axis_position;
-          } else {
-            sys_position[Z_AXIS] = 0;
-          }
-        #else
           sys_position[idx] = 0;
-        #endif
         // Set target direction based on cycle mask and homing cycle approach state.
         // NOTE: This happens to compile smaller than any other implementation tried.
         if (bit_istrue(settings.homing_dir_mask,bit(idx))) {
@@ -143,12 +127,7 @@ void limits_go_home(uint8_t cycle_mask)
         for (idx=0; idx<N_AXIS; idx++) {
           if (axislock & step_pin[idx]) {
             if (limit_state & (1 << idx)) {
-              #ifdef COREXY
-                if (idx==Z_AXIS) { axislock &= ~(step_pin[Z_AXIS]); }
-                else { axislock &= ~(step_pin[A_MOTOR]|step_pin[B_MOTOR]); }
-              #else
                 axislock &= ~(step_pin[idx]);
-              #endif
             }
           }
         }
@@ -217,21 +196,7 @@ void limits_go_home(uint8_t cycle_mask)
         }
       #endif
 
-      #ifdef COREXY
-        if (idx==X_AXIS) {
-          int32_t off_axis_position = system_convert_corexy_to_y_axis_steps(sys_position);
-          sys_position[A_MOTOR] = set_axis_position + off_axis_position;
-          sys_position[B_MOTOR] = set_axis_position - off_axis_position;
-        } else if (idx==Y_AXIS) {
-          int32_t off_axis_position = system_convert_corexy_to_x_axis_steps(sys_position);
-          sys_position[A_MOTOR] = off_axis_position + set_axis_position;
-          sys_position[B_MOTOR] = off_axis_position - set_axis_position;
-        } else {
-          sys_position[idx] = set_axis_position;
-        }
-      #else
         sys_position[idx] = set_axis_position;
-      #endif
 
     }
   }

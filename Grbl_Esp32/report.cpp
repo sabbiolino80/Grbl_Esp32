@@ -392,9 +392,6 @@ void report_build_info(char *line, uint8_t client)
   #ifdef USE_LINE_NUMBERS
     strcat(build_info,"N");
   #endif
-  #ifdef COREXY
-    strcat(build_info,"C");
-  #endif
   #ifdef HOMING_FORCE_SET_ORIGIN
     strcat(build_info,"Z");
   #endif

@@ -216,7 +216,6 @@ void IRAM_ATTR onStepperDriverTimer(void *para)  // ISR It is time to take a ste
       // With AMASS enabled, adjust Bresenham axis increment counters according to AMASS level.
       st.steps[X_AXIS] = st.exec_block->steps[X_AXIS] >> st.exec_segment->amass_level;
       st.steps[Y_AXIS] = st.exec_block->steps[Y_AXIS] >> st.exec_segment->amass_level;
-      st.steps[Z_AXIS] = st.exec_block->steps[Z_AXIS] >> st.exec_segment->amass_level;
 #endif
 
 
@@ -263,21 +262,6 @@ void IRAM_ATTR onStepperDriverTimer(void *para)  // ISR It is time to take a ste
       sys_position[Y_AXIS]++;
     }
   }
-#ifdef ADAPTIVE_MULTI_AXIS_STEP_SMOOTHING
-  st.counter_z += st.steps[Z_AXIS];
-#else
-  st.counter_z += st.exec_block->steps[Z_AXIS];
-#endif
-  if (st.counter_z > st.exec_block->step_event_count) {
-    st.step_outbits |= (1 << Z_STEP_BIT);
-    st.counter_z -= st.exec_block->step_event_count;
-    if (st.exec_block->direction_bits & (1 << Z_DIRECTION_BIT)) {
-      sys_position[Z_AXIS]--;
-    }
-    else {
-      sys_position[Z_AXIS]++;
-    }
-  }
 
   // During a homing cycle, lock out and prevent desired axes from moving.
   if (sys.state == STATE_HOMING) {
@@ -319,9 +303,6 @@ void stepper_init()
 #ifdef Y_DIRECTION_PIN
   pinMode(Y_DIRECTION_PIN, OUTPUT);
 #endif
-#ifdef Z_DIRECTION_PIN
-  pinMode(Z_DIRECTION_PIN, OUTPUT);
-#endif
 
   // make the step pins outputs
 #ifdef  X_STEP_PIN
@@ -329,9 +310,6 @@ void stepper_init()
 #endif
 #ifdef Y_STEP_PIN
   pinMode(Y_STEP_PIN, OUTPUT);
-#endif
-#ifdef Z_STEP_PIN
-  pinMode(Z_STEP_PIN, OUTPUT);
 #endif
 
   // make the stepper disable pin an output
@@ -428,9 +406,6 @@ void set_direction_pins_on(uint8_t onMask)
 #ifdef Y_DIRECTION_PIN
   digitalWrite(Y_DIRECTION_PIN, (onMask & (1 << Y_AXIS)));
 #endif
-#ifdef Z_DIRECTION_PIN
-  digitalWrite(Z_DIRECTION_PIN, (onMask & (1 << Z_AXIS)));
-#endif
 }
 
 void set_stepper_pins_on(uint8_t onMask)
@@ -442,9 +417,6 @@ void set_stepper_pins_on(uint8_t onMask)
 #endif
 #ifdef Y_STEP_PIN
   digitalWrite(Y_STEP_PIN, (onMask & (1 << Y_AXIS)));
-#endif
-#ifdef Z_STEP_PIN
-  digitalWrite(Z_STEP_PIN, (onMask & (1 << Z_AXIS)));
 #endif
 }
 

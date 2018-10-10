@@ -90,10 +90,6 @@
 #define CONTROL_MODE_EXACT_PATH 0 // G61 (Default: Must be zero)
 
 
-// Modal Group G8: Tool length offset
-#define TOOL_LENGTH_OFFSET_CANCEL 0 // G49 (Default: Must be zero)
-#define TOOL_LENGTH_OFFSET_ENABLE_DYNAMIC 1 // G43.1
-
 // Modal Group G12: Active work coordinate system
 // N/A: Stores coordinate system value (54-59) to change to.
 
@@ -136,7 +132,6 @@ typedef struct {
   // uint8_t distance_arc; // {G91.1} NOTE: Don't track. Only default supported.
   uint8_t plane_select;    // {G17,G18,G19}
   // uint8_t cutter_comp;  // {G40} NOTE: Don't track. Only default supported.
-  uint8_t tool_length;     // {G43.1,G49}
   uint8_t coord_select;    // {G54,G55,G56,G57,G58,G59}
   // uint8_t control;      // {G61} NOTE: Don't track. Only default supported.
   uint8_t program_flow;    // {M0,M1,M2,M30}
@@ -168,7 +163,6 @@ typedef struct {
   // position in mm. Loaded from EEPROM when called.
   float coord_offset[N_AXIS];    // Retains the G92 coordinate offset (work coordinates) relative to
   // machine zero in mm. Non-persistent. Cleared upon reset and boot.
-  float tool_length_offset;      // Tracks tool length offset value when enabled.
 } parser_state_t;
 extern parser_state_t gc_state;
 

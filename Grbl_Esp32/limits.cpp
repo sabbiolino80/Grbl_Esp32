@@ -230,18 +230,12 @@ void limits_init()
 #ifdef Y_LIMIT_PIN
   pinMode(Y_LIMIT_PIN, INPUT_PULLUP);
 #endif
-#ifdef Z_LIMIT_PIN
-  pinMode(Z_LIMIT_PIN, INPUT_PULLUP);
-#endif
 #else
 #ifdef X_LIMIT_PIN
   pinMode(X_LIMIT_PIN, INPUT); // input no pullup
 #endif
 #ifdef Y_LIMIT_PIN
   pinMode(Y_LIMIT_PIN, INPUT);
-#endif
-#ifdef Z_LIMIT_PIN
-  pinMode(Z_LIMIT_PIN, INPUT);
 #endif
 #endif
 
@@ -252,9 +246,6 @@ void limits_init()
 #endif
 #ifdef Y_LIMIT_PIN
     attachInterrupt(digitalPinToInterrupt(Y_LIMIT_PIN), isr_limit_switches, CHANGE);
-#endif
-#ifdef Z_LIMIT_PIN
-    attachInterrupt(digitalPinToInterrupt(Z_LIMIT_PIN), isr_limit_switches, CHANGE);
 #endif
   } else {
     limits_disable();
@@ -277,7 +268,6 @@ void limits_disable()
 {
   detachInterrupt(X_LIMIT_BIT);
   detachInterrupt(Y_LIMIT_BIT);
-  detachInterrupt(Z_LIMIT_BIT);
 }
 
 
@@ -294,9 +284,6 @@ uint8_t limits_get_state()
 #endif
 #ifdef Y_LIMIT_PIN
   pin += (digitalRead(Y_LIMIT_PIN) << Y_AXIS);
-#endif
-#ifdef Z_LIMIT_PIN
-  pin += (digitalRead(Z_LIMIT_PIN) << Z_AXIS);
 #endif
 
 #ifdef INVERT_LIMIT_PIN_MASK // not normally used..unless you have both normal and inverted switches

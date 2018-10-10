@@ -31,11 +31,9 @@
 // be handy if you are using a servo, etc. for another axis.
 #define X_STEP_PIN      GPIO_NUM_12
 #define Y_STEP_PIN      GPIO_NUM_14
-#define Z_STEP_PIN      GPIO_NUM_27
 
 #define X_DIRECTION_PIN   GPIO_NUM_26
 #define Y_DIRECTION_PIN   GPIO_NUM_25
-#define Z_DIRECTION_PIN   GPIO_NUM_33
 
 // OK to comment out to use pin for other features
 #define STEPPERS_DISABLE_PIN GPIO_NUM_13
@@ -43,7 +41,6 @@
 
 #define X_LIMIT_PIN      	GPIO_NUM_2
 #define Y_LIMIT_PIN      	GPIO_NUM_4
-#define Z_LIMIT_PIN     	GPIO_NUM_15
 
 #define CONTROL_RESET_PIN         GPIO_NUM_34  // needs external pullup
 #define CONTROL_FEED_HOLD_PIN     GPIO_NUM_36  // needs external pullup 
@@ -63,16 +60,13 @@
 
 #define X_STEP_BIT    0  // don't change
 #define Y_STEP_BIT    1  // don't change
-#define Z_STEP_BIT    2  // don't change
 #define STEP_MASK       B111 // don't change
 
 #define X_DIRECTION_BIT   0 // don't change
 #define Y_DIRECTION_BIT   1  // don't change
-#define Z_DIRECTION_BIT   2  // don't change
 
 #define X_LIMIT_BIT      	0  // don't change
 #define Y_LIMIT_BIT      	1  // don't change
-#define Z_LIMIT_BIT     	2  // don't change
 #define LIMIT_MASK      	B111  // don't change
 
 #define CONTROL_MASK      				B1111  	// don't change

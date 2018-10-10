@@ -166,7 +166,6 @@ uint8_t system_execute_line(char *line, uint8_t client)
             switch (line[2]) {
               case 'X': mc_homing_cycle(HOMING_CYCLE_X); break;
               case 'Y': mc_homing_cycle(HOMING_CYCLE_Y); break;
-              case 'Z': mc_homing_cycle(HOMING_CYCLE_Z); break;
               default: return (STATUS_INVALID_STATEMENT);
             }
 #endif
@@ -422,5 +421,4 @@ uint8_t get_limit_pin_mask(uint8_t axis_idx)
   if ( axis_idx == Y_AXIS ) {
     return ((1 << Y_LIMIT_BIT));
   }
-  return ((1 << Z_LIMIT_BIT));
 }

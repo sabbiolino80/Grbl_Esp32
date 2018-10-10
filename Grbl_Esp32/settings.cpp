@@ -70,16 +70,12 @@ void settings_restore(uint8_t restore_flag) {
 
     settings.steps_per_mm[X_AXIS] = DEFAULT_X_STEPS_PER_MM;
     settings.steps_per_mm[Y_AXIS] = DEFAULT_Y_STEPS_PER_MM;
-    settings.steps_per_mm[Z_AXIS] = DEFAULT_Z_STEPS_PER_MM;
     settings.max_rate[X_AXIS] = DEFAULT_X_MAX_RATE;
     settings.max_rate[Y_AXIS] = DEFAULT_Y_MAX_RATE;
-    settings.max_rate[Z_AXIS] = DEFAULT_Z_MAX_RATE;
     settings.acceleration[X_AXIS] = DEFAULT_X_ACCELERATION;
     settings.acceleration[Y_AXIS] = DEFAULT_Y_ACCELERATION;
-    settings.acceleration[Z_AXIS] = DEFAULT_Z_ACCELERATION;
     settings.max_travel[X_AXIS] = (-DEFAULT_X_MAX_TRAVEL);
     settings.max_travel[Y_AXIS] = (-DEFAULT_Y_MAX_TRAVEL);
-    settings.max_travel[Z_AXIS] = (-DEFAULT_Z_MAX_TRAVEL);
 
     write_global_settings();
   }

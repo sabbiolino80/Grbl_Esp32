@@ -261,7 +261,6 @@ void report_ngc_parameters(uint8_t client)
   strcat(ngc_rpt, "]\r\n");
   strcat(ngc_rpt, "[TLO:"); // Print tool length offset value
 
-  sprintf(temp, "%4.3f]\r\n", gc_state.tool_length_offset);
   strcat(ngc_rpt, temp);
 
   grbl_send(client, ngc_rpt);
@@ -446,9 +445,6 @@ void report_realtime_status(uint8_t client)
     for (idx = 0; idx < N_AXIS; idx++) {
       // Apply work coordinate offsets and tool length offset to current position.
       wco[idx] = gc_state.coord_system[idx] + gc_state.coord_offset[idx];
-      if (idx == TOOL_LENGTH_OFFSET_AXIS) {
-        wco[idx] += gc_state.tool_length_offset;
-      }
       if (bit_isfalse(settings.status_report_mask, BITFLAG_RT_STATUS_POSITION_TYPE)) {
         print_position[idx] -= wco[idx];
       }
@@ -506,24 +502,6 @@ void report_realtime_status(uint8_t client)
       if (bit_istrue(lim_pin_state, bit(Y_AXIS))) {
         strcat(status, "Y");
       }
-      if (bit_istrue(lim_pin_state, bit(Z_AXIS))) {
-        strcat(status, "Z");
-      }
-#ifdef A_AXIS
-      if (bit_istrue(lim_pin_state, bit(A_AXIS))) {
-        strcat(status, "A");
-      }
-#endif
-#ifdef B_AXIS
-      if (bit_istrue(lim_pin_state, bit(B_AXIS))) {
-        strcat(status, "B");
-      }
-#endif
-#ifdef C_AXIS
-      if (bit_istrue(lim_pin_state, bit(C_AXIS))) {
-        strcat(status, "C");
-      }
-#endif
     }
     if (ctrl_pin_state) {
       if (bit_istrue(ctrl_pin_state, CONTROL_PIN_INDEX_RESET)) {

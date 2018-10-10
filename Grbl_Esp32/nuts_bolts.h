@@ -16,11 +16,9 @@
 #define SOME_LARGE_VALUE 1.0E+38
 
 // Axis array index values. Must start with 0 and be continuous.
-#define N_AXIS 3 // Number of axes
+#define N_AXIS 2 // Number of axes
 #define X_AXIS 0 // Axis indexing value.
 #define Y_AXIS 1
-#define Z_AXIS 2
-// #define A_AXIS 3
 
 // Conversions
 #define TICKS_PER_MICROSECOND (F_STEPPER_TIMER/1000000) // Different from AVR version 

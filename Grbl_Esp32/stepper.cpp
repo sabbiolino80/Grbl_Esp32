@@ -227,9 +227,6 @@ void IRAM_ATTR onStepperDriverTimer(void *para)  // ISR It is time to take a ste
   }
 
 
-  // Check probing state.
-  if (sys_probe_state == PROBE_ACTIVE) { probe_state_monitor(); }
-
   // Reset step out bits.
   st.step_outbits = 0;
 

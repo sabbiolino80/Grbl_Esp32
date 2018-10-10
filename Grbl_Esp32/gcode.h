@@ -58,10 +58,6 @@
 #define MOTION_MODE_LINEAR 1 // G1 (Do not alter value)
 #define MOTION_MODE_CW_ARC 2  // G2 (Do not alter value)
 #define MOTION_MODE_CCW_ARC 3  // G3 (Do not alter value)
-#define MOTION_MODE_PROBE_TOWARD 140 // G38.2 (Do not alter value)
-#define MOTION_MODE_PROBE_TOWARD_NO_ERROR 141 // G38.3 (Do not alter value)
-#define MOTION_MODE_PROBE_AWAY 142 // G38.4 (Do not alter value)
-#define MOTION_MODE_PROBE_AWAY_NO_ERROR 143 // G38.5 (Do not alter value)
 #define MOTION_MODE_NONE 80 // G80 (Do not alter value)
 
 // Modal Group G2: Plane select
@@ -128,24 +124,11 @@
 #define GC_UPDATE_POS_SYSTEM   1
 #define GC_UPDATE_POS_NONE     2
 
-// Define probe cycle exit states and assign proper position updating.
-#define GC_PROBE_FOUND      GC_UPDATE_POS_SYSTEM
-#define GC_PROBE_ABORT      GC_UPDATE_POS_NONE
-#define GC_PROBE_FAIL_INIT  GC_UPDATE_POS_NONE
-#define GC_PROBE_FAIL_END   GC_UPDATE_POS_TARGET
-#ifdef SET_CHECK_MODE_PROBE_TO_START
-  #define GC_PROBE_CHECK_MODE   GC_UPDATE_POS_NONE  
-#else
-  #define GC_PROBE_CHECK_MODE   GC_UPDATE_POS_TARGET
-#endif
-
 // Define gcode parser flags for handling special cases.
 #define GC_PARSER_NONE                  0 // Must be zero.
 #define GC_PARSER_JOG_MOTION            bit(0)
 #define GC_PARSER_CHECK_MANTISSA        bit(1)
 #define GC_PARSER_ARC_IS_CLOCKWISE      bit(2)
-#define GC_PARSER_PROBE_IS_AWAY         bit(3)
-#define GC_PARSER_PROBE_IS_NO_ERROR     bit(4)
 #define GC_PARSER_LASER_FORCE_SYNC      bit(5)
 #define GC_PARSER_LASER_DISABLE         bit(6)
 #define GC_PARSER_LASER_ISMOTION        bit(7)

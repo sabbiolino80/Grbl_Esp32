@@ -44,9 +44,7 @@
 		#define X_LIMIT_PIN      	GPIO_NUM_2  
 		#define Y_LIMIT_PIN      	GPIO_NUM_4  
 		#define Z_LIMIT_PIN     	GPIO_NUM_15 		
-		
-		#define PROBE_PIN       	GPIO_NUM_32  
-		
+
 		#define CONTROL_RESET_PIN         GPIO_NUM_34  // needs external pullup
 		#define CONTROL_FEED_HOLD_PIN     GPIO_NUM_36  // needs external pullup 
 		#define CONTROL_CYCLE_START_PIN   GPIO_NUM_39  // needs external pullup    		
@@ -76,9 +74,7 @@
 		#define Y_LIMIT_BIT      	1  // don't change
 		#define Z_LIMIT_BIT     	2  // don't change
 		#define LIMIT_MASK      	B111  // don't change
-		
-		#define PROBE_MASK        1 // don't change		
-		
+
 		#define CONTROL_MASK      				B1111  	// don't change
 		#define INVERT_CONTROL_PIN_MASK   B1110		// don't change
 		

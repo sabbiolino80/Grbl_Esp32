@@ -64,8 +64,6 @@
 #define ALARM_HARD_LIMIT_ERROR      EXEC_ALARM_HARD_LIMIT
 #define ALARM_SOFT_LIMIT_ERROR      EXEC_ALARM_SOFT_LIMIT
 #define ALARM_ABORT_CYCLE           EXEC_ALARM_ABORT_CYCLE
-#define ALARM_PROBE_FAIL_INITIAL    EXEC_ALARM_PROBE_FAIL_INITIAL
-#define ALARM_PROBE_FAIL_CONTACT    EXEC_ALARM_PROBE_FAIL_CONTACT
 #define ALARM_HOMING_FAIL_RESET     EXEC_ALARM_HOMING_FAIL_RESET
 #define ALARM_HOMING_FAIL_DOOR      EXEC_ALARM_HOMING_FAIL_DOOR
 #define ALARM_HOMING_FAIL_PULLOFF   EXEC_ALARM_HOMING_FAIL_PULLOFF
@@ -117,10 +115,8 @@ void report_echo_line_received(char *line, uint8_t client);
 // Prints realtime status report
 void report_realtime_status(uint8_t client);
 
-// Prints recorded probe position
-void report_probe_parameters(uint8_t client);
 
-// Prints Grbl NGC parameters (coordinate offsets, probe)
+// Prints Grbl NGC parameters (coordinate offsets)
 void report_ngc_parameters(uint8_t client);
 
 // Prints current g-code parser mode state

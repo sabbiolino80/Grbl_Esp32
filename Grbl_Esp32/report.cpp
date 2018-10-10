@@ -183,7 +183,6 @@ void report_grbl_settings(uint8_t client) {
 	sprintf(setting, "$3=%d\r\n", settings.dir_invert_mask);  strcat(rpt, setting);
 	sprintf(setting, "$4=%d\r\n", bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE));  strcat(rpt, setting);
 	sprintf(setting, "$5=%d\r\n", bit_istrue(settings.flags,BITFLAG_INVERT_LIMIT_PINS));  strcat(rpt, setting);
-	sprintf(setting, "$6=%d\r\n", bit_istrue(settings.flags,BITFLAG_INVERT_PROBE_PIN));  strcat(rpt, setting);
 	sprintf(setting, "$10=%d\r\n", settings.status_report_mask);  strcat(rpt, setting);
 	
 	sprintf(setting, "$11=%4.3f\r\n", settings.junction_deviation);   strcat(rpt, setting);	
@@ -223,34 +222,6 @@ void report_grbl_settings(uint8_t client) {
 	grbl_send(client,rpt);
 }
 
-
-
-
-
-
-// Prints current probe parameters. Upon a probe command, these parameters are updated upon a
-// successful probe or upon a failed probe with the G38.3 without errors command (if supported).
-// These values are retained until Grbl is power-cycled, whereby they will be re-zeroed.
-void report_probe_parameters(uint8_t client)
-{
-  // Report in terms of machine position.	
-	float print_position[N_AXIS];
-	char probe_rpt[50];	// the probe report we are building here
-	char temp[30];
-	
-	strcpy(probe_rpt, "[PRB:"); // initialize the string with the first characters
-  
-	// get the machine position and put them into a string and append to the probe report
-  system_convert_array_steps_to_mpos(print_position,sys_probe_position);
-	report_util_axis_values(print_position, temp);	
-	strcat(probe_rpt, temp);
-	
-	// add the success indicator and add closing characters
-	sprintf(temp, ":%d]\r\n", sys.probe_succeeded);	
-	strcat(probe_rpt, temp);
-	
-	grbl_send(client, probe_rpt); // send the report 
-}
 
 
 
@@ -299,8 +270,7 @@ void report_ngc_parameters(uint8_t client)
 	strcat(ngc_rpt, temp);
 	
 	grbl_send(client, ngc_rpt);
-	
-  report_probe_parameters(client); 
+
 }
 
 
@@ -315,11 +285,9 @@ void report_gcode_modes(uint8_t client)
   strcpy(modes_rpt, "[GC:G");
 	
 	
-  if (gc_state.modal.motion >= MOTION_MODE_PROBE_TOWARD) {
-    sprintf(temp, "38.%d", gc_state.modal.motion - (MOTION_MODE_PROBE_TOWARD-2));		
-  } else {
+
 		sprintf(temp, "%d", gc_state.modal.motion);	    
-  }
+
 	strcat(modes_rpt, temp);
 
 	sprintf(temp, " G%d", gc_state.modal.coord_select+54);
@@ -527,10 +495,9 @@ void report_realtime_status(uint8_t client)
   #ifdef REPORT_FIELD_PIN_STATE
     uint8_t lim_pin_state = limits_get_state();
     uint8_t ctrl_pin_state = system_control_get_state();
-    uint8_t prb_pin_state = probe_get_state();
-    if (lim_pin_state | ctrl_pin_state | prb_pin_state) {      
+    
+    if (lim_pin_state | ctrl_pin_state) {      
 			strcat(status, "|Pn:");
-      if (prb_pin_state) { strcat(status, "P"); }
       if (lim_pin_state) {
         if (bit_istrue(lim_pin_state,bit(X_AXIS))) { strcat(status, "X"); }
         if (bit_istrue(lim_pin_state,bit(Y_AXIS))) { strcat(status, "Y"); }

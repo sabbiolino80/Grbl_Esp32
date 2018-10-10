@@ -4,22 +4,7 @@
 
   Copyright (c) 2011-2016 Sungeun K. Jeon for Gnea Research LLC
   Copyright (c) 2009-2011 Simen Svale Skogsrud
-	
-	2018 -	Bart Dring This file was modifed for use on the ESP32
-					CPU. Do not use this with Grbl for atMega328P
 
-  Grbl is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Grbl is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "grbl.h"
@@ -58,9 +43,6 @@ void settings_restore(uint8_t restore_flag) {
     settings.junction_deviation = DEFAULT_JUNCTION_DEVIATION;
 
     settings.arc_tolerance = DEFAULT_ARC_TOLERANCE;
-
-    settings.rpm_max = DEFAULT_SPINDLE_RPM_MAX;
-    settings.rpm_min = DEFAULT_SPINDLE_RPM_MIN;
 
     settings.homing_dir_mask = DEFAULT_HOMING_DIR_MASK;
     settings.homing_feed_rate = DEFAULT_HOMING_FEED_RATE;
@@ -300,15 +282,8 @@ uint8_t settings_store_global_setting(uint8_t parameter, float value) {
       case 25: settings.homing_seek_rate = value; break;
       case 26: settings.homing_debounce_delay = int_value; break;
       case 27: settings.homing_pulloff = value; break;
-      case 30: settings.rpm_max = value; spindle_init(); break; // Re-initialize spindle rpm calibration
-      case 31: settings.rpm_min = value; spindle_init(); break; // Re-initialize spindle rpm calibration
       case 32:
-        #ifdef VARIABLE_SPINDLE
-          if (int_value) { settings.flags |= BITFLAG_LASER_MODE; }
-          else { settings.flags &= ~BITFLAG_LASER_MODE; }
-        #else
           return(STATUS_SETTING_DISABLED_LASER);
-        #endif
         break;
       default:
         return(STATUS_INVALID_STATEMENT);
@@ -334,4 +309,3 @@ uint8_t get_direction_pin_mask(uint8_t axis_idx)
 {      
 	return(1<<axis_idx);
 }
-

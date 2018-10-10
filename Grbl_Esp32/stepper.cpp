@@ -4,25 +4,6 @@
   stepper.c - stepper motor driver: executes motion plans using stepper motors
   Part of Grbl
 
-  Copyright (c) 2011-2016 Sungeun K. Jeon for Gnea Research LLC
-  Copyright (c) 2009-2011 Simen Svale Skogsrud
-	
-	2018 -	Bart Dring This file was modifed for use on the ESP32
-					CPU. Do not use this with Grbl for atMega328P
-
-  Grbl is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Grbl is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-  
-
-  You should have received a copy of the GNU General Public License
-  along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "grbl.h"
@@ -37,9 +18,7 @@ typedef struct {
   uint32_t steps[N_AXIS];
   uint32_t step_event_count;
   uint8_t direction_bits;
-  #ifdef VARIABLE_SPINDLE
-    uint8_t is_pwm_rate_adjusted; // Tracks motions that require constant laser power/rate
-  #endif
+
 } st_block_t;
 static st_block_t st_block_buffer[SEGMENT_BUFFER_SIZE-1];
 
@@ -55,9 +34,6 @@ typedef struct {
     uint8_t amass_level;    // Indicates AMASS level for the ISR to execute this segment
   #else
     uint8_t prescaler;      // Without AMASS, a prescaler is required to adjust for slow timing.
-  #endif
-  #ifdef VARIABLE_SPINDLE
-    uint8_t spindle_pwm;
   #endif
 } segment_t;
 static segment_t segment_buffer[SEGMENT_BUFFER_SIZE];
@@ -128,10 +104,6 @@ typedef struct {
   float accelerate_until; // Acceleration ramp end measured from end of block (mm)
   float decelerate_after; // Deceleration ramp start measured from end of block (mm)
 
-  #ifdef VARIABLE_SPINDLE
-    float inv_rate;    // Used by PWM laser mode to speed up segment calculations.
-    uint8_t current_spindle_pwm; 
-  #endif
 } st_prep_t;
 static st_prep_t prep;
 
@@ -245,18 +217,10 @@ void IRAM_ATTR onStepperDriverTimer(void *para)  // ISR It is time to take a ste
         st.steps[Z_AXIS] = st.exec_block->steps[Z_AXIS] >> st.exec_segment->amass_level;
       #endif
 
-      #ifdef VARIABLE_SPINDLE
-        // Set real-time spindle output as segment is loaded, just prior to the first step.
-        spindle_set_speed(st.exec_segment->spindle_pwm);
-      #endif
 
     } else {
       // Segment buffer empty. Shutdown.
       st_go_idle();
-      #ifdef VARIABLE_SPINDLE
-        // Ensure pwm is set properly upon completion of rate-controlled motion.
-        if (st.exec_block->is_pwm_rate_adjusted) { spindle_set_speed(SPINDLE_PWM_OFF_VALUE); }
-      #endif
       system_set_exec_state_flag(EXEC_CYCLE_STOP); // Flag main program for cycle end
       return; // Nothing to do but exit.
     }
@@ -605,19 +569,7 @@ void st_prep_buffer()
         } else {
           prep.current_speed = sqrt(pl_block->entry_speed_sqr);
         }
-        
-        #ifdef VARIABLE_SPINDLE
-          // Setup laser mode variables. PWM rate adjusted motions will always complete a motion with the
-          // spindle off. 
-          st_prep_block->is_pwm_rate_adjusted = false;
-          if (settings.flags & BITFLAG_LASER_MODE) {
-            if (pl_block->condition & PL_COND_FLAG_SPINDLE_CCW) { 
-              // Pre-compute inverse programmed rate to speed up PWM updating per step segment.
-              prep.inv_rate = 1.0/pl_block->programmed_rate;
-              st_prep_block->is_pwm_rate_adjusted = true; 
-            }
-          }
-        #endif
+
       }
 
 			/* ---------------------------------------------------------------------------------
@@ -711,9 +663,6 @@ void st_prep_buffer()
 				}
 			}
       
-      #ifdef VARIABLE_SPINDLE
-        bit_true(sys.step_control, STEP_CONTROL_UPDATE_SPINDLE_PWM); // Force update whenever updating block.
-      #endif
     }
     
     // Initialize new segment
@@ -821,28 +770,6 @@ void st_prep_buffer()
       }
     } while (mm_remaining > prep.mm_complete); // **Complete** Exit loop. Profile complete.
 
-    #ifdef VARIABLE_SPINDLE
-      /* -----------------------------------------------------------------------------------
-        Compute spindle speed PWM output for step segment
-      */
-      
-      if (st_prep_block->is_pwm_rate_adjusted || (sys.step_control & STEP_CONTROL_UPDATE_SPINDLE_PWM)) {
-        if (pl_block->condition & (PL_COND_FLAG_SPINDLE_CW | PL_COND_FLAG_SPINDLE_CCW)) {
-          float rpm = pl_block->spindle_speed;
-          // NOTE: Feed and rapid overrides are independent of PWM value and do not alter laser power/rate.        
-          if (st_prep_block->is_pwm_rate_adjusted) { rpm *= (prep.current_speed * prep.inv_rate); }
-          // If current_speed is zero, then may need to be rpm_min*(100/MAX_SPINDLE_SPEED_OVERRIDE)
-          // but this would be instantaneous only and during a motion. May not matter at all.
-          prep.current_spindle_pwm = spindle_compute_pwm_value(rpm);
-        } else { 
-          sys.spindle_speed = 0.0;
-          prep.current_spindle_pwm = SPINDLE_PWM_OFF_VALUE;
-        }
-        bit_false(sys.step_control,STEP_CONTROL_UPDATE_SPINDLE_PWM);
-      }
-      prep_segment->spindle_pwm = prep.current_spindle_pwm; // Reload segment PWM value
-
-    #endif
     
     /* -----------------------------------------------------------------------------------
        Compute segment step rate, steps to execute, and apply necessary rate corrections.

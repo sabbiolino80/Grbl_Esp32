@@ -2,20 +2,6 @@
   Grbl_ESP32.ino - Header for system level commands and real-time processes
   Part of Grbl
   Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
-	
-	2018 -	Bart Dring This file was modified for use on the ESP32
-					CPU. Do not use this with Grbl for atMega328P
-	
-  Grbl is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-  Grbl is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-  You should have received a copy of the GNU General Public License
-  along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "grbl.h"
@@ -28,7 +14,7 @@ volatile uint8_t sys_probe_state;   // Probing state value.  Used to coordinate 
 volatile uint8_t sys_rt_exec_state;   // Global realtime executor bitflag variable for state management. See EXEC bitmasks.
 volatile uint8_t sys_rt_exec_alarm;   // Global realtime executor bitflag variable for setting various alarms.
 volatile uint8_t sys_rt_exec_motion_override; // Global realtime executor bitflag variable for motion-based overrides.
-volatile uint8_t sys_rt_exec_accessory_override; // Global realtime executor bitflag variable for spindle overrides.
+
 
 
 
@@ -79,14 +65,11 @@ void loop() {
   sys_rt_exec_state = 0;
   sys_rt_exec_alarm = 0;
   sys_rt_exec_motion_override = 0;
-  sys_rt_exec_accessory_override = 0;
 
   // Reset Grbl primary systems.
   serial_reset_read_buffer(CLIENT_ALL); // Clear serial read buffer
   
-  gc_init(); // Set g-code parser to default state  
-  
-  spindle_init();  
+  gc_init(); // Set g-code parser to default state   
   
   limits_init();
   probe_init();

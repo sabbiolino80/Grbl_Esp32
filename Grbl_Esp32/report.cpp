@@ -3,22 +3,7 @@
   Part of Grbl  
 
   Copyright (c) 2012-2016 Sungeun K. Jeon for Gnea Research LLC     
-		 
-	2018 -	Bart Dring This file was modified for use on the ESP32
-					CPU. Do not use this with Grbl for atMega328P
 
-  Grbl is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Grbl is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*
@@ -165,8 +150,6 @@ void report_feedback_message(uint8_t message_code)  // OK to send to all clients
       grbl_send(CLIENT_ALL, "[MSG:Pgm End]\r\n"); break;
     case MESSAGE_RESTORE_DEFAULTS:
       grbl_send(CLIENT_ALL, "[MSG:Restoring defaults]\r\n"); break;
-    case MESSAGE_SPINDLE_RESTORE:
-      grbl_send(CLIENT_ALL, "[MSG:Restoring spindle]\r\n"); break;
     case MESSAGE_SLEEP_MODE:
       grbl_send(CLIENT_ALL, "[MSG:Sleeping]\r\n"); break;
   }  		
@@ -218,14 +201,9 @@ void report_grbl_settings(uint8_t client) {
 	sprintf(setting, "$26=%d\r\n", settings.homing_debounce_delay);   strcat(rpt, setting);	
   
 	sprintf(setting, "$27=%4.3f\r\n", settings.homing_pulloff);   strcat(rpt, setting);	
-	sprintf(setting, "$30=%4.3f\r\n", settings.rpm_max);   strcat(rpt, setting);	
-	sprintf(setting, "$31=%4.3f\r\n", settings.rpm_min);   strcat(rpt, setting);	
+	
 	 
-  #ifdef VARIABLE_SPINDLE
-		sprintf(setting, "$32=%d\r\n", bit_istrue(settings.flags,BITFLAG_LASER_MODE));  strcat(rpt, setting);	
-  #else
-    strcat(rpt, "$32=0\r\n");
-  #endif
+
 	
   // Print axis settings
   uint8_t idx, set_idx;
@@ -374,11 +352,6 @@ void report_gcode_modes(uint8_t client)
   }
 
   
-  switch (gc_state.modal.spindle) {
-    case SPINDLE_ENABLE_CW : strcat(modes_rpt, " M3"); break;
-    case SPINDLE_ENABLE_CCW : strcat(modes_rpt, " M4"); break;
-    case SPINDLE_DISABLE : strcat(modes_rpt, " M5"); break;
-  }
 
 
 	sprintf(temp, " T%d", gc_state.tool);
@@ -387,10 +360,6 @@ void report_gcode_modes(uint8_t client)
   sprintf(temp, " F%4.3f", gc_state.feed_rate);
 	strcat(modes_rpt, temp);
 	
-  #ifdef VARIABLE_SPINDLE    
-		sprintf(temp, " S%4.3f", gc_state.spindle_speed);
-	  strcat(modes_rpt, temp);
-  #endif
 
   strcat(modes_rpt, "]\r\n");
 	
@@ -420,9 +389,6 @@ void report_build_info(char *line, uint8_t client)
 	strcat(build_info, line);
 	strcat(build_info, "]\r\n[OPT:");
 	  
-  #ifdef VARIABLE_SPINDLE
-    strcat(build_info,"V");
-  #endif
   #ifdef USE_LINE_NUMBERS
     strcat(build_info,"N");
   #endif
@@ -556,14 +522,9 @@ void report_realtime_status(uint8_t client)
 
   // Report realtime feed speed
   #ifdef REPORT_FIELD_CURRENT_FEED_SPEED
-    #ifdef VARIABLE_SPINDLE      
-			sprintf(temp, "|FS:%4.3f,%4.3f", st_get_realtime_rate(), sys.spindle_speed);
-			strcat(status, temp);
-    #else
       
 			sprintf(temp, "|F:%4.3f", st_get_realtime_rate());
-			strcat(status, temp);
-    #endif      
+			strcat(status, temp);     
   #endif
 
   #ifdef REPORT_FIELD_PIN_STATE

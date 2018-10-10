@@ -2,20 +2,7 @@
   cpu_map.h - Header for system level commands and real-time processes
   Part of Grbl
   Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
-	
-	2018 -	Bart Dring This file was modifed for use on the ESP32
-					CPU. Do not use this with Grbl for atMega328P
-	
-  Grbl is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-  Grbl is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-  You should have received a copy of the GNU General Public License
-  along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
+
 */
 
 #ifndef cpu_map_h
@@ -53,21 +40,6 @@
 		// OK to comment out to use pin for other features
 		#define STEPPERS_DISABLE_PIN GPIO_NUM_13		
 		
-		
-		// If SPINDLE_PWM_PIN is commented out, this frees up the pin, but Grbl will still
-		// use a virtual spindle. Do not comment out the other parameters for the spindle.
-		#define SPINDLE_PWM_PIN    GPIO_NUM_17 
-		#define SPINDLE_PWM_CHANNEL 0
-		#define SPINDLE_PWM_BASE_FREQ 5000 // Hz
-		#define SPINDLE_PWM_BIT_PRECISION 8
-		#define SPINDLE_PWM_OFF_VALUE     0
-		#define SPINDLE_PWM_MAX_VALUE     255  // TODO ESP32 Calc from resolution
-		#define SPINDLE_PWM_RANGE         (SPINDLE_PWM_MAX_VALUE-SPINDLE_PWM_MIN_VALUE)		
-		
-		// if these spindle function pins are defined, they will be activated in the code
-		// comment them out to use the pins for other functions
-		//#define SPINDLE_ENABLE_PIN	GPIO_NUM_16
-		//#define SPINDLE_DIR_PIN			GPIO_NUM_16		
 		
 		#define X_LIMIT_PIN      	GPIO_NUM_2  
 		#define Y_LIMIT_PIN      	GPIO_NUM_4  

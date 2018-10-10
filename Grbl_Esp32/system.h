@@ -2,26 +2,13 @@
   system.h - Header for system level commands and real-time processes
   Part of Grbl
   Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
-	
-	2018 -	Bart Dring This file was modifed for use on the ESP32
-					CPU. Do not use this with Grbl for atMega328P
-	
-  Grbl is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-  Grbl is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-  You should have received a copy of the GNU General Public License
-  along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
+
 */
 
 #ifndef system_h
   #define system_h
   #include "grbl.h"
-  #include "tdef.h"
+  #include "grbl.h"
 
 // Define global system variables
 typedef struct {
@@ -33,9 +20,7 @@ typedef struct {
   uint8_t probe_succeeded;     // Tracks if last probing cycle was successful.
   uint8_t homing_axis_lock;    // Locks axes when limits engage. Used as an axis motion mask in the stepper ISR.
   uint8_t report_wco_counter;  // Tracks when to add work coordinate offset data to status reports.
-  
-    float spindle_speed;
-  
+
 } system_t;
 extern system_t sys;
 
@@ -90,7 +75,7 @@ extern system_t sys;
 #define STEP_CONTROL_END_MOTION           bit(0)
 #define STEP_CONTROL_EXECUTE_HOLD         bit(1)
 #define STEP_CONTROL_EXECUTE_SYS_MOTION   bit(2)
-#define STEP_CONTROL_UPDATE_SPINDLE_PWM   bit(3)
+
 
 // Define control pin index for Grbl internal use. Pin maps may change, but these values don't.
   #define N_CONTROL_PIN 3
@@ -109,7 +94,6 @@ extern volatile uint8_t sys_probe_state;   // Probing state value.  Used to coor
 extern volatile uint8_t sys_rt_exec_state;   // Global realtime executor bitflag variable for state management. See EXEC bitmasks.
 extern volatile uint8_t sys_rt_exec_alarm;   // Global realtime executor bitflag variable for setting various alarms.
 extern volatile uint8_t sys_rt_exec_motion_override; // Global realtime executor bitflag variable for motion-based overrides.
-extern volatile uint8_t sys_rt_exec_accessory_override; // Global realtime executor bitflag variable for spindle overrides.
 
 
 
@@ -128,9 +112,7 @@ void system_clear_exec_state_flag(uint8_t mask);
 void system_set_exec_alarm(uint8_t code);
 void system_clear_exec_alarm();
 void system_set_exec_motion_override_flag(uint8_t mask);
-void system_set_exec_accessory_override_flag(uint8_t mask);
 void system_clear_exec_motion_overrides();
-void system_clear_exec_accessory_overrides();
 
 // Execute the startup script lines stored in EEPROM upon initialization
 void system_execute_startup(char *line);
@@ -154,8 +136,6 @@ void system_clear_exec_state_flag(uint8_t mask);
 void system_set_exec_alarm(uint8_t code);
 void system_clear_exec_alarm();
 void system_set_exec_motion_override_flag(uint8_t mask);
-void system_set_exec_accessory_override_flag(uint8_t mask);
 void system_clear_exec_motion_overrides();
-void system_clear_exec_accessory_overrides();
 
 #endif

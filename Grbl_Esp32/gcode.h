@@ -7,9 +7,9 @@
 
 */
 #ifndef gcode_h
-#define gcode_h  
+#define gcode_h
 
-  
+
 // Define modal group internal numbers for checking multiple command violations and tracking the
 // type of command that is called in the block. A modal group is a group of g-code commands that are
 // mutually exclusive, or cannot exist on the same line, because they each toggle a state or execute
@@ -36,9 +36,9 @@
 
 // Define command actions for within execution-type modal groups (motion, stopping, non-modal). Used
 // internally by the parser to know which command to execute.
-// NOTE: Some macro values are assigned specific values to make g-code state reporting and parsing 
+// NOTE: Some macro values are assigned specific values to make g-code state reporting and parsing
 // compile a litte smaller. Necessary due to being completely out of flash on the 328p. Although not
-// ideal, just be careful with values that state 'do not alter' and check both report.c and gcode.c 
+// ideal, just be careful with values that state 'do not alter' and check both report.c and gcode.c
 // to see how they are used, if you need to alter them.
 
 // Modal Group G0: Non-modal actions
@@ -165,9 +165,9 @@ typedef struct {
   float position[N_AXIS];       // Where the interpreter considers the tool to be at this point in the code
 
   float coord_system[N_AXIS];    // Current work coordinate system (G54+). Stores offset from absolute machine
-                                 // position in mm. Loaded from EEPROM when called.
+  // position in mm. Loaded from EEPROM when called.
   float coord_offset[N_AXIS];    // Retains the G92 coordinate offset (work coordinates) relative to
-                                 // machine zero in mm. Non-persistent. Cleared upon reset and boot.
+  // machine zero in mm. Non-persistent. Cleared upon reset and boot.
   float tool_length_offset;      // Tracks tool length offset value when enabled.
 } parser_state_t;
 extern parser_state_t gc_state;

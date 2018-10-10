@@ -14,18 +14,18 @@ settings_t settings;
 // Method to store startup lines into EEPROM
 void settings_store_startup_line(uint8_t n, char *line)
 {
-  #ifdef FORCE_BUFFER_SYNC_DURING_EEPROM_WRITE
-    protocol_buffer_synchronize(); // A startup line may contain a motion and be executing. 
-  #endif
-  uint32_t addr = n*(LINE_BUFFER_SIZE+1)+EEPROM_ADDR_STARTUP_BLOCK;
-  memcpy_to_eeprom_with_checksum(addr,(char*)line, LINE_BUFFER_SIZE);
+#ifdef FORCE_BUFFER_SYNC_DURING_EEPROM_WRITE
+  protocol_buffer_synchronize(); // A startup line may contain a motion and be executing.
+#endif
+  uint32_t addr = n * (LINE_BUFFER_SIZE + 1) + EEPROM_ADDR_STARTUP_BLOCK;
+  memcpy_to_eeprom_with_checksum(addr, (char*)line, LINE_BUFFER_SIZE);
 }
 
 void settings_init()
 {
-	EEPROM.begin(EEPROM_SIZE);
-  
-  if(!read_global_settings()) {
+  EEPROM.begin(EEPROM_SIZE);
+
+  if (!read_global_settings()) {
     report_status_message(STATUS_SETTING_READ_FAIL, CLIENT_SERIAL);
     settings_restore(SETTINGS_RESTORE_ALL); // Force restore all EEPROM data.
     report_grbl_settings(CLIENT_SERIAL); // only the serial could be working at this point
@@ -51,11 +51,21 @@ void settings_restore(uint8_t restore_flag) {
     settings.homing_pulloff = DEFAULT_HOMING_PULLOFF;
 
     settings.flags = 0;
-    if (DEFAULT_INVERT_ST_ENABLE) { settings.flags |= BITFLAG_INVERT_ST_ENABLE; }
-    if (DEFAULT_HARD_LIMIT_ENABLE) { settings.flags |= BITFLAG_HARD_LIMIT_ENABLE; }
-    if (DEFAULT_HOMING_ENABLE) { settings.flags |= BITFLAG_HOMING_ENABLE; }
-    if (DEFAULT_SOFT_LIMIT_ENABLE) { settings.flags |= BITFLAG_SOFT_LIMIT_ENABLE; }
-    if (DEFAULT_INVERT_LIMIT_PINS) { settings.flags |= BITFLAG_INVERT_LIMIT_PINS; }
+    if (DEFAULT_INVERT_ST_ENABLE) {
+      settings.flags |= BITFLAG_INVERT_ST_ENABLE;
+    }
+    if (DEFAULT_HARD_LIMIT_ENABLE) {
+      settings.flags |= BITFLAG_HARD_LIMIT_ENABLE;
+    }
+    if (DEFAULT_HOMING_ENABLE) {
+      settings.flags |= BITFLAG_HOMING_ENABLE;
+    }
+    if (DEFAULT_SOFT_LIMIT_ENABLE) {
+      settings.flags |= BITFLAG_SOFT_LIMIT_ENABLE;
+    }
+    if (DEFAULT_INVERT_LIMIT_PINS) {
+      settings.flags |= BITFLAG_INVERT_LIMIT_PINS;
+    }
 
 
     settings.steps_per_mm[X_AXIS] = DEFAULT_X_STEPS_PER_MM;
@@ -78,29 +88,31 @@ void settings_restore(uint8_t restore_flag) {
     uint8_t idx;
     float coord_data[N_AXIS];
     memset(&coord_data, 0, sizeof(coord_data));
-    for (idx=0; idx <= SETTING_INDEX_NCOORD; idx++) { settings_write_coord_data(idx, coord_data); }
+    for (idx = 0; idx <= SETTING_INDEX_NCOORD; idx++) {
+      settings_write_coord_data(idx, coord_data);
+    }
   }
 
   if (restore_flag & SETTINGS_RESTORE_STARTUP_LINES) {
-    #if N_STARTUP_LINE > 0
-      EEPROM.write(EEPROM_ADDR_STARTUP_BLOCK, 0);
-      EEPROM.write(EEPROM_ADDR_STARTUP_BLOCK+1, 0); // Checksum
-      EEPROM.commit();
-    #endif
-    #if N_STARTUP_LINE > 1
-      EEPROM.write(EEPROM_ADDR_STARTUP_BLOCK+(LINE_BUFFER_SIZE+1), 0);
-      EEPROM.write(EEPROM_ADDR_STARTUP_BLOCK+(LINE_BUFFER_SIZE+2), 0); // Checksum
-      EEPROM.commit();
-    #endif
+#if N_STARTUP_LINE > 0
+    EEPROM.write(EEPROM_ADDR_STARTUP_BLOCK, 0);
+    EEPROM.write(EEPROM_ADDR_STARTUP_BLOCK + 1, 0); // Checksum
+    EEPROM.commit();
+#endif
+#if N_STARTUP_LINE > 1
+    EEPROM.write(EEPROM_ADDR_STARTUP_BLOCK + (LINE_BUFFER_SIZE + 1), 0);
+    EEPROM.write(EEPROM_ADDR_STARTUP_BLOCK + (LINE_BUFFER_SIZE + 2), 0); // Checksum
+    EEPROM.commit();
+#endif
   }
 
   if (restore_flag & SETTINGS_RESTORE_BUILD_INFO) {
     EEPROM.write(EEPROM_ADDR_BUILD_INFO , 0);
-    EEPROM.write(EEPROM_ADDR_BUILD_INFO+1 , 0); // Checksum
+    EEPROM.write(EEPROM_ADDR_BUILD_INFO + 1 , 0); // Checksum
     EEPROM.commit();
   }
 
-  
+
 }
 
 // Reads Grbl global settings struct from EEPROM.
@@ -110,12 +122,12 @@ uint8_t read_global_settings() {
   if (version == SETTINGS_VERSION) {
     // Read settings-record and check checksum
     if (!(memcpy_from_eeprom_with_checksum((char*)&settings, EEPROM_ADDR_GLOBAL, sizeof(settings_t)))) {
-      return(false);
+      return (false);
     }
   } else {
-    return(false);
+    return (false);
   }
-  return(true);
+  return (true);
 }
 
 // Method to store Grbl global settings struct and version number into EEPROM
@@ -124,30 +136,30 @@ void write_global_settings()
 {
   EEPROM.write(0, SETTINGS_VERSION);
   memcpy_to_eeprom_with_checksum(EEPROM_ADDR_GLOBAL, (char*)&settings, sizeof(settings_t));
-  
+
 }
 
 // Read selected coordinate data from EEPROM. Updates pointed coord_data value.
 uint8_t settings_read_coord_data(uint8_t coord_select, float *coord_data)
 {
-  uint32_t addr = coord_select*(sizeof(float)*N_AXIS+1) + EEPROM_ADDR_PARAMETERS;
+  uint32_t addr = coord_select * (sizeof(float) * N_AXIS + 1) + EEPROM_ADDR_PARAMETERS;
   if (!(memcpy_from_eeprom_with_checksum((char*)coord_data, addr, sizeof(float)*N_AXIS))) {
     // Reset with default zero vector
     clear_vector_float(coord_data);
-    settings_write_coord_data(coord_select,coord_data);
-    return(false);
+    settings_write_coord_data(coord_select, coord_data);
+    return (false);
   }
-  return(true);
+  return (true);
 }
 
 // Method to store coord data parameters into EEPROM
 void settings_write_coord_data(uint8_t coord_select, float *coord_data)
 {
-  #ifdef FORCE_BUFFER_SYNC_DURING_EEPROM_WRITE
-    protocol_buffer_synchronize();
-  #endif
-  uint32_t addr = coord_select*(sizeof(float)*N_AXIS+1) + EEPROM_ADDR_PARAMETERS; 
-  memcpy_to_eeprom_with_checksum(addr,(char*)coord_data, sizeof(float)*N_AXIS);
+#ifdef FORCE_BUFFER_SYNC_DURING_EEPROM_WRITE
+  protocol_buffer_synchronize();
+#endif
+  uint32_t addr = coord_select * (sizeof(float) * N_AXIS + 1) + EEPROM_ADDR_PARAMETERS;
+  memcpy_to_eeprom_with_checksum(addr, (char*)coord_data, sizeof(float)*N_AXIS);
 }
 
 // Method to store build info into EEPROM
@@ -155,7 +167,7 @@ void settings_write_coord_data(uint8_t coord_select, float *coord_data)
 void settings_store_build_info(char *line)
 {
   // Build info can only be stored when state is IDLE.
-  memcpy_to_eeprom_with_checksum(EEPROM_ADDR_BUILD_INFO,(char*)line, LINE_BUFFER_SIZE);
+  memcpy_to_eeprom_with_checksum(EEPROM_ADDR_BUILD_INFO, (char*)line, LINE_BUFFER_SIZE);
 }
 
 // Reads startup line from EEPROM. Updated pointed line string data.
@@ -165,9 +177,9 @@ uint8_t settings_read_build_info(char *line)
     // Reset line with default value
     line[0] = 0; // Empty line
     settings_store_build_info(line);
-    return(false);
+    return (false);
   }
-  return(true);
+  return (true);
 }
 
 
@@ -175,19 +187,21 @@ uint8_t settings_read_build_info(char *line)
 // Reads startup line from EEPROM. Updated pointed line string data.
 uint8_t settings_read_startup_line(uint8_t n, char *line)
 {
-  uint32_t addr = n*(LINE_BUFFER_SIZE+1)+EEPROM_ADDR_STARTUP_BLOCK;
+  uint32_t addr = n * (LINE_BUFFER_SIZE + 1) + EEPROM_ADDR_STARTUP_BLOCK;
   if (!(memcpy_from_eeprom_with_checksum((char*)line, addr, LINE_BUFFER_SIZE))) {
     // Reset line with default value
     line[0] = 0; // Empty line
     settings_store_startup_line(n, line);
-    return(false);
+    return (false);
   }
-  return(true);
+  return (true);
 }
 
 // A helper method to set settings from command line
 uint8_t settings_store_global_setting(uint8_t parameter, float value) {
-  if (value < 0.0) { return(STATUS_NEGATIVE_VALUE); }
+  if (value < 0.0) {
+    return (STATUS_NEGATIVE_VALUE);
+  }
   if (parameter >= AXIS_SETTINGS_START_VAL) {
     // Store axis configuration. Axis numbering sequence set by AXIS_SETTING defines.
     // NOTE: Ensure the setting index corresponds to the report.c settings printout.
@@ -198,34 +212,42 @@ uint8_t settings_store_global_setting(uint8_t parameter, float value) {
         // Valid axis setting found.
         switch (set_idx) {
           case 0:
-            #ifdef MAX_STEP_RATE_HZ
-              if (value*settings.max_rate[parameter] > (MAX_STEP_RATE_HZ*60.0)) { return(STATUS_MAX_STEP_RATE_EXCEEDED); }
-            #endif
+#ifdef MAX_STEP_RATE_HZ
+            if (value * settings.max_rate[parameter] > (MAX_STEP_RATE_HZ * 60.0)) {
+              return (STATUS_MAX_STEP_RATE_EXCEEDED);
+            }
+#endif
             settings.steps_per_mm[parameter] = value;
             break;
           case 1:
-            #ifdef MAX_STEP_RATE_HZ
-              if (value*settings.steps_per_mm[parameter] > (MAX_STEP_RATE_HZ*60.0)) {  return(STATUS_MAX_STEP_RATE_EXCEEDED); }
-            #endif
+#ifdef MAX_STEP_RATE_HZ
+            if (value * settings.steps_per_mm[parameter] > (MAX_STEP_RATE_HZ * 60.0)) {
+              return (STATUS_MAX_STEP_RATE_EXCEEDED);
+            }
+#endif
             settings.max_rate[parameter] = value;
             break;
-          case 2: settings.acceleration[parameter] = value*60*60; break; // Convert to mm/min^2 for grbl internal use.
+          case 2: settings.acceleration[parameter] = value * 60 * 60; break; // Convert to mm/min^2 for grbl internal use.
           case 3: settings.max_travel[parameter] = -value; break;  // Store as negative for grbl internal use.
         }
         break; // Exit while-loop after setting has been configured and proceed to the EEPROM write call.
       } else {
         set_idx++;
         // If axis index greater than N_AXIS or setting index greater than number of axis settings, error out.
-        if ((parameter < AXIS_SETTINGS_INCREMENT) || (set_idx == AXIS_N_SETTINGS)) { return(STATUS_INVALID_STATEMENT); }
+        if ((parameter < AXIS_SETTINGS_INCREMENT) || (set_idx == AXIS_N_SETTINGS)) {
+          return (STATUS_INVALID_STATEMENT);
+        }
         parameter -= AXIS_SETTINGS_INCREMENT;
       }
     }
   } else {
     // Store non-axis Grbl settings
     uint8_t int_value = trunc(value);
-    switch(parameter) {
+    switch (parameter) {
       case 0:
-        if (int_value < 3) { return(STATUS_SETTING_STEP_PULSE_MIN); }
+        if (int_value < 3) {
+          return (STATUS_SETTING_STEP_PULSE_MIN);
+        }
         settings.pulse_microseconds = int_value; break;
       case 1: settings.stepper_idle_lock_time = int_value; break;
       case 2:
@@ -237,29 +259,47 @@ uint8_t settings_store_global_setting(uint8_t parameter, float value) {
         st_generate_step_dir_invert_masks(); // Regenerate step and direction port invert masks.
         break;
       case 4: // Reset to ensure change. Immediate re-init may cause problems.
-        if (int_value) { settings.flags |= BITFLAG_INVERT_ST_ENABLE; }
-        else { settings.flags &= ~BITFLAG_INVERT_ST_ENABLE; }
+        if (int_value) {
+          settings.flags |= BITFLAG_INVERT_ST_ENABLE;
+        }
+        else {
+          settings.flags &= ~BITFLAG_INVERT_ST_ENABLE;
+        }
         break;
       case 5: // Reset to ensure change. Immediate re-init may cause problems.
-        if (int_value) { settings.flags |= BITFLAG_INVERT_LIMIT_PINS; }
-        else { settings.flags &= ~BITFLAG_INVERT_LIMIT_PINS; }
+        if (int_value) {
+          settings.flags |= BITFLAG_INVERT_LIMIT_PINS;
+        }
+        else {
+          settings.flags &= ~BITFLAG_INVERT_LIMIT_PINS;
+        }
         break;
       case 10: settings.status_report_mask = int_value; break;
       case 11: settings.junction_deviation = value; break;
       case 12: settings.arc_tolerance = value; break;
       case 20:
         if (int_value) {
-          if (bit_isfalse(settings.flags, BITFLAG_HOMING_ENABLE)) { return(STATUS_SOFT_LIMIT_ERROR); }
+          if (bit_isfalse(settings.flags, BITFLAG_HOMING_ENABLE)) {
+            return (STATUS_SOFT_LIMIT_ERROR);
+          }
           settings.flags |= BITFLAG_SOFT_LIMIT_ENABLE;
-        } else { settings.flags &= ~BITFLAG_SOFT_LIMIT_ENABLE; }
+        } else {
+          settings.flags &= ~BITFLAG_SOFT_LIMIT_ENABLE;
+        }
         break;
       case 21:
-        if (int_value) { settings.flags |= BITFLAG_HARD_LIMIT_ENABLE; }
-        else { settings.flags &= ~BITFLAG_HARD_LIMIT_ENABLE; }
+        if (int_value) {
+          settings.flags |= BITFLAG_HARD_LIMIT_ENABLE;
+        }
+        else {
+          settings.flags &= ~BITFLAG_HARD_LIMIT_ENABLE;
+        }
         limits_init(); // Re-init to immediately change. NOTE: Nice to have but could be problematic later.
         break;
       case 22:
-        if (int_value) { settings.flags |= BITFLAG_HOMING_ENABLE; }
+        if (int_value) {
+          settings.flags |= BITFLAG_HOMING_ENABLE;
+        }
         else {
           settings.flags &= ~BITFLAG_HOMING_ENABLE;
           settings.flags &= ~BITFLAG_SOFT_LIMIT_ENABLE; // Force disable soft-limits.
@@ -271,11 +311,11 @@ uint8_t settings_store_global_setting(uint8_t parameter, float value) {
       case 26: settings.homing_debounce_delay = int_value; break;
       case 27: settings.homing_pulloff = value; break;
       default:
-        return(STATUS_INVALID_STATEMENT);
+        return (STATUS_INVALID_STATEMENT);
     }
   }
   write_global_settings();
-  return(STATUS_OK);
+  return (STATUS_OK);
 }
 
 
@@ -285,12 +325,12 @@ uint8_t settings_store_global_setting(uint8_t parameter, float value) {
 uint8_t get_step_pin_mask(uint8_t axis_idx)
 {
   // todo clean this up further up stream
-  return(1<<axis_idx);
+  return (1 << axis_idx);
 }
 
 
 // Returns direction pin mask according to Grbl internal axis indexing.
 uint8_t get_direction_pin_mask(uint8_t axis_idx)
-{      
-	return(1<<axis_idx);
+{
+  return (1 << axis_idx);
 }

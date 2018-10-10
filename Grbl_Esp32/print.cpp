@@ -48,8 +48,12 @@ void print_uint8_base10(uint8_t n)
     n /= 10;
   }
   serial_write('0' + n);
-  if (digit_b) { serial_write(digit_b); }
-  if (digit_a) { serial_write(digit_a); }
+  if (digit_b) {
+    serial_write(digit_b);
+  }
+  if (digit_a) {
+    serial_write(digit_a);
+  }
 }
 
 
@@ -59,12 +63,12 @@ void print_uint8_base2_ndigit(uint8_t n, uint8_t digits) {
   uint8_t i = 0;
 
   for (; i < digits; i++) {
-      buf[i] = n % 2 ;
-      n /= 2;
+    buf[i] = n % 2 ;
+    n /= 2;
   }
 
   for (; i > 0; i--)
-      Serial.print('0' + buf[i - 1]);
+    Serial.print('0' + buf[i - 1]);
 }
 
 
@@ -84,7 +88,7 @@ void print_uint32_base10(uint32_t n)
   }
 
   for (; i > 0; i--)
-    Serial.print('0' + buf[i-1]);
+    Serial.print('0' + buf[i - 1]);
 }
 
 
@@ -115,9 +119,9 @@ void printFloat(float n, uint8_t decimal_places)
 //  - CoordValue: Handles all position or coordinate values in  mm reporting.
 //  - RateValue: Handles feed rate and current velocity in  mm reporting.
 void printFloat_CoordValue(float n) {
-    printFloat(n,N_DECIMAL_COORDVALUE_MM);
+  printFloat(n, N_DECIMAL_COORDVALUE_MM);
 }
 
 void printFloat_RateValue(float n) {
-    printFloat(n,N_DECIMAL_RATEVALUE_MM);
+  printFloat(n, N_DECIMAL_RATEVALUE_MM);
 }

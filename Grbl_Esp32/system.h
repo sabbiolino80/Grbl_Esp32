@@ -6,14 +6,14 @@
 */
 
 #ifndef system_h
-  #define system_h
-  #include "grbl.h"
-  #include "grbl.h"
+#define system_h
+#include "grbl.h"
+#include "grbl.h"
 
 // Define global system variables
 typedef struct {
   uint8_t state;               // Tracks the current system state of Grbl.
-  uint8_t abort;               // System abort flag. Forces exit back to main loop for reset.             
+  uint8_t abort;               // System abort flag. Forces exit back to main loop for reset.
   uint8_t suspend;             // System suspend bitflag variable that manages holds, cancels, and safety door.
   uint8_t soft_limit;          // Tracks soft limit errors for the state machine. (boolean)
   uint8_t step_control;        // Governs the step segment generator depending on system state.
@@ -75,10 +75,10 @@ extern system_t sys;
 
 
 // Define control pin index for Grbl internal use. Pin maps may change, but these values don't.
-  #define N_CONTROL_PIN 3
-  #define CONTROL_PIN_INDEX_RESET         bit(0)
-  #define CONTROL_PIN_INDEX_FEED_HOLD     bit(1)
-  #define CONTROL_PIN_INDEX_CYCLE_START   bit(2)
+#define N_CONTROL_PIN 3
+#define CONTROL_PIN_INDEX_RESET         bit(0)
+#define CONTROL_PIN_INDEX_FEED_HOLD     bit(1)
+#define CONTROL_PIN_INDEX_CYCLE_START   bit(2)
 
 
 

@@ -9,10 +9,10 @@
 
 void memcpy_to_eeprom_with_checksum(unsigned int destination, char *source, unsigned int size) {
   unsigned char checksum = 0;
-  for(; size > 0; size--) { 
+  for (; size > 0; size--) {
     checksum = (checksum << 1) || (checksum >> 7);
     checksum += *source;
-    EEPROM.write(destination++, *(source++)); 
+    EEPROM.write(destination++, *(source++));
   }
   EEPROM.write(destination, checksum);
   EEPROM.commit();
@@ -20,11 +20,11 @@ void memcpy_to_eeprom_with_checksum(unsigned int destination, char *source, unsi
 
 int memcpy_from_eeprom_with_checksum(char *destination, unsigned int source, unsigned int size) {
   unsigned char data, checksum = 0;
-  for(; size > 0; size--) { 
+  for (; size > 0; size--) {
     data = EEPROM.read(source++);
     checksum = (checksum << 1) || (checksum >> 7);
-    checksum += data;    
-    *(destination++) = data; 
+    checksum += data;
+    *(destination++) = data;
   }
-  return(checksum == EEPROM.read(source));
+  return (checksum == EEPROM.read(source));
 }

@@ -336,18 +336,18 @@ void protocol_exec_rt_system()
         // Cycle start only when IDLE or when a hold is complete and ready to resume.
         if ((sys.state == STATE_IDLE) || ((sys.state & STATE_HOLD) && (sys.suspend & SUSPEND_HOLD_COMPLETE))) {
 
-            // Start cycle only if queued motions exist in planner buffer and the motion is not canceled.
-            sys.step_control = STEP_CONTROL_NORMAL_OP; // Restore step control to normal operation
-            if (plan_get_current_block() && bit_isfalse(sys.suspend, SUSPEND_MOTION_CANCEL)) {
-              sys.suspend = SUSPEND_DISABLE; // Break suspend state.
-              sys.state = STATE_CYCLE;
-              st_prep_buffer(); // Initialize step segment buffer before beginning cycle.
-              st_wake_up();
-            } else { // Otherwise, do nothing. Set and resume IDLE state.
-              sys.suspend = SUSPEND_DISABLE; // Break suspend state.
-              sys.state = STATE_IDLE;
-            }
-          
+          // Start cycle only if queued motions exist in planner buffer and the motion is not canceled.
+          sys.step_control = STEP_CONTROL_NORMAL_OP; // Restore step control to normal operation
+          if (plan_get_current_block() && bit_isfalse(sys.suspend, SUSPEND_MOTION_CANCEL)) {
+            sys.suspend = SUSPEND_DISABLE; // Break suspend state.
+            sys.state = STATE_CYCLE;
+            st_prep_buffer(); // Initialize step segment buffer before beginning cycle.
+            st_wake_up();
+          } else { // Otherwise, do nothing. Set and resume IDLE state.
+            sys.suspend = SUSPEND_DISABLE; // Break suspend state.
+            sys.state = STATE_IDLE;
+          }
+
         }
       }
       system_clear_exec_state_flag(EXEC_CYCLE_START);
@@ -377,9 +377,9 @@ void protocol_exec_rt_system()
           gc_sync_position();
           plan_sync_position();
         }
-          sys.suspend = SUSPEND_DISABLE;
-          sys.state = STATE_IDLE;
-        
+        sys.suspend = SUSPEND_DISABLE;
+        sys.state = STATE_IDLE;
+
       }
       system_clear_exec_state_flag(EXEC_CYCLE_STOP);
     }
@@ -433,8 +433,8 @@ static void protocol_exec_rt_suspend()
       }
 
 
-        system_set_exec_state_flag(EXEC_CYCLE_START); // Set to resume program.
-      
+      system_set_exec_state_flag(EXEC_CYCLE_START); // Set to resume program.
+
     }
   }
 

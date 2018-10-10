@@ -34,7 +34,7 @@
 #define SETTINGS_RESTORE_STARTUP_LINES bit(2)
 #define SETTINGS_RESTORE_BUILD_INFO bit(3)
 #ifndef SETTINGS_RESTORE_ALL
-  #define SETTINGS_RESTORE_ALL 0xFF // All bitflags
+#define SETTINGS_RESTORE_ALL 0xFF // All bitflags
 #endif
 
 // Define EEPROM memory address location values for Grbl settings and parameters
@@ -88,7 +88,7 @@ typedef struct {
 extern settings_t settings;
 
 // Initialize the configuration subsystem (load settings from EEPROM)
-void settings_init(); 
+void settings_init();
 void settings_restore(uint8_t restore_flag);
 void write_global_settings();
 uint8_t read_global_settings();

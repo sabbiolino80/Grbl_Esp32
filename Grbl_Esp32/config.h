@@ -75,11 +75,11 @@
 // #define HOMING_CYCLE_2                         // OPTIONAL: Uncomment and add axes mask to enable
 
 #define HOMING_CYCLE_0 (1<<Z_AXIS)                // REQUIRED: First move Z to clear workspace.
-#define HOMING_CYCLE_1 (1<<X_AXIS)  
+#define HOMING_CYCLE_1 (1<<X_AXIS)
 #define HOMING_CYCLE_2 (1<<Y_AXIS)
 
 // NOTE: The following are two examples to setup homing for 2-axis machines.
-// #define HOMING_CYCLE_0 ((1<<X_AXIS)|(1<<Y_AXIS))  // Homes both X-Y in one cycle. 
+// #define HOMING_CYCLE_0 ((1<<X_AXIS)|(1<<Y_AXIS))  // Homes both X-Y in one cycle.
 
 // #define HOMING_CYCLE_0 (1<<X_AXIS)  // First home X
 // #define HOMING_CYCLE_1 (1<<Y_AXIS)  //Then home Y
@@ -89,7 +89,7 @@
 // greater.
 #define N_HOMING_LOCATE_CYCLE 1 // Integer (1-128)
 
-// Enables single axis homing commands. $HX, $HY, and $HZ for X, Y, and Z-axis homing. The full homing 
+// Enables single axis homing commands. $HX, $HY, and $HZ for X, Y, and Z-axis homing. The full homing
 // cycle is still invoked by the $H command. This is disabled by default. It's here only to address
 // users that need to switch between a two-axis and three-axis machine. This is actually very rare.
 // If you have a two-axis machine, DON'T USE THIS. Instead, just alter the homing cycle for two-axes.
@@ -329,12 +329,12 @@
 // #define RX_BUFFER_SIZE 128 // (1-254) Uncomment to override defaults in serial.h
 // #define TX_BUFFER_SIZE 100 // (1-254)
 
-// A simple software debouncing feature for hard limit switches. When enabled, the interrupt 
-// monitoring the hard limit switch pins will enable the Arduino's watchdog timer to re-check 
-// the limit pin state after a delay of about 32msec. This can help with CNC machines with 
-// problematic false triggering of their hard limit switches, but it WILL NOT fix issues with 
+// A simple software debouncing feature for hard limit switches. When enabled, the interrupt
+// monitoring the hard limit switch pins will enable the Arduino's watchdog timer to re-check
+// the limit pin state after a delay of about 32msec. This can help with CNC machines with
+// problematic false triggering of their hard limit switches, but it WILL NOT fix issues with
 // electrical interference on the signal cables from external sources. It's recommended to first
-// use shielded signal cables with their shielding connected to ground (old USB/computer cables 
+// use shielded signal cables with their shielding connected to ground (old USB/computer cables
 // work well and are cheap to find) and wire in a low-pass circuit into each limit pin.
 // #define ENABLE_SOFTWARE_DEBOUNCE // Default disabled. Uncomment to enable.
 

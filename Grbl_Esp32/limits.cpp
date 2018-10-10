@@ -12,34 +12,34 @@
 
 // Homing axis search distance multiplier. Computed by this value times the cycle travel.
 #ifndef HOMING_AXIS_SEARCH_SCALAR
-  #define HOMING_AXIS_SEARCH_SCALAR  1.1 // Must be > 1 to ensure limit switch will be engaged.
+#define HOMING_AXIS_SEARCH_SCALAR  1.1 // Must be > 1 to ensure limit switch will be engaged.
 #endif
 #ifndef HOMING_AXIS_LOCATE_SCALAR
-  #define HOMING_AXIS_LOCATE_SCALAR  5.0 // Must be > 1 to ensure limit switch is cleared.
+#define HOMING_AXIS_LOCATE_SCALAR  5.0 // Must be > 1 to ensure limit switch is cleared.
 #endif
 
 void isr_limit_switches()
 {
-	 // Ignore limit switches if already in an alarm state or in-process of executing an alarm.
-    // When in the alarm state, Grbl should have been reset or will force a reset, so any pending
-    // moves in the planner and serial buffers are all cleared and newly sent blocks will be
-    // locked out until a homing cycle or a kill lock command. Allows the user to disable the hard
-    // limit setting if their limits are constantly triggering after a reset and move their axes.
+  // Ignore limit switches if already in an alarm state or in-process of executing an alarm.
+  // When in the alarm state, Grbl should have been reset or will force a reset, so any pending
+  // moves in the planner and serial buffers are all cleared and newly sent blocks will be
+  // locked out until a homing cycle or a kill lock command. Allows the user to disable the hard
+  // limit setting if their limits are constantly triggering after a reset and move their axes.
 
-		if (  ( sys.state != STATE_ALARM) & (bit_isfalse(sys.state, STATE_HOMING)) ) {
-      if (!(sys_rt_exec_alarm)) {
-        #ifdef HARD_LIMIT_FORCE_STATE_CHECK
-          // Check limit pin state.
-          if (limits_get_state()) {
-            mc_reset(); // Initiate system kill.
-            system_set_exec_alarm(EXEC_ALARM_HARD_LIMIT); // Indicate hard limit critical event
-          }
-        #else
-          mc_reset(); // Initiate system kill.
-          system_set_exec_alarm(EXEC_ALARM_HARD_LIMIT); // Indicate hard limit critical event
-        #endif
-      }			
+  if (  ( sys.state != STATE_ALARM) & (bit_isfalse(sys.state, STATE_HOMING)) ) {
+    if (!(sys_rt_exec_alarm)) {
+#ifdef HARD_LIMIT_FORCE_STATE_CHECK
+      // Check limit pin state.
+      if (limits_get_state()) {
+        mc_reset(); // Initiate system kill.
+        system_set_exec_alarm(EXEC_ALARM_HARD_LIMIT); // Indicate hard limit critical event
+      }
+#else
+      mc_reset(); // Initiate system kill.
+      system_set_exec_alarm(EXEC_ALARM_HARD_LIMIT); // Indicate hard limit critical event
+#endif
     }
+  }
 }
 
 // Homes the specified cycle axes, sets the machine position, and performs a pull-off motion after
@@ -51,31 +51,33 @@ void isr_limit_switches()
 // TODO: Move limit pin-specific calls to a general function for portability.
 void limits_go_home(uint8_t cycle_mask)
 {
-  if (sys.abort) { return; } // Block if system reset has been issued.
+  if (sys.abort) {
+    return;  // Block if system reset has been issued.
+  }
 
   // Initialize plan data struct for homing motion. Spindle are disabled.
   plan_line_data_t plan_data;
   plan_line_data_t *pl_data = &plan_data;
-  memset(pl_data,0,sizeof(plan_line_data_t));
+  memset(pl_data, 0, sizeof(plan_line_data_t));
   pl_data->condition = (PL_COND_FLAG_SYSTEM_MOTION);
-  #ifdef USE_LINE_NUMBERS
-    pl_data->line_number = HOMING_CYCLE_LINE_NUMBER;
-  #endif
+#ifdef USE_LINE_NUMBERS
+  pl_data->line_number = HOMING_CYCLE_LINE_NUMBER;
+#endif
 
   // Initialize variables used for homing computations.
-  uint8_t n_cycle = (2*N_HOMING_LOCATE_CYCLE+1);
+  uint8_t n_cycle = (2 * N_HOMING_LOCATE_CYCLE + 1);
   uint8_t step_pin[N_AXIS];
   float target[N_AXIS];
   float max_travel = 0.0;
   uint8_t idx;
-  for (idx=0; idx<N_AXIS; idx++) {
+  for (idx = 0; idx < N_AXIS; idx++) {
     // Initialize step pin masks
     step_pin[idx] = get_step_pin_mask(idx);
 
-    if (bit_istrue(cycle_mask,bit(idx))) {
+    if (bit_istrue(cycle_mask, bit(idx))) {
       // Set target based on max_travel setting. Ensure homing switches engaged with search scalar.
       // NOTE: settings.max_travel[] is stored as a negative value.
-      max_travel = MAX(max_travel,(-HOMING_AXIS_SEARCH_SCALAR)*settings.max_travel[idx]);
+      max_travel = MAX(max_travel, (-HOMING_AXIS_SEARCH_SCALAR) * settings.max_travel[idx]);
     }
   }
 
@@ -86,24 +88,32 @@ void limits_go_home(uint8_t cycle_mask)
   uint8_t limit_state, axislock, n_active_axis;
   do {
 
-    system_convert_array_steps_to_mpos(target,sys_position);
+    system_convert_array_steps_to_mpos(target, sys_position);
 
     // Initialize and declare variables needed for homing routine.
     axislock = 0;
     n_active_axis = 0;
-    for (idx=0; idx<N_AXIS; idx++) {
+    for (idx = 0; idx < N_AXIS; idx++) {
       // Set target location for active axes and setup computation for homing rate.
-      if (bit_istrue(cycle_mask,bit(idx))) {
+      if (bit_istrue(cycle_mask, bit(idx))) {
         n_active_axis++;
-          sys_position[idx] = 0;
+        sys_position[idx] = 0;
         // Set target direction based on cycle mask and homing cycle approach state.
         // NOTE: This happens to compile smaller than any other implementation tried.
-        if (bit_istrue(settings.homing_dir_mask,bit(idx))) {
-          if (approach) { target[idx] = -max_travel; }
-          else { target[idx] = max_travel; }
+        if (bit_istrue(settings.homing_dir_mask, bit(idx))) {
+          if (approach) {
+            target[idx] = -max_travel;
+          }
+          else {
+            target[idx] = max_travel;
+          }
         } else {
-          if (approach) { target[idx] = max_travel; }
-          else { target[idx] = -max_travel; }
+          if (approach) {
+            target[idx] = max_travel;
+          }
+          else {
+            target[idx] = -max_travel;
+          }
         }
         // Apply axislock to the step port pins active in this cycle.
         axislock |= step_pin[idx];
@@ -124,10 +134,10 @@ void limits_go_home(uint8_t cycle_mask)
       if (approach) {
         // Check limit state. Lock out cycle axes when they change.
         limit_state = limits_get_state();
-        for (idx=0; idx<N_AXIS; idx++) {
+        for (idx = 0; idx < N_AXIS; idx++) {
           if (axislock & step_pin[idx]) {
             if (limit_state & (1 << idx)) {
-                axislock &= ~(step_pin[idx]);
+              axislock &= ~(step_pin[idx]);
             }
           }
         }
@@ -140,11 +150,17 @@ void limits_go_home(uint8_t cycle_mask)
       if (sys_rt_exec_state & (EXEC_RESET | EXEC_CYCLE_STOP)) {
         uint8_t rt_exec = sys_rt_exec_state;
         // Homing failure condition: Reset issued during cycle.
-        if (rt_exec & EXEC_RESET) { system_set_exec_alarm(EXEC_ALARM_HOMING_FAIL_RESET); }
+        if (rt_exec & EXEC_RESET) {
+          system_set_exec_alarm(EXEC_ALARM_HOMING_FAIL_RESET);
+        }
         // Homing failure condition: Limit switch still engaged after pull-off motion
-        if (!approach && (limits_get_state() & cycle_mask)) { system_set_exec_alarm(EXEC_ALARM_HOMING_FAIL_PULLOFF); }
+        if (!approach && (limits_get_state() & cycle_mask)) {
+          system_set_exec_alarm(EXEC_ALARM_HOMING_FAIL_PULLOFF);
+        }
         // Homing failure condition: Limit switch not found during approach.
-        if (approach && (rt_exec & EXEC_CYCLE_STOP)) { system_set_exec_alarm(EXEC_ALARM_HOMING_FAIL_APPROACH); }
+        if (approach && (rt_exec & EXEC_CYCLE_STOP)) {
+          system_set_exec_alarm(EXEC_ALARM_HOMING_FAIL_APPROACH);
+        }
         if (sys_rt_exec_alarm) {
           mc_reset(); // Stop motors, if they are running.
           protocol_execute_realtime();
@@ -166,7 +182,7 @@ void limits_go_home(uint8_t cycle_mask)
 
     // After first cycle, homing enters locating phase. Shorten search to pull-off distance.
     if (approach) {
-      max_travel = settings.homing_pulloff*HOMING_AXIS_LOCATE_SCALAR;
+      max_travel = settings.homing_pulloff * HOMING_AXIS_LOCATE_SCALAR;
       homing_rate = settings.homing_feed_rate;
     } else {
       max_travel = settings.homing_pulloff;
@@ -183,20 +199,20 @@ void limits_go_home(uint8_t cycle_mask)
   // triggering when hard limits are enabled or when more than one axes shares a limit pin.
   int32_t set_axis_position;
   // Set machine positions for homed limit switches. Don't update non-homed axes.
-  for (idx=0; idx<N_AXIS; idx++) {
+  for (idx = 0; idx < N_AXIS; idx++) {
     // NOTE: settings.max_travel[] is stored as a negative value.
     if (cycle_mask & bit(idx)) {
-      #ifdef HOMING_FORCE_SET_ORIGIN
-        set_axis_position = 0;
-      #else
-        if ( bit_istrue(settings.homing_dir_mask,bit(idx)) ) {
-          set_axis_position = lround((settings.max_travel[idx]+settings.homing_pulloff)*settings.steps_per_mm[idx]);
-        } else {
-          set_axis_position = lround(-settings.homing_pulloff*settings.steps_per_mm[idx]);
-        }
-      #endif
+#ifdef HOMING_FORCE_SET_ORIGIN
+      set_axis_position = 0;
+#else
+      if ( bit_istrue(settings.homing_dir_mask, bit(idx)) ) {
+        set_axis_position = lround((settings.max_travel[idx] + settings.homing_pulloff) * settings.steps_per_mm[idx]);
+      } else {
+        set_axis_position = lround(-settings.homing_pulloff * settings.steps_per_mm[idx]);
+      }
+#endif
 
-        sys_position[idx] = set_axis_position;
+      sys_position[idx] = set_axis_position;
 
     }
   }
@@ -205,63 +221,63 @@ void limits_go_home(uint8_t cycle_mask)
 
 
 void limits_init()
-{  
-	
-  #ifndef DISABLE_LIMIT_PIN_PULL_UP  
-		#ifdef X_LIMIT_PIN
-			pinMode(X_LIMIT_PIN, INPUT_PULLUP);  // input with pullup
-		#endif
-		#ifdef Y_LIMIT_PIN
-			pinMode(Y_LIMIT_PIN, INPUT_PULLUP);
-		#endif
-		#ifdef Z_LIMIT_PIN
-			pinMode(Z_LIMIT_PIN, INPUT_PULLUP);
-		#endif
-	#else
-		#ifdef X_LIMIT_PIN
-			pinMode(X_LIMIT_PIN, INPUT); // input no pullup
-		#endif
-		#ifdef Y_LIMIT_PIN
-			pinMode(Y_LIMIT_PIN, INPUT);
-		#endif
-		#ifdef Z_LIMIT_PIN
-			pinMode(Z_LIMIT_PIN, INPUT);	
-		#endif
-  #endif
-   
-  if (bit_istrue(settings.flags,BITFLAG_HARD_LIMIT_ENABLE)) {
+{
+
+#ifndef DISABLE_LIMIT_PIN_PULL_UP
+#ifdef X_LIMIT_PIN
+  pinMode(X_LIMIT_PIN, INPUT_PULLUP);  // input with pullup
+#endif
+#ifdef Y_LIMIT_PIN
+  pinMode(Y_LIMIT_PIN, INPUT_PULLUP);
+#endif
+#ifdef Z_LIMIT_PIN
+  pinMode(Z_LIMIT_PIN, INPUT_PULLUP);
+#endif
+#else
+#ifdef X_LIMIT_PIN
+  pinMode(X_LIMIT_PIN, INPUT); // input no pullup
+#endif
+#ifdef Y_LIMIT_PIN
+  pinMode(Y_LIMIT_PIN, INPUT);
+#endif
+#ifdef Z_LIMIT_PIN
+  pinMode(Z_LIMIT_PIN, INPUT);
+#endif
+#endif
+
+  if (bit_istrue(settings.flags, BITFLAG_HARD_LIMIT_ENABLE)) {
     // attach interrupt to them
-		#ifdef X_LIMIT_PIN
-			attachInterrupt(digitalPinToInterrupt(X_LIMIT_PIN), isr_limit_switches, CHANGE);
-		#endif
-		#ifdef Y_LIMIT_PIN
-			attachInterrupt(digitalPinToInterrupt(Y_LIMIT_PIN), isr_limit_switches, CHANGE);
-		#endif
-		#ifdef Z_LIMIT_PIN
-			attachInterrupt(digitalPinToInterrupt(Z_LIMIT_PIN), isr_limit_switches, CHANGE);
-		#endif
+#ifdef X_LIMIT_PIN
+    attachInterrupt(digitalPinToInterrupt(X_LIMIT_PIN), isr_limit_switches, CHANGE);
+#endif
+#ifdef Y_LIMIT_PIN
+    attachInterrupt(digitalPinToInterrupt(Y_LIMIT_PIN), isr_limit_switches, CHANGE);
+#endif
+#ifdef Z_LIMIT_PIN
+    attachInterrupt(digitalPinToInterrupt(Z_LIMIT_PIN), isr_limit_switches, CHANGE);
+#endif
   } else {
     limits_disable();
   }
-  
 
-// TODO Debounce
-/*
-  #ifdef ENABLE_SOFTWARE_DEBOUNCE
-    MCUSR &= ~(1<<WDRF);
-    WDTCSR |= (1<<WDCE) | (1<<WDE);
-    WDTCSR = (1<<WDP0); // Set time-out at ~32msec.
-  #endif
- */ 
+
+  // TODO Debounce
+  /*
+    #ifdef ENABLE_SOFTWARE_DEBOUNCE
+      MCUSR &= ~(1<<WDRF);
+      WDTCSR |= (1<<WDCE) | (1<<WDE);
+      WDTCSR = (1<<WDP0); // Set time-out at ~32msec.
+    #endif
+  */
 }
 
 
 // Disables hard limits.
 void limits_disable()
-{  
+{
   detachInterrupt(X_LIMIT_BIT);
   detachInterrupt(Y_LIMIT_BIT);
-  detachInterrupt(Z_LIMIT_BIT);  
+  detachInterrupt(Z_LIMIT_BIT);
 }
 
 
@@ -272,36 +288,38 @@ uint8_t limits_get_state()
 {
   uint8_t limit_state = 0;
   uint8_t pin = 0;
-	
-	#ifdef X_LIMIT_PIN
-		pin += digitalRead(X_LIMIT_PIN);
-	#endif
-	#ifdef Y_LIMIT_PIN
-		pin += (digitalRead(Y_LIMIT_PIN) << Y_AXIS);
-	#endif
-	#ifdef Z_LIMIT_PIN
-		pin += (digitalRead(Z_LIMIT_PIN) << Z_AXIS);
-	#endif
 
-	#ifdef INVERT_LIMIT_PIN_MASK // not normally used..unless you have both normal and inverted switches
-    pin ^= INVERT_LIMIT_PIN_MASK;
-  #endif	
-  
-  if (bit_istrue(settings.flags,BITFLAG_INVERT_LIMIT_PINS)) 
-	{ 
-		pin ^= LIMIT_MASK;
-	}
-  
+#ifdef X_LIMIT_PIN
+  pin += digitalRead(X_LIMIT_PIN);
+#endif
+#ifdef Y_LIMIT_PIN
+  pin += (digitalRead(Y_LIMIT_PIN) << Y_AXIS);
+#endif
+#ifdef Z_LIMIT_PIN
+  pin += (digitalRead(Z_LIMIT_PIN) << Z_AXIS);
+#endif
+
+#ifdef INVERT_LIMIT_PIN_MASK // not normally used..unless you have both normal and inverted switches
+  pin ^= INVERT_LIMIT_PIN_MASK;
+#endif
+
+  if (bit_istrue(settings.flags, BITFLAG_INVERT_LIMIT_PINS))
+  {
+    pin ^= LIMIT_MASK;
+  }
+
   if (pin) {
     uint8_t idx;
-    for (idx=0; idx<N_AXIS; idx++) {
-      if (pin & get_limit_pin_mask(idx)) { limit_state |= (1 << idx); }
+    for (idx = 0; idx < N_AXIS; idx++) {
+      if (pin & get_limit_pin_mask(idx)) {
+        limit_state |= (1 << idx);
+      }
     }
   }
-	
-  return(limit_state);
-  
-	
+
+  return (limit_state);
+
+
 }
 
 
@@ -324,7 +342,9 @@ void limits_soft_check(float *target)
       system_set_exec_state_flag(EXEC_FEED_HOLD);
       do {
         protocol_execute_realtime();
-        if (sys.abort) { return; }
+        if (sys.abort) {
+          return;
+        }
       } while ( sys.state != STATE_IDLE );
     }
     mc_reset(); // Issue system reset and ensure spindle are shutdown.

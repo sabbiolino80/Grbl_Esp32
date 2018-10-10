@@ -10,8 +10,8 @@
 
 
 #ifndef motion_control_h
-  #define motion_control_h
-    
+#define motion_control_h
+
 #include "grbl.h"
 
 
@@ -37,7 +37,7 @@ void mc_line(float *target, plan_line_data_t *pl_data);
 // the direction of helical travel, radius == circle radius, is_clockwise_arc boolean. Used
 // for vector transformation direction.
 void mc_arc(float *target, plan_line_data_t *pl_data, float *position, float *offset, float radius,
-  uint8_t axis_0, uint8_t axis_1, uint8_t axis_linear, uint8_t is_clockwise_arc);
+            uint8_t axis_0, uint8_t axis_1, uint8_t axis_linear, uint8_t is_clockwise_arc);
 
 // Dwell for a specific number of seconds
 void mc_dwell(float seconds);

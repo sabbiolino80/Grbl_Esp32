@@ -21,23 +21,13 @@ void setup() {
 
   serial_init();   // Setup serial baud rate and interrupts
   settings_init(); // Load Grbl settings from EEPROM
-
-
-
   stepper_init();  // Configure stepper pins and interrupt timers
   system_ini();   // Configure pinout pins and pin-change interrupt (Renamed due to conflict with esp32 files)
 
-
   memset(sys_position, 0, sizeof(sys_position)); // Clear machine position.
 
-
   // Initialize system state.
-#ifdef FORCE_INITIALIZATION_ALARM
-  // Force Grbl into an ALARM state upon a power-cycle or hard reset.
-  sys.state = STATE_ALARM;
-#else
   sys.state = STATE_IDLE;
-#endif
 
   // Check for power-up and set system alarm if homing is enabled to force homing cycle
   // by setting Grbl's alarm state. Alarm locks out all g-code commands, including the

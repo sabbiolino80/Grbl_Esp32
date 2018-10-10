@@ -42,8 +42,6 @@ void settings_restore(uint8_t restore_flag) {
     settings.status_report_mask = DEFAULT_STATUS_REPORT_MASK;
     settings.junction_deviation = DEFAULT_JUNCTION_DEVIATION;
 
-    settings.arc_tolerance = DEFAULT_ARC_TOLERANCE;
-
     settings.homing_dir_mask = DEFAULT_HOMING_DIR_MASK;
     settings.homing_feed_rate = DEFAULT_HOMING_FEED_RATE;
     settings.homing_seek_rate = DEFAULT_HOMING_SEEK_RATE;
@@ -272,7 +270,6 @@ uint8_t settings_store_global_setting(uint8_t parameter, float value) {
         break;
       case 10: settings.status_report_mask = int_value; break;
       case 11: settings.junction_deviation = value; break;
-      case 12: settings.arc_tolerance = value; break;
       case 20:
         if (int_value) {
           if (bit_isfalse(settings.flags, BITFLAG_HOMING_ENABLE)) {

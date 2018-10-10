@@ -20,9 +20,8 @@
 #define MODAL_GROUP_G1 1 // [G0,G1,G2,G3,G38.2,G38.3,G38.4,G38.5,G80] Motion
 #define MODAL_GROUP_G2 2 // [G17,G18,G19] Plane selection
 #define MODAL_GROUP_G3 3 // [G90,G91] Distance mode
-#define MODAL_GROUP_G4 4 // [G91.1] Arc IJK distance mode
+//#define MODAL_GROUP_G4 4 // [G91.1] Arc IJK distance mode
 #define MODAL_GROUP_G5 5 // [G93,G94] Feed rate mode
-#define MODAL_GROUP_G6 6 // [G20,G21] Units
 #define MODAL_GROUP_G7 7 // [G40] Cutter radius compensation mode. G41/42 NOT SUPPORTED.
 #define MODAL_GROUP_G8 8 // [G43.1,G49] Tool length offset
 #define MODAL_GROUP_G12 9 // [G54,G55,G56,G57,G58,G59] Coordinate system selection
@@ -56,8 +55,6 @@
 // Modal Group G1: Motion modes
 #define MOTION_MODE_SEEK 0 // G0 (Default: Must be zero)
 #define MOTION_MODE_LINEAR 1 // G1 (Do not alter value)
-#define MOTION_MODE_CW_ARC 2  // G2 (Do not alter value)
-#define MOTION_MODE_CCW_ARC 3  // G3 (Do not alter value)
 #define MOTION_MODE_NONE 80 // G80 (Do not alter value)
 
 // Modal Group G2: Plane select
@@ -68,9 +65,6 @@
 // Modal Group G3: Distance mode
 #define DISTANCE_MODE_ABSOLUTE 0 // G90 (Default: Must be zero)
 #define DISTANCE_MODE_INCREMENTAL 1 // G91 (Do not alter value)
-
-// Modal Group G4: Arc IJK distance mode
-#define DISTANCE_ARC_MODE_INCREMENTAL 0 // G91.1 (Default: Must be zero)
 
 // Modal Group M4: Program flow
 #define PROGRAM_FLOW_RUNNING 0 // (Default: Must be zero)
@@ -119,20 +113,15 @@
 #define GC_PARSER_NONE                  0 // Must be zero.
 #define GC_PARSER_JOG_MOTION            bit(0)
 #define GC_PARSER_CHECK_MANTISSA        bit(1)
-#define GC_PARSER_ARC_IS_CLOCKWISE      bit(2)
 
 
 // NOTE: When this struct is zeroed, the above defines set the defaults for the system.
 typedef struct {
   uint8_t motion;          // {G0,G1,G2,G3,G38.2,G80}
   uint8_t feed_rate;       // {G93,G94}
-  uint8_t units;           // {G20,G21}
   uint8_t distance;        // {G90,G91}
-  // uint8_t distance_arc; // {G91.1} NOTE: Don't track. Only default supported.
   uint8_t plane_select;    // {G17,G18,G19}
-  // uint8_t cutter_comp;  // {G40} NOTE: Don't track. Only default supported.
   uint8_t coord_select;    // {G54,G55,G56,G57,G58,G59}
-  // uint8_t control;      // {G61} NOTE: Don't track. Only default supported.
   uint8_t program_flow;    // {M0,M1,M2,M30}
 } gc_modal_t;
 

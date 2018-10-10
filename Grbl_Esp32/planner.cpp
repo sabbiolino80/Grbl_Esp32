@@ -22,7 +22,7 @@ static uint8_t block_buffer_planned;  // Index of the optimally planned block
 typedef struct {
   int32_t position[N_AXIS];          // The planner position of the tool in absolute steps. Kept separate
   // from g-code position for movements requiring multiple line motions,
-  // i.e. arcs, canned cycles, and backlash compensation.
+  // i.e.  canned cycles, and backlash compensation.
   float previous_unit_vec[N_AXIS];   // Unit vector of previous path line segment
   float previous_nominal_speed;  // Nominal speed of previous path line segment
 } planner_t;

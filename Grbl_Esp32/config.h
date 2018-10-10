@@ -114,9 +114,6 @@
 // #define LIMITS_TWO_SWITCHES_ON_AXES
 
 
-
-
-
 // Inverts pin logic of the control command pins based on a mask. This essentially means you can use
 // normally-closed switches on the specified pins, rather than the default normally-open switches.
 // NOTE: The top option will mask and invert all control pins. The bottom option is an example of
@@ -129,7 +126,6 @@
 //#define IGNORE_CONTROL_PINS
 
 
-
 // Inverts select limit pin states based on the following mask. This effects all limit pin functions,
 // such as hard limits and homing. However, this is different from overall invert limits setting.
 // This build option will invert only the limit pins defined here, and then the invert limits setting
@@ -138,16 +134,6 @@
 // NOTE: PLEASE DO NOT USE THIS, unless you have a situation that needs it.
 // #define INVERT_LIMIT_PIN_MASK ((1<<X_LIMIT_BIT)|(1<<Y_LIMIT_BIT)) // Default disabled. Uncomment to enable.
 
-
-
-
-// When Grbl powers-cycles or is hard reset with the Arduino reset button, Grbl boots up with no ALARM
-// by default. This is to make it as simple as possible for new users to start using Grbl. When homing
-// is enabled and a user has installed limit switches, Grbl will boot up in an ALARM state to indicate
-// Grbl doesn't know its position and to force the user to home before proceeding. This option forces
-// Grbl to always initialize into an ALARM state regardless of homing or not. This option is more for
-// OEMs and LinuxCNC users that would like this power-cycle behavior.
-// #define FORCE_INITIALIZATION_ALARM // Default disabled. Uncomment to enable.
 
 // At power-up or a reset, Grbl will check the limit switch states to ensure they are not active
 // before initialization. If it detects a problem and the hard limits setting is enabled, Grbl will
@@ -238,21 +224,6 @@
 // machines, perhaps to 0.1mm/min, but your success may vary based on multiple factors.
 #define MINIMUM_FEED_RATE 1.0 // (mm/min)
 
-// Number of arc generation iterations by small angle approximation before exact arc trajectory
-// correction with expensive sin() and cos() calcualtions. This parameter maybe decreased if there
-// are issues with the accuracy of the arc generations, or increased if arc execution is getting
-// bogged down by too many trig calculations.
-#define N_ARC_CORRECTION 12 // Integer (1-255)
-
-// The arc G2/3 g-code standard is problematic by definition. Radius-based arcs have horrible numerical
-// errors when arc at semi-circles(pi) or full-circles(2*pi). Offset-based arcs are much more accurate
-// but still have a problem when arcs are full-circles (2*pi). This define accounts for the floating
-// point issues when offset-based arcs are commanded as full circles, but get interpreted as extremely
-// small arcs with around machine epsilon (1.2e-7rad) due to numerical round-off and precision issues.
-// This define value sets the machine epsilon cutoff to determine if the arc is a full-circle or not.
-// NOTE: Be very careful when adjusting this value. It should always be greater than 1.2e-7 but not too
-// much greater than this. The default setting should capture most, if not all, full arc error situations.
-#define ARC_ANGULAR_TRAVEL_EPSILON 5E-7 // Float (radians)
 
 // Time delay increments performed during a dwell. The default value is set at 50ms, which provides
 // a maximum time delay of roughly 55 minutes, more than enough for most any application. Increasing

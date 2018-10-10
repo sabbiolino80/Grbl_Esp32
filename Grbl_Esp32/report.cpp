@@ -186,7 +186,6 @@ void report_grbl_settings(uint8_t client) {
   sprintf(setting, "$10=%d\r\n", settings.status_report_mask);  strcat(rpt, setting);
 
   sprintf(setting, "$11=%4.3f\r\n", settings.junction_deviation);   strcat(rpt, setting);
-  sprintf(setting, "$12=%4.3f\r\n", settings.arc_tolerance);   strcat(rpt, setting);
 
   sprintf(setting, "$20=%d\r\n", bit_istrue(settings.flags, BITFLAG_SOFT_LIMIT_ENABLE));   strcat(rpt, setting);
   sprintf(setting, "$21=%d\r\n", bit_istrue(settings.flags, BITFLAG_HARD_LIMIT_ENABLE));   strcat(rpt, setting);
@@ -281,16 +280,12 @@ void report_gcode_modes(uint8_t client)
 
 
   sprintf(temp, "%d", gc_state.modal.motion);
-
   strcat(modes_rpt, temp);
 
   sprintf(temp, " G%d", gc_state.modal.coord_select + 54);
   strcat(modes_rpt, temp);
 
   sprintf(temp, " G%d", gc_state.modal.plane_select + 17);
-  strcat(modes_rpt, temp);
-
-  sprintf(temp, " G%d", 21 - gc_state.modal.units);
   strcat(modes_rpt, temp);
 
   sprintf(temp, " G%d", gc_state.modal.distance + 90);

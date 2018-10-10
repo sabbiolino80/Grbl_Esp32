@@ -111,9 +111,7 @@
 // values cannot be less than 0.001mm or 0.0001in, because machines can not be physically more
 // precise this. So, there is likely no need to change these, but you can if you need to here.
 // NOTE: Must be an integer value from 0 to ~4. More than 4 may exhibit round-off errors.
-#define N_DECIMAL_COORDVALUE_INCH 4 // Coordinate or position value in inches
 #define N_DECIMAL_COORDVALUE_MM   3 // Coordinate or position value in mm
-#define N_DECIMAL_RATEVALUE_INCH  1 // Rate or velocity value in in/min
 #define N_DECIMAL_RATEVALUE_MM    0 // Rate or velocity value in mm/min
 #define N_DECIMAL_SETTINGVALUE    3 // Decimals for floating point setting values
 #define N_DECIMAL_RPMVALUE        0 // RPM value in rotations per min.

@@ -359,7 +359,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
   // NOTE: For jogging, ignore prior feed rate mode. Enforce G94 and check for required F word.
   if (gc_parser_flags & GC_PARSER_JOG_MOTION) {
     if (bit_isfalse(value_words,bit(WORD_F))) { FAIL(STATUS_GCODE_UNDEFINED_FEED_RATE); }
-    if (gc_block.modal.units == UNITS_MODE_INCHES) { gc_block.values.f *= MM_PER_INCH; }
   } else {
     if (gc_block.modal.feed_rate == FEED_RATE_MODE_INVERSE_TIME) { // = G93
       // NOTE: G38 can also operate in inverse time, but is undefined as an error. Missing F word check added here.
@@ -384,7 +383,7 @@ uint8_t gc_execute_line(char *line, uint8_t client)
       // - In units per mm mode: If F word passed, ensure value is in mm/min, otherwise push last state value.
       if (gc_state.modal.feed_rate == FEED_RATE_MODE_UNITS_PER_MIN) { // Last state is also G94
         if (bit_istrue(value_words,bit(WORD_F))) {
-          if (gc_block.modal.units == UNITS_MODE_INCHES) { gc_block.values.f *= MM_PER_INCH; }
+          
         } else {
           gc_block.values.f = gc_state.feed_rate; // Push last state feed rate
         }
@@ -421,13 +420,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
   // [12. Set length units ]: N/A
   // Pre-convert XYZ coordinate values to millimeters, if applicable.
   uint8_t idx;
-  if (gc_block.modal.units == UNITS_MODE_INCHES) {
-    for (idx=0; idx<N_AXIS; idx++) { // Axes indices are consistent, so loop may be used.
-      if (bit_istrue(axis_words,bit(idx)) ) {
-        gc_block.values.xyz[idx] *= MM_PER_INCH;
-      }
-    }
-  }
 
   // [13. Cutter radius compensation ]: G41/42 NOT SUPPORTED. Error, if enabled while G53 is active.
   // [G40 Errors]: G2/3 arc is programmed after a G40. The linear move after disabling is less than tool diameter.
@@ -642,7 +634,7 @@ uint8_t gc_execute_line(char *line, uint8_t client)
             if (isequal_position_vector(gc_state.position, gc_block.values.xyz)) { FAIL(STATUS_GCODE_INVALID_TARGET); } // [Invalid target]
 
             // Convert radius value to proper units.
-            if (gc_block.modal.units == UNITS_MODE_INCHES) { gc_block.values.r *= MM_PER_INCH; }
+            
             /*  We need to calculate the center of the circle that has the designated radius and passes
                 through both the current position and the target position. This method calculates the following
                 set of equations where [x,y] is the vector from current to target position, d == magnitude of
@@ -733,12 +725,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
             if (!(ijk_words & (bit(axis_0)|bit(axis_1)))) { FAIL(STATUS_GCODE_NO_OFFSETS_IN_PLANE); } // [No offsets in plane]
             bit_false(value_words,(bit(WORD_I)|bit(WORD_J)|bit(WORD_K)));
 
-            // Convert IJK values to proper units.
-            if (gc_block.modal.units == UNITS_MODE_INCHES) {
-              for (idx=0; idx<N_AXIS; idx++) { // Axes indices are consistent, so loop may be used to save flash space.
-                if (ijk_words & bit(idx)) { gc_block.values.ijk[idx] *= MM_PER_INCH; }
-              }
-            }
 
             // Arc radius from center to target
             x -= gc_block.values.ijk[axis_0]; // Delta x between circle center and target
@@ -800,25 +786,7 @@ uint8_t gc_execute_line(char *line, uint8_t client)
     if (status == STATUS_OK) { memcpy(gc_state.position, gc_block.values.xyz, sizeof(gc_block.values.xyz)); }
     return(status);
   }
-  
-  // If in laser mode, setup laser power based on current and past parser conditions.
-  if (bit_istrue(settings.flags,BITFLAG_LASER_MODE)) {
-    if ( !((gc_block.modal.motion == MOTION_MODE_LINEAR) || (gc_block.modal.motion == MOTION_MODE_CW_ARC) 
-        || (gc_block.modal.motion == MOTION_MODE_CCW_ARC)) ) {
-      gc_parser_flags |= GC_PARSER_LASER_DISABLE;
-    }
 
-    // Any motion mode with axis words is allowed to be passed from a spindle speed update. 
-    // NOTE: G1 and G0 without axis words sets axis_command to none. G28/30 are intentionally omitted.
-    // TODO: Check sync conditions for M3 enabled motions that don't enter the planner. (zero length).
-    if (axis_words && (axis_command == AXIS_COMMAND_MOTION_MODE)) { 
-      gc_parser_flags |= GC_PARSER_LASER_ISMOTION; 
-    } else {
-      // M3 constant power laser requires planner syncs to update the laser when changing between
-      // a G1/2/3 motion mode state and vice versa when there is no motion in the line.
-
-    }
-  }
 
   // [0. Non-specific/common error-checks and miscellaneous setup]:
   // NOTE: If no line number is present, the value is zero.

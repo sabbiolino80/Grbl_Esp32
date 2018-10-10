@@ -30,7 +30,7 @@
   
   #define DEFAULT_JUNCTION_DEVIATION 0.01 // mm
   #define DEFAULT_ARC_TOLERANCE 0.002 // mm
-  #define DEFAULT_REPORT_INCHES 0 // false
+
   
   #define DEFAULT_SOFT_LIMIT_ENABLE 0 // false
   #define DEFAULT_HARD_LIMIT_ENABLE 0  // false
@@ -42,8 +42,6 @@
   #define DEFAULT_HOMING_DEBOUNCE_DELAY 250 // msec (0-65k)
   #define DEFAULT_HOMING_PULLOFF 1.0 // mm
 
-  
-  #define DEFAULT_LASER_MODE 0 // false
   
   #define DEFAULT_X_STEPS_PER_MM 800.0
   #define DEFAULT_Y_STEPS_PER_MM 800.0

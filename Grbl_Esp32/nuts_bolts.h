@@ -23,8 +23,6 @@
 // #define A_AXIS 3
 
 // Conversions
-#define MM_PER_INCH (25.40)
-#define INCH_PER_MM (0.0393701)
 #define TICKS_PER_MICROSECOND (F_STEPPER_TIMER/1000000) // Different from AVR version 
 
 #define DELAY_MODE_DWELL       0

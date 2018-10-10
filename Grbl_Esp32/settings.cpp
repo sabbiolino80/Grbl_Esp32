@@ -51,8 +51,6 @@ void settings_restore(uint8_t restore_flag) {
     settings.homing_pulloff = DEFAULT_HOMING_PULLOFF;
 
     settings.flags = 0;
-    if (DEFAULT_REPORT_INCHES) { settings.flags |= BITFLAG_REPORT_INCHES; }
-    if (DEFAULT_LASER_MODE) { settings.flags |= BITFLAG_LASER_MODE; }
     if (DEFAULT_INVERT_ST_ENABLE) { settings.flags |= BITFLAG_INVERT_ST_ENABLE; }
     if (DEFAULT_HARD_LIMIT_ENABLE) { settings.flags |= BITFLAG_HARD_LIMIT_ENABLE; }
     if (DEFAULT_HOMING_ENABLE) { settings.flags |= BITFLAG_HOMING_ENABLE; }
@@ -249,11 +247,6 @@ uint8_t settings_store_global_setting(uint8_t parameter, float value) {
       case 10: settings.status_report_mask = int_value; break;
       case 11: settings.junction_deviation = value; break;
       case 12: settings.arc_tolerance = value; break;
-      case 13:
-        if (int_value) { settings.flags |= BITFLAG_REPORT_INCHES; }
-        else { settings.flags &= ~BITFLAG_REPORT_INCHES; }
-        system_flag_wco_change(); // Make sure WCO is immediately updated.
-        break;
       case 20:
         if (int_value) {
           if (bit_isfalse(settings.flags, BITFLAG_HOMING_ENABLE)) { return(STATUS_SOFT_LIMIT_ERROR); }
@@ -277,9 +270,6 @@ uint8_t settings_store_global_setting(uint8_t parameter, float value) {
       case 25: settings.homing_seek_rate = value; break;
       case 26: settings.homing_debounce_delay = int_value; break;
       case 27: settings.homing_pulloff = value; break;
-      case 32:
-          return(STATUS_SETTING_DISABLED_LASER);
-        break;
       default:
         return(STATUS_INVALID_STATEMENT);
     }

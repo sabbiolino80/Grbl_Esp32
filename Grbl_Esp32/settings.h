@@ -18,8 +18,6 @@
 #define SETTINGS_VERSION 10  // NOTE: Check settings_reset() when moving to next version.
 
 // Define bit flag masks for the boolean settings in settings.flag.
-#define BITFLAG_REPORT_INCHES      bit(0)
-#define BITFLAG_LASER_MODE         bit(1)
 #define BITFLAG_INVERT_ST_ENABLE   bit(2)
 #define BITFLAG_HARD_LIMIT_ENABLE  bit(3)
 #define BITFLAG_HOMING_ENABLE      bit(4)

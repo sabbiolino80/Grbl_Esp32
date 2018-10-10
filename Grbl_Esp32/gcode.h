@@ -83,10 +83,6 @@
 #define FEED_RATE_MODE_UNITS_PER_MIN  0 // G94 (Default: Must be zero)
 #define FEED_RATE_MODE_INVERSE_TIME   1 // G93 (Do not alter value)
 
-// Modal Group G6: Units mode
-#define UNITS_MODE_MM 0 // G21 (Default: Must be zero)
-#define UNITS_MODE_INCHES 1 // G20 (Do not alter value)
-
 // Modal Group G7: Cutter radius compensation mode
 #define CUTTER_COMP_DISABLE 0 // G40 (Default: Must be zero)
 
@@ -129,9 +125,6 @@
 #define GC_PARSER_JOG_MOTION            bit(0)
 #define GC_PARSER_CHECK_MANTISSA        bit(1)
 #define GC_PARSER_ARC_IS_CLOCKWISE      bit(2)
-#define GC_PARSER_LASER_FORCE_SYNC      bit(5)
-#define GC_PARSER_LASER_DISABLE         bit(6)
-#define GC_PARSER_LASER_ISMOTION        bit(7)
 
 
 // NOTE: When this struct is zeroed, the above defines set the defaults for the system.

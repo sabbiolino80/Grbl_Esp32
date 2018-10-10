@@ -187,8 +187,7 @@ void report_grbl_settings(uint8_t client) {
 	
 	sprintf(setting, "$11=%4.3f\r\n", settings.junction_deviation);   strcat(rpt, setting);	
 	sprintf(setting, "$12=%4.3f\r\n", settings.arc_tolerance);   strcat(rpt, setting);	
-	
-  sprintf(setting, "$13=%d\r\n", bit_istrue(settings.flags,BITFLAG_REPORT_INCHES));   strcat(rpt, setting);	
+
 	sprintf(setting, "$20=%d\r\n", bit_istrue(settings.flags,BITFLAG_SOFT_LIMIT_ENABLE));   strcat(rpt, setting);	
 	sprintf(setting, "$21=%d\r\n", bit_istrue(settings.flags,BITFLAG_HARD_LIMIT_ENABLE));   strcat(rpt, setting);	
 	sprintf(setting, "$22=%d\r\n", bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE));   strcat(rpt, setting);	
@@ -262,11 +261,7 @@ void report_ngc_parameters(uint8_t client)
 	strcat(ngc_rpt, "]\r\n");
   strcat(ngc_rpt, "[TLO:"); // Print tool length offset value
 	
-	if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)) {
-		sprintf(temp, "%4.3f]\r\n", gc_state.tool_length_offset * INCH_PER_MM);
-  } else {
     sprintf(temp, "%4.3f]\r\n", gc_state.tool_length_offset);
-  }
 	strcat(ngc_rpt, temp);
 	
 	grbl_send(client, ngc_rpt);

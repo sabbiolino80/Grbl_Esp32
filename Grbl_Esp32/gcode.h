@@ -23,7 +23,7 @@
 //#define MODAL_GROUP_G4 4 // [G91.1] Arc IJK distance mode
 #define MODAL_GROUP_G5 5 // [G93,G94] Feed rate mode
 #define MODAL_GROUP_G7 7 // [G40] Cutter radius compensation mode. G41/42 NOT SUPPORTED.
-#define MODAL_GROUP_G8 8 // [G43.1,G49] Tool length offset
+
 #define MODAL_GROUP_G12 9 // [G54,G55,G56,G57,G58,G59] Coordinate system selection
 #define MODAL_GROUP_G13 10 // [G61] Control mode
 
@@ -130,9 +130,6 @@ typedef struct {
   float ijk[N_AXIS];    // I,J,K Axis arc offsets
   uint8_t l;       // G10 or canned cycles parameters
   float p;         // G10 or dwell parameters
-  // float q;      // G82 peck drilling
-  float r;         // Arc radius
-  uint8_t t;       // Tool selection
   float xyz[N_AXIS];    // X,Y,Z Translational axes
 } gc_values_t;
 
@@ -141,7 +138,6 @@ typedef struct {
   gc_modal_t modal;
 
   float feed_rate;              // Millimeters/min
-  uint8_t tool;                 // Tracks tool number. NOT USED.
 
   float position[N_AXIS];       // Where the interpreter considers the tool to be at this point in the code
 

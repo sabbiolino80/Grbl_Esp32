@@ -258,9 +258,6 @@ void report_ngc_parameters(uint8_t client)
   report_util_axis_values(gc_state.coord_offset, temp);
   strcat(ngc_rpt, temp);
   strcat(ngc_rpt, "]\r\n");
-  strcat(ngc_rpt, "[TLO:"); // Print tool length offset value
-
-  strcat(ngc_rpt, temp);
 
   grbl_send(client, ngc_rpt);
 
@@ -308,11 +305,6 @@ void report_gcode_modes(uint8_t client)
     }
   }
 
-
-
-
-  sprintf(temp, " T%d", gc_state.tool);
-  strcat(modes_rpt, temp);
 
   sprintf(temp, " F%4.3f", gc_state.feed_rate);
   strcat(modes_rpt, temp);

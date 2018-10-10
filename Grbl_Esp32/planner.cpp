@@ -321,9 +321,6 @@ uint8_t plan_buffer_line(float *target, plan_line_data_t *pl_data)
   plan_block_t *block = &block_buffer[block_buffer_head];
   memset(block, 0, sizeof(plan_block_t)); // Zero all block values.
   block->condition = pl_data->condition;
-#ifdef USE_LINE_NUMBERS
-  block->line_number = pl_data->line_number;
-#endif
 
   // Compute and store initial move distance data.
   int32_t target_steps[N_AXIS], position_steps[N_AXIS];

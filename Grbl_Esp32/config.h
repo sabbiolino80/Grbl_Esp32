@@ -113,9 +113,6 @@
 // homing cycle while on the limit switch and not have to move the machine off of it.
 // #define LIMITS_TWO_SWITCHES_ON_AXES
 
-// Allows GRBL to track and report gcode line numbers.  Enabling this means that the planning buffer
-// goes from 16 to 15 to make room for the additional line number data in the plan_block_t struct
-// #define USE_LINE_NUMBERS // Disabled by default. Uncomment to enable.
 
 
 

@@ -351,9 +351,6 @@ void report_build_info(char *line, uint8_t client)
   strcat(build_info, line);
   strcat(build_info, "]\r\n[OPT:");
 
-#ifdef USE_LINE_NUMBERS
-  strcat(build_info, "N");
-#endif
 #ifdef HOMING_FORCE_SET_ORIGIN
   strcat(build_info, "Z");
 #endif
@@ -466,20 +463,6 @@ void report_realtime_status(uint8_t client)
     sprintf(temp, "|Bf:%d,%d", plan_get_block_buffer_available(), serial_get_rx_buffer_available(CLIENT_SERIAL));
     strcat(status, temp);
   }
-#endif
-
-#ifdef USE_LINE_NUMBERS
-#ifdef REPORT_FIELD_LINE_NUMBERS
-  // Report current line number
-  plan_block_t * cur_block = plan_get_current_block();
-  if (cur_block != NULL) {
-    uint32_t ln = cur_block->line_number;
-    if (ln > 0) {
-      sprintf(temp, "|Ln:%d", ln);
-      strcat(status, temp);
-    }
-  }
-#endif
 #endif
 
   // Report realtime feed speed

@@ -15,9 +15,6 @@ uint8_t jog_execute(plan_line_data_t *pl_data, parser_block_t *gc_block)
   // Initialize planner data struct for jogging motions.
   // NOTE: Spindle are allowed to fully function with overrides during a jog.
   pl_data->feed_rate = gc_block->values.f;
-#ifdef USE_LINE_NUMBERS
-  pl_data->line_number = gc_block->values.n;
-#endif
 
   if (bit_istrue(settings.flags, BITFLAG_SOFT_LIMIT_ENABLE)) {
     if (system_check_travel_limits(gc_block->values.xyz)) {

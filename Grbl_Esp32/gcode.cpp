@@ -81,9 +81,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
     gc_parser_flags |= GC_PARSER_JOG_MOTION;
     gc_block.modal.motion = MOTION_MODE_LINEAR;
     gc_block.modal.feed_rate = FEED_RATE_MODE_UNITS_PER_MIN;
-#ifdef USE_LINE_NUMBERS
-    gc_block.values.n = JOG_LINE_NUMBER; // Initialize default line number reported during jog.
-#endif
   }
 
   /* -------------------------------------------------------------------------------------
@@ -284,7 +281,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
           case 'I': word_bit = WORD_I; gc_block.values.ijk[X_AXIS] = value; ijk_words |= (1 << X_AXIS); break;
           case 'J': word_bit = WORD_J; gc_block.values.ijk[Y_AXIS] = value; ijk_words |= (1 << Y_AXIS); break;
           case 'L': word_bit = WORD_L; gc_block.values.l = int_value; break;
-          case 'N': word_bit = WORD_N; gc_block.values.n = trunc(value); break;
           case 'P': word_bit = WORD_P; gc_block.values.p = value; break;
           // NOTE: For certain commands, P value must be an integer, but none of these commands are supported.
           // case 'Q': // Not supported
@@ -307,7 +303,7 @@ uint8_t gc_execute_line(char *line, uint8_t client)
         }
         // Check for invalid negative values for words F, N, P, T, and S.
         // NOTE: Negative value check is done here simply for code-efficiency.
-        if ( bit(word_bit) & (bit(WORD_F) | bit(WORD_N) | bit(WORD_P) | bit(WORD_T) | bit(WORD_S)) ) {
+        if ( bit(word_bit) & (bit(WORD_F) | bit(WORD_P) | bit(WORD_T) | bit(WORD_S)) ) {
           if (value < 0.0) {
             FAIL(STATUS_NEGATIVE_VALUE);  // [Word value cannot be negative]
           }
@@ -355,14 +351,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
     }
   }
 
-  // Check for valid line number N value.
-  if (bit_istrue(value_words, bit(WORD_N))) {
-    // Line number value cannot be less than zero (done) or greater than max line number.
-    if (gc_block.values.n > MAX_LINE_NUMBER) {
-      FAIL(STATUS_GCODE_INVALID_LINE_NUMBER);  // [Exceeds max line number]
-    }
-  }
-  // bit_false(value_words,bit(WORD_N)); // NOTE: Single-meaning value word. Set at end of error-checking.
 
   // Track for unused words at the end of error-checking.
   // NOTE: Single-meaning value words are removed all at once at the end of error-checking, because
@@ -799,9 +787,9 @@ uint8_t gc_execute_line(char *line, uint8_t client)
   // radius mode, or axis words that aren't used in the block.
   if (gc_parser_flags & GC_PARSER_JOG_MOTION) {
     // Jogging only uses the F feed rate and XYZ value words. N is valid, but S and T are invalid.
-    bit_false(value_words, (bit(WORD_N) | bit(WORD_F)));
+    bit_false(value_words, ( bit(WORD_F)));
   } else {
-    bit_false(value_words, (bit(WORD_N) | bit(WORD_F) | bit(WORD_S) | bit(WORD_T))); // Remove single-meaning value words.
+    bit_false(value_words, ( bit(WORD_F) | bit(WORD_S) | bit(WORD_T))); // Remove single-meaning value words.
   }
 
   if (axis_command) {
@@ -844,15 +832,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
     return (status);
   }
 
-
-  // [0. Non-specific/common error-checks and miscellaneous setup]:
-  // NOTE: If no line number is present, the value is zero.
-  gc_state.line_number = gc_block.values.n;
-#ifdef USE_LINE_NUMBERS
-  pl_data->line_number = gc_state.line_number; // Record data for planner use.
-#endif
-
-  // [1. Comments feedback ]:  NOT SUPPORTED
 
   // [2. Set feed rate mode ]:
   gc_state.modal.feed_rate = gc_block.modal.feed_rate;

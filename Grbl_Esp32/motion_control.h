@@ -15,8 +15,6 @@
 #include "grbl.h"
 
 
-// System motion commands must have a line number of zero.
-#define HOMING_CYCLE_LINE_NUMBER 0
 
 #define HOMING_CYCLE_ALL  0  // Must be zero.
 #define HOMING_CYCLE_X    bit(X_AXIS)

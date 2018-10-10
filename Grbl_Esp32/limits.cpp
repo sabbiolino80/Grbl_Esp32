@@ -60,9 +60,6 @@ void limits_go_home(uint8_t cycle_mask)
   plan_line_data_t *pl_data = &plan_data;
   memset(pl_data, 0, sizeof(plan_line_data_t));
   pl_data->condition = (PL_COND_FLAG_SYSTEM_MOTION);
-#ifdef USE_LINE_NUMBERS
-  pl_data->line_number = HOMING_CYCLE_LINE_NUMBER;
-#endif
 
   // Initialize variables used for homing computations.
   uint8_t n_cycle = (2 * N_HOMING_LOCATE_CYCLE + 1);

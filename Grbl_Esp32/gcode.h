@@ -99,7 +99,6 @@
 #define WORD_J  2
 #define WORD_K  3
 #define WORD_L  4
-#define WORD_N  5
 #define WORD_P  6
 #define WORD_R  7
 #define WORD_S  8
@@ -141,7 +140,6 @@ typedef struct {
   float f;         // Feed
   float ijk[N_AXIS];    // I,J,K Axis arc offsets
   uint8_t l;       // G10 or canned cycles parameters
-  int32_t n;       // Line number
   float p;         // G10 or dwell parameters
   // float q;      // G82 peck drilling
   float r;         // Arc radius
@@ -155,7 +153,6 @@ typedef struct {
 
   float feed_rate;              // Millimeters/min
   uint8_t tool;                 // Tracks tool number. NOT USED.
-  int32_t line_number;          // Last line number sent
 
   float position[N_AXIS];       // Where the interpreter considers the tool to be at this point in the code
 

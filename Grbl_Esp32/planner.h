@@ -14,11 +14,7 @@
 
 // The number of linear motions that can be in the plan at any give time
 #ifndef BLOCK_BUFFER_SIZE
-#ifdef USE_LINE_NUMBERS
-#define BLOCK_BUFFER_SIZE 15
-#else
 #define BLOCK_BUFFER_SIZE 16
-#endif
 #endif
 
 // Returned status message from planner.
@@ -44,9 +40,6 @@ typedef struct {
 
   // Block condition data to ensure correct execution depending on states.
   uint8_t condition;      // Block bitflag variable defining block run conditions. Copied from pl_line_data.
-#ifdef USE_LINE_NUMBERS
-  int32_t line_number;  // Block line number for real-time reporting. Copied from pl_line_data.
-#endif
 
   // Fields used by the motion planner to manage acceleration. Some of these values may be updated
   // by the stepper module during execution of special motion cases for replanning purposes.
@@ -68,9 +61,6 @@ typedef struct {
 typedef struct {
   float feed_rate;          // Desired feed rate for line motion. Value is ignored, if rapid motion.
   uint8_t condition;        // Bitflag variable to indicate planner conditions. See defines above.
-#ifdef USE_LINE_NUMBERS
-  int32_t line_number;    // Desired line number to report when executing.
-#endif
 } plan_line_data_t;
 
 

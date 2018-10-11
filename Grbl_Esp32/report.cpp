@@ -227,32 +227,10 @@ void report_grbl_settings(uint8_t client) {
 // Prints Grbl NGC parameters (coordinate offsets, probing)
 void report_ngc_parameters(uint8_t client)
 {
-  float coord_data[N_AXIS];
-  uint8_t coord_select;
   char temp[50];
   char ngc_rpt[400];
 
   ngc_rpt[0] = '\0';
-
-  for (coord_select = 0; coord_select <= SETTING_INDEX_NCOORD; coord_select++) {
-    if (!(settings_read_coord_data(coord_select, coord_data))) {
-      report_status_message(STATUS_SETTING_READ_FAIL, CLIENT_SERIAL);
-      return;
-    }
-    strcat(ngc_rpt, "[G");
-    switch (coord_select) {
-      case 6: strcat(ngc_rpt, "28"); break;
-      case 7: strcat(ngc_rpt, "30"); break;
-      default:
-        sprintf(temp, "%d", coord_select + 54);
-        strcat(ngc_rpt, temp);
-        break; // G54-G59
-    }
-    strcat(ngc_rpt, ":");
-    report_util_axis_values(coord_data, temp);
-    strcat(ngc_rpt, temp);
-    strcat(ngc_rpt, "]\r\n");
-  }
 
   strcat(ngc_rpt, "[G92:"); // Print G92,G92.1 which are not persistent in memory
   report_util_axis_values(gc_state.coord_offset, temp);
@@ -277,12 +255,6 @@ void report_gcode_modes(uint8_t client)
 
 
   sprintf(temp, "%d", gc_state.modal.motion);
-  strcat(modes_rpt, temp);
-
-  sprintf(temp, " G%d", gc_state.modal.coord_select + 54);
-  strcat(modes_rpt, temp);
-
-  sprintf(temp, " G%d", gc_state.modal.plane_select + 17);
   strcat(modes_rpt, temp);
 
   sprintf(temp, " G%d", gc_state.modal.distance + 90);

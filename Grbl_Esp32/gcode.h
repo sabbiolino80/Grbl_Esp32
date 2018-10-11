@@ -16,22 +16,13 @@
 // a unique motion. These are defined in the NIST RS274-NGC v3 g-code standard, available online,
 // and are similar/identical to other g-code interpreters by manufacturers (Haas,Fanuc,Mazak,etc).
 // NOTE: Modal group define values must be sequential and starting from zero.
-#define MODAL_GROUP_G0 0 // [G4,G10,G28,G28.1,G30,G30.1,G53,G92,G92.1] Non-modal
+#define MODAL_GROUP_G0 0 // [G4,G10,G53,G92,G92.1] Non-modal  - G10 and G92 preset G28 HOME
 #define MODAL_GROUP_G1 1 // [G0,G1,G2,G3,G38.2,G38.3,G38.4,G38.5,G80] Motion
-#define MODAL_GROUP_G2 2 // [G17,G18,G19] Plane selection
-#define MODAL_GROUP_G3 3 // [G90,G91] Distance mode
-//#define MODAL_GROUP_G4 4 // [G91.1] Arc IJK distance mode
-#define MODAL_GROUP_G5 5 // [G93,G94] Feed rate mode
-#define MODAL_GROUP_G7 7 // [G40] Cutter radius compensation mode. G41/42 NOT SUPPORTED.
-
-#define MODAL_GROUP_G12 9 // [G54,G55,G56,G57,G58,G59] Coordinate system selection
+#define MODAL_GROUP_G3 3 // [G90,G91] Distance mode - absolute or relative
+#define MODAL_GROUP_G5 5 // [G93,G94] Feed rate mode - mm/min or inverse time
 #define MODAL_GROUP_G13 10 // [G61] Control mode
-
 #define MODAL_GROUP_M4 11  // [M0,M1,M2,M30] Stopping
 
-// #define OTHER_INPUT_F 14
-// #define OTHER_INPUT_S 15
-// #define OTHER_INPUT_T 16
 
 // Define command actions for within execution-type modal groups (motion, stopping, non-modal). Used
 // internally by the parser to know which command to execute.
@@ -44,11 +35,7 @@
 #define NON_MODAL_NO_ACTION 0 // (Default: Must be zero)
 #define NON_MODAL_DWELL 4 // G4 (Do not alter value)
 #define NON_MODAL_SET_COORDINATE_DATA 10 // G10 (Do not alter value)
-#define NON_MODAL_GO_HOME_0 28 // G28 (Do not alter value)
-#define NON_MODAL_SET_HOME_0 38 // G28.1 (Do not alter value)
-#define NON_MODAL_GO_HOME_1 30 // G30 (Do not alter value)
-#define NON_MODAL_SET_HOME_1 40 // G30.1 (Do not alter value)
-#define NON_MODAL_ABSOLUTE_OVERRIDE 53 // G53 (Do not alter value)
+#define NON_MODAL_ABSOLUTE_OVERRIDE 53 // G53 (Do not alter value) - JOG???
 #define NON_MODAL_SET_COORDINATE_OFFSET 92 // G92 (Do not alter value)
 #define NON_MODAL_RESET_COORDINATE_OFFSET 102 //G92.1 (Do not alter value)
 
@@ -57,10 +44,6 @@
 #define MOTION_MODE_LINEAR 1 // G1 (Do not alter value)
 #define MOTION_MODE_NONE 80 // G80 (Do not alter value)
 
-// Modal Group G2: Plane select
-#define PLANE_SELECT_XY 0 // G17 (Default: Must be zero)
-#define PLANE_SELECT_ZX 1 // G18 (Do not alter value)
-#define PLANE_SELECT_YZ 2 // G19 (Do not alter value)
 
 // Modal Group G3: Distance mode
 #define DISTANCE_MODE_ABSOLUTE 0 // G90 (Default: Must be zero)
@@ -77,8 +60,6 @@
 #define FEED_RATE_MODE_UNITS_PER_MIN  0 // G94 (Default: Must be zero)
 #define FEED_RATE_MODE_INVERSE_TIME   1 // G93 (Do not alter value)
 
-// Modal Group G7: Cutter radius compensation mode
-#define CUTTER_COMP_DISABLE 0 // G40 (Default: Must be zero)
 
 // Modal Group G13: Control mode
 #define CONTROL_MODE_EXACT_PATH 0 // G61 (Default: Must be zero)
@@ -120,8 +101,6 @@ typedef struct {
   uint8_t motion;          // {G0,G1,G2,G3,G38.2,G80}
   uint8_t feed_rate;       // {G93,G94}
   uint8_t distance;        // {G90,G91}
-  uint8_t plane_select;    // {G17,G18,G19}
-  uint8_t coord_select;    // {G54,G55,G56,G57,G58,G59}
   uint8_t program_flow;    // {M0,M1,M2,M30}
 } gc_modal_t;
 

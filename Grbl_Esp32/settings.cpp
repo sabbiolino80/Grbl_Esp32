@@ -78,14 +78,6 @@ void settings_restore(uint8_t restore_flag) {
     write_global_settings();
   }
 
-  if (restore_flag & SETTINGS_RESTORE_PARAMETERS) {
-    uint8_t idx;
-    float coord_data[N_AXIS];
-    memset(&coord_data, 0, sizeof(coord_data));
-    for (idx = 0; idx <= SETTING_INDEX_NCOORD; idx++) {
-      settings_write_coord_data(idx, coord_data);
-    }
-  }
 
   if (restore_flag & SETTINGS_RESTORE_STARTUP_LINES) {
 #if N_STARTUP_LINE > 0
@@ -133,28 +125,6 @@ void write_global_settings()
 
 }
 
-// Read selected coordinate data from EEPROM. Updates pointed coord_data value.
-uint8_t settings_read_coord_data(uint8_t coord_select, float *coord_data)
-{
-  uint32_t addr = coord_select * (sizeof(float) * N_AXIS + 1) + EEPROM_ADDR_PARAMETERS;
-  if (!(memcpy_from_eeprom_with_checksum((char*)coord_data, addr, sizeof(float)*N_AXIS))) {
-    // Reset with default zero vector
-    clear_vector_float(coord_data);
-    settings_write_coord_data(coord_select, coord_data);
-    return (false);
-  }
-  return (true);
-}
-
-// Method to store coord data parameters into EEPROM
-void settings_write_coord_data(uint8_t coord_select, float *coord_data)
-{
-#ifdef FORCE_BUFFER_SYNC_DURING_EEPROM_WRITE
-  protocol_buffer_synchronize();
-#endif
-  uint32_t addr = coord_select * (sizeof(float) * N_AXIS + 1) + EEPROM_ADDR_PARAMETERS;
-  memcpy_to_eeprom_with_checksum(addr, (char*)coord_data, sizeof(float)*N_AXIS);
-}
 
 // Method to store build info into EEPROM
 // NOTE: This function can only be called in IDLE state.

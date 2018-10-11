@@ -26,10 +26,7 @@ void gc_init()
 {
   memset(&gc_state, 0, sizeof(parser_state_t));
 
-  // Load default G54 coordinate system.
-  if (!(settings_read_coord_data(gc_state.modal.coord_select, gc_state.coord_system))) {
-    report_status_message(STATUS_SETTING_READ_FAIL, CLIENT_SERIAL);
-  }
+  
 }
 
 
@@ -70,6 +67,10 @@ uint8_t gc_execute_line(char *line, uint8_t client)
   uint16_t command_words = 0; // Tracks G and M command words. Also used for modal group violations.
   uint16_t value_words = 0; // Tracks value words.
   uint8_t gc_parser_flags = GC_PARSER_NONE;
+
+//FB removed plane selection
+  axis_0 = X_AXIS;
+  axis_1 = Y_AXIS;
 
   // Determine if the line is a jogging motion or a normal g-code block.
   if (line[0] == '$') { // NOTE: `$J=` already parsed when passed to this function.
@@ -171,38 +172,15 @@ uint8_t gc_execute_line(char *line, uint8_t client)
               mantissa = 0; // Set to zero to indicate valid non-integer G command.
             }
             break;
-          case 17: case 18: case 19:
-            word_bit = MODAL_GROUP_G2;
-            gc_block.modal.plane_select = int_value - 17;
-            break;
           case 90: case 91:
             if (mantissa == 0) {
               word_bit = MODAL_GROUP_G3;
               gc_block.modal.distance = int_value - 90;
             } 
-//            else {
-//              word_bit = MODAL_GROUP_G4;
-//              if ((mantissa != 10) || (int_value == 90)) {
-//                FAIL(STATUS_GCODE_UNSUPPORTED_COMMAND);  // [G90.1 not supported]
-//              }
-//              mantissa = 0; // Set to zero to indicate valid non-integer G command.
-//              // Otherwise, arc IJK incremental mode is default. G91.1 does nothing.
-//            }
             break;
           case 93: case 94:
             word_bit = MODAL_GROUP_G5;
             gc_block.modal.feed_rate = 94 - int_value;
-            break;
-          case 40:
-            word_bit = MODAL_GROUP_G7;
-            // NOTE: Not required since cutter radius compensation is always disabled. Only here
-            // to support G40 commands that often appear in g-code program headers to setup defaults.
-            // gc_block.modal.cutter_comp = CUTTER_COMP_DISABLE; // G40
-            break;
-          case 54: case 55: case 56: case 57: case 58: case 59:
-            // NOTE: G59.x are not supported. (But their int_values would be 60, 61, and 62.)
-            word_bit = MODAL_GROUP_G12;
-            gc_block.modal.coord_select = int_value - 54; // Shift to array indexing.
             break;
           case 61:
             word_bit = MODAL_GROUP_G13;
@@ -259,16 +237,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
            legal g-code words and stores their value. Error-checking is performed later since some
            words (I,J,K,L,P,R) have multiple connotations and/or depend on the issued commands. */
         switch (letter) {
-#ifdef A_AXIS
-          case 'A': word_bit = WORD_A; gc_block.values.xyz[A_AXIS] = value; axis_words |= (1 << A_AXIS); break;
-#endif
-#ifdef B_AXIS
-          case 'B': word_bit = WORD_B; gc_block.values.xyz[B_AXIS] = value; axis_words |= (1 << B_AXIS); break;
-#endif
-#ifdef C_AXIS
-          case 'C': word_bit = WORD_C; gc_block.values.xyz[C_AXIS] = value; axis_words |= (1 << C_AXIS); break;
-#endif
-          // case 'D': // Not supported
           case 'F': word_bit = WORD_F; gc_block.values.f = value; break;
           // case 'H': // Not supported
           case 'I': word_bit = WORD_I; gc_block.values.ijk[X_AXIS] = value; ijk_words |= (1 << X_AXIS); break;
@@ -396,38 +364,10 @@ uint8_t gc_execute_line(char *line, uint8_t client)
     bit_false(value_words, bit(WORD_P));
   }
 
-  // [11. Set active plane ]: N/A
-  switch (gc_block.modal.plane_select) {
-    //case PLANE_SELECT_XY:
-      axis_0 = X_AXIS;
-      axis_1 = Y_AXIS;
-      //break;
-  }
 
   uint8_t idx;
 
 
-  // [15. Coordinate system selection ]: *N/A. Error, if cutter radius comp is active.
-  // TODO: An EEPROM read of the coordinate data may require a buffer sync when the cycle
-  // is active. The read pauses the processor temporarily and may cause a rare crash. For
-  // future versions on processors with enough memory, all coordinate data should be stored
-  // in memory and written to EEPROM only when there is not a cycle active.
-  float block_coord_system[N_AXIS];
-  memcpy(block_coord_system, gc_state.coord_system, sizeof(gc_state.coord_system));
-  if ( bit_istrue(command_words, bit(MODAL_GROUP_G12)) ) { // Check if called in block
-    if (gc_block.modal.coord_select > N_COORDINATE_SYSTEM) {
-      FAIL(STATUS_GCODE_UNSUPPORTED_COORD_SYS);  // [Greater than N sys]
-    }
-    if (gc_state.modal.coord_select != gc_block.modal.coord_select) {
-      if (!(settings_read_coord_data(gc_block.modal.coord_select, block_coord_system))) {
-        FAIL(STATUS_SETTING_READ_FAIL);
-      }
-    }
-  }
-
-  // [16. Set path control mode ]: N/A. Only G61. G61.1 and G64 NOT SUPPORTED.
-  // [17. Set distance mode ]: N/A. Only G91.1. G90.1 NOT SUPPORTED.
-  // [18. Set retract mode ]: NOT SUPPORTED.
 
   // [19. Remaining non-modal actions ]: Check go to predefined position, set G10, or set axis offsets.
   // NOTE: We need to separate the non-modal commands that are axis word-using (G10/G28/G30/G92), as these
@@ -460,20 +400,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
       }
       bit_false(value_words, (bit(WORD_L) | bit(WORD_P)));
 
-      // Determine coordinate system to change and try to load from EEPROM.
-      if (coord_select > 0) {
-        coord_select--;  // Adjust P1-P6 index to EEPROM coordinate data indexing.
-      }
-      else {
-        coord_select = gc_block.modal.coord_select;  // Index P0 as the active coordinate system
-      }
-
-      // NOTE: Store parameter data in IJK values. By rule, they are not in use with this command.
-      // FIXME: Instead of IJK, we'd better use: float vector[N_AXIS]; // [DG]
-      if (!settings_read_coord_data(coord_select, gc_block.values.ijk)) {
-        FAIL(STATUS_SETTING_READ_FAIL);  // [EEPROM read fail]
-      }
-
       // Pre-calculate the coordinate data changes.
       for (idx = 0; idx < N_AXIS; idx++) { // Axes indices are consistent, so loop may be used.
         // Update axes defined only in block. Always in machine coordinates. Can change non-active system.
@@ -500,7 +426,7 @@ uint8_t gc_execute_line(char *line, uint8_t client)
       for (idx = 0; idx < N_AXIS; idx++) { // Axes indices are consistent, so loop may be used.
         if (bit_istrue(axis_words, bit(idx)) ) {
           // WPos = MPos - WCS - G92 - TLO  ->  G92 = MPos - WCS - TLO - WPos
-          gc_block.values.xyz[idx] = gc_state.position[idx] - block_coord_system[idx] - gc_block.values.xyz[idx];
+          gc_block.values.xyz[idx] = gc_state.position[idx] - gc_block.values.xyz[idx];
         } else {
           gc_block.values.xyz[idx] = gc_state.coord_offset[idx];
         }
@@ -522,7 +448,7 @@ uint8_t gc_execute_line(char *line, uint8_t client)
               if (gc_block.non_modal_command != NON_MODAL_ABSOLUTE_OVERRIDE) {
                 // Apply coordinate offsets based on distance mode.
                 if (gc_block.modal.distance == DISTANCE_MODE_ABSOLUTE) {
-                  gc_block.values.xyz[idx] += block_coord_system[idx] + gc_state.coord_offset[idx];
+                  gc_block.values.xyz[idx] +=  gc_state.coord_offset[idx];
                 } else {  // Incremental mode
                   gc_block.values.xyz[idx] += gc_state.position[idx];
                 }
@@ -534,36 +460,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
 
       // Check remaining non-modal commands for errors.
       switch (gc_block.non_modal_command) {
-        case NON_MODAL_GO_HOME_0: // G28
-        case NON_MODAL_GO_HOME_1: // G30
-          // [G28/30 Errors]: Cutter compensation is enabled.
-          // Retreive G28/30 go-home position data (in machine coordinates) from EEPROM
-          // NOTE: Store parameter data in IJK values. By rule, they are not in use with this command.
-          if (gc_block.non_modal_command == NON_MODAL_GO_HOME_0) {
-            if (!settings_read_coord_data(SETTING_INDEX_G28, gc_block.values.ijk)) {
-              FAIL(STATUS_SETTING_READ_FAIL);
-            }
-          } else { // == NON_MODAL_GO_HOME_1
-            if (!settings_read_coord_data(SETTING_INDEX_G30, gc_block.values.ijk)) {
-              FAIL(STATUS_SETTING_READ_FAIL);
-            }
-          }
-          if (axis_words) {
-            // Move only the axes specified in secondary move.
-            for (idx = 0; idx < N_AXIS; idx++) {
-              if (!(axis_words & (1 << idx))) {
-                gc_block.values.ijk[idx] = gc_state.position[idx];
-              }
-            }
-          } else {
-            axis_command = AXIS_COMMAND_NONE; // Set to none if no intermediate motion.
-          }
-          break;
-        case NON_MODAL_SET_HOME_0: // G28.1
-        case NON_MODAL_SET_HOME_1: // G30.1
-          // [G28.1/30.1 Errors]: Cutter compensation is enabled.
-          // NOTE: If axis words are passed here, they are interpreted as an implicit motion mode.
-          break;
         case NON_MODAL_RESET_COORDINATE_OFFSET:
           // NOTE: If axis words are passed here, they are interpreted as an implicit motion mode.
           break;
@@ -685,16 +581,8 @@ uint8_t gc_execute_line(char *line, uint8_t client)
     mc_dwell(gc_block.values.p);
   }
 
-  // [11. Set active plane ]:
-  gc_state.modal.plane_select = gc_block.modal.plane_select;
 
 
-  // [15. Coordinate system selection ]:
-  if (gc_state.modal.coord_select != gc_block.modal.coord_select) {
-    gc_state.modal.coord_select = gc_block.modal.coord_select;
-    memcpy(gc_state.coord_system, block_coord_system, N_AXIS * sizeof(float));
-    system_flag_wco_change();
-  }
 
   // [16. Set path control mode ]: G61.1/G64 NOT SUPPORTED
   // gc_state.modal.control = gc_block.modal.control; // NOTE: Always default.
@@ -707,28 +595,9 @@ uint8_t gc_execute_line(char *line, uint8_t client)
   // [19. Go to predefined position, Set G10, or Set axis offsets ]:
   switch (gc_block.non_modal_command) {
     case NON_MODAL_SET_COORDINATE_DATA:
-      settings_write_coord_data(coord_select, gc_block.values.ijk);
       // Update system coordinate system if currently active.
-      if (gc_state.modal.coord_select == coord_select) {
         memcpy(gc_state.coord_system, gc_block.values.ijk, N_AXIS * sizeof(float));
         system_flag_wco_change();
-      }
-      break;
-    case NON_MODAL_GO_HOME_0: case NON_MODAL_GO_HOME_1:
-      // Move to intermediate position before going home. Obeys current coordinate system and offsets
-      // and absolute and incremental modes.
-      pl_data->condition |= PL_COND_FLAG_RAPID_MOTION; // Set rapid motion condition flag.
-      if (axis_command) {
-        mc_line(gc_block.values.xyz, pl_data);
-      }
-      mc_line(gc_block.values.ijk, pl_data);
-      memcpy(gc_state.position, gc_block.values.ijk, N_AXIS * sizeof(float));
-      break;
-    case NON_MODAL_SET_HOME_0:
-      settings_write_coord_data(SETTING_INDEX_G28, gc_state.position);
-      break;
-    case NON_MODAL_SET_HOME_1:
-      settings_write_coord_data(SETTING_INDEX_G30, gc_state.position);
       break;
     case NON_MODAL_SET_COORDINATE_OFFSET:
       memcpy(gc_state.coord_offset, gc_block.values.xyz, sizeof(gc_block.values.xyz));
@@ -787,18 +656,12 @@ uint8_t gc_execute_line(char *line, uint8_t client)
       // and [M-code 7,8,9] reset to [G1,G17,G90,G94,G40,G54,M5,M9,M48]. The remaining modal groups
       // [G-code 4,6,8,10,13,14,15] and [M-code 4,5,6] and the modal words [F,S,T,H] do not reset.
       gc_state.modal.motion = MOTION_MODE_LINEAR;
-      gc_state.modal.plane_select = PLANE_SELECT_XY;
       gc_state.modal.distance = DISTANCE_MODE_ABSOLUTE;
       gc_state.modal.feed_rate = FEED_RATE_MODE_UNITS_PER_MIN;
-      // gc_state.modal.cutter_comp = CUTTER_COMP_DISABLE; // Not supported.
-      gc_state.modal.coord_select = 0; // G54
 
 
       // Execute coordinate change
       if (sys.state != STATE_CHECK_MODE) {
-        if (!(settings_read_coord_data(gc_state.modal.coord_select, gc_state.coord_system))) {
-          FAIL(STATUS_SETTING_READ_FAIL);
-        }
         system_flag_wco_change(); // Set to refresh immediately just in case something altered.
       }
       report_feedback_message(MESSAGE_PROGRAM_END);

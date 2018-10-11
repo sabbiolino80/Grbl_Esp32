@@ -42,17 +42,17 @@
 #define DEFAULT_HOMING_PULLOFF 1.0 // mm
 
 
-#define DEFAULT_X_STEPS_PER_MM 800.0
-#define DEFAULT_Y_STEPS_PER_MM 800.0
+#define DEFAULT_X_STEPS_PER_MM 8.0
+#define DEFAULT_Y_STEPS_PER_MM 7.555
 
-#define DEFAULT_X_MAX_RATE 5000.0 // mm/min
-#define DEFAULT_Y_MAX_RATE 4000.0 // mm/min
+#define DEFAULT_X_MAX_RATE 15000.0 // mm/min
+#define DEFAULT_Y_MAX_RATE 15000.0 // mm/min
 
 #define DEFAULT_X_ACCELERATION (200.0*60*60) // 10*60*60 mm/min^2 = 10 mm/sec^2
 #define DEFAULT_Y_ACCELERATION (200.0*60*60) // 10*60*60 mm/min^2 = 10 mm/sec^2
 
-#define DEFAULT_X_MAX_TRAVEL 300.0 // mm NOTE: Must be a positive value.
-#define DEFAULT_Y_MAX_TRAVEL 300.0 // mm NOTE: Must be a positive value.
+#define DEFAULT_X_MAX_TRAVEL 359.0 // mm NOTE: Must be a positive value.
+#define DEFAULT_Y_MAX_TRAVEL 90.0 // mm NOTE: Must be a positive value.
 
 
 #endif

@@ -1,0 +1,29 @@
+REPORT
+limits
+MOTION_MODE_seek
+coord_select
+
+
+coolant
+wifi http
+ENABLE_SERIAL2SOCKET_OUT
+ENABLE_BT
+ENABLE_SD
+parking
+SAFETY_DOOR
+retract
+OVR override
+SPINDLE
+DEBUG
+corexy
+probe
+LASER
+inch, units
+z axis
+line number
+arc
+tool
+plane_select
+
+X 72/5 = 14,4ratio 1,8°/step 0,125 °/step = 360/72*5/200
+Y 68/5 = 13,6ratio 1,8°/step 0,1323529411764706 °/step = 360/68*5/200

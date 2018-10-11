@@ -57,7 +57,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
 
   uint8_t axis_command = AXIS_COMMAND_NONE;
   uint8_t axis_0, axis_1;
-  uint8_t coord_select = 0; // Tracks G10 P coordinate selection for execution
 
   // Initialize bitflag tracking variables for axis indices compatible operations.
   uint8_t axis_words = 0; // XYZ tracking
@@ -384,10 +383,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
       }; // [No axis words]
       if (bit_isfalse(value_words, ((1 << WORD_P) | (1 << WORD_L)))) {
         FAIL(STATUS_GCODE_VALUE_WORD_MISSING);  // [P/L word missing]
-      }
-      coord_select = trunc(gc_block.values.p); // Convert p value to int.
-      if (coord_select > N_COORDINATE_SYSTEM) {
-        FAIL(STATUS_GCODE_UNSUPPORTED_COORD_SYS);  // [Greater than N sys]
       }
       if (gc_block.values.l != 20) {
         if (gc_block.values.l == 2) {

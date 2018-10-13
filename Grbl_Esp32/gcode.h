@@ -9,6 +9,91 @@
 #ifndef gcode_h
 #define gcode_h
 
+/*
+G0 : Rapid linear Move
+G1 : Linear Move
+Usage
+G0 Xnnn Ynnn Znnn Ennn Fnnn Snnn
+G1 Xnnn Ynnn Znnn Ennn Fnnn Snnn
+Parameters
+Not all parameters need to be used, but at least one has to be used
+Xnnn The position to move to on the X axis
+Ynnn The position to move to on the Y axis
+Znnn The position to move to on the Z axis
+Ennn The amount to extrude between the starting point and ending point
+Fnnn The feedrate per minute of the move between the starting point and ending point (if supplied)
+Snnn Flag to check if an endstop was hit (S1 to check, S0 to ignore, S2 see note, default is S0)
+
+G2 & G3: Controlled Arc Move
+Usage
+G2 Xnnn Ynnn Innn Jnnn Ennn Fnnn (Clockwise Arc)
+G3 Xnnn Ynnn Innn Jnnn Ennn Fnnn (Counter-Clockwise Arc)
+Parameters
+Xnnn The position to move to on the X axis
+Ynnn The position to move to on the Y axis
+Innn The point in X space from the current X position to maintain a constant distance from
+Jnnn The point in Y space from the current Y position to maintain a constant distance from
+Ennn The amount to extrude between the starting point and ending point
+Fnnn The feedrate per minute of the move between the starting point and ending point (if supplied)
+
+G4: Dwell (pausa)
+Parameters
+Pnnn Time to wait, in milliseconds (In Teacup, P0, wait until all previous moves are finished)
+Snnn Time to wait, in seconds (Only on Repetier, Marlin, Smoothieware, and RepRapFirmware 1.16 and later)
+
+G10: Tool Offset?
+Usage
+G10 Pnnn Xnnn Ynnn Znnn Rnnn Snnn1
+Parameters
+Pnnn Tool number
+Xnnn X offset
+Ynnn Y offset
+U,V,Wnnn U, V and W axis offsets5
+Znnn Z offset2
+Rnnn Standby temperature(s)
+Snnn Active temperature(s)
+
+G28: Move to Origin (Home)
+Parameters
+This command can be used without any additional parameters.
+X Flag to go back to the X axis origin
+Y Flag to go back to the Y axis origin
+Z Flag to go back to the Z axis origin
+
+G80 stop canned cycle
+
+G90: Set to Absolute Positioning
+
+G91: Set to Relative Positioning
+
+G92: Set Position (preset, senza paraetri = tutti a 0)
+Parameters
+This command can be used without any additional parameters.
+Xnnn new X axis position
+Ynnn new Y axis position
+Znnn new Z axis position
+Ennn new extruder position
+
+G92.1 - reset axis offsets to zero and set parameters 5211 - 5219 to zero.
+
+G93: Feed Rate Mode (Inverse Time Mode)
+
+G94: Feed Rate Mode (Units per Minute)
+
+M0: Stop or Unconditional stop
+Parameters
+This command can be used without any additional parameters.
+Pnnn Time to wait, in milliseconds1
+Snnn Time to wait, in seconds2
+
+M1: Sleep or Conditional stop
+
+M2: Program End
+
+M30
+
+ */
+
 
 // Define modal group internal numbers for checking multiple command violations and tracking the
 // type of command that is called in the block. A modal group is a group of g-code commands that are
@@ -16,11 +101,11 @@
 // a unique motion. These are defined in the NIST RS274-NGC v3 g-code standard, available online,
 // and are similar/identical to other g-code interpreters by manufacturers (Haas,Fanuc,Mazak,etc).
 // NOTE: Modal group define values must be sequential and starting from zero.
-#define MODAL_GROUP_G0 0 // [G4,G10,G53,G92,G92.1] Non-modal  - G10 and G92 preset G28 HOME
-#define MODAL_GROUP_G1 1 // [G0,G1,G2,G3,G38.2,G38.3,G38.4,G38.5,G80] Motion
+#define MODAL_GROUP_G0 0 // [G4,G10,G92,G92.1] Non-modal  - G10 and G92 preset G28 HOME
+#define MODAL_GROUP_G1 1 // [G0,G1,G2,G3,G80] Motion
 #define MODAL_GROUP_G3 3 // [G90,G91] Distance mode - absolute or relative
 #define MODAL_GROUP_G5 5 // [G93,G94] Feed rate mode - mm/min or inverse time
-#define MODAL_GROUP_G13 10 // [G61] Control mode
+//#define MODAL_GROUP_G13 10 // [G61] Control mode
 #define MODAL_GROUP_M4 11  // [M0,M1,M2,M30] Stopping
 
 
@@ -35,7 +120,6 @@
 #define NON_MODAL_NO_ACTION 0 // (Default: Must be zero)
 #define NON_MODAL_DWELL 4 // G4 (Do not alter value)
 #define NON_MODAL_SET_COORDINATE_DATA 10 // G10 (Do not alter value)
-#define NON_MODAL_ABSOLUTE_OVERRIDE 53 // G53 (Do not alter value) - JOG???
 #define NON_MODAL_SET_COORDINATE_OFFSET 92 // G92 (Do not alter value)
 #define NON_MODAL_RESET_COORDINATE_OFFSET 102 //G92.1 (Do not alter value)
 
@@ -62,7 +146,7 @@
 
 
 // Modal Group G13: Control mode
-#define CONTROL_MODE_EXACT_PATH 0 // G61 (Default: Must be zero)
+//#define CONTROL_MODE_EXACT_PATH 0 // G61 (Default: Must be zero)
 
 
 // Modal Group G12: Active work coordinate system
@@ -98,7 +182,7 @@
 
 // NOTE: When this struct is zeroed, the above defines set the defaults for the system.
 typedef struct {
-  uint8_t motion;          // {G0,G1,G2,G3,G38.2,G80}
+  uint8_t motion;          // {G0,G1,G2,G3,G80}
   uint8_t feed_rate;       // {G93,G94}
   uint8_t distance;        // {G90,G91}
   uint8_t program_flow;    // {M0,M1,M2,M30}

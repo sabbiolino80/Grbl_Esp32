@@ -163,13 +163,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
           case 80:
             word_bit = MODAL_GROUP_G1;
             gc_block.modal.motion = int_value;
-            if (int_value == 38) {
-              if (!((mantissa == 20) || (mantissa == 30) || (mantissa == 40) || (mantissa == 50))) {
-                FAIL(STATUS_GCODE_UNSUPPORTED_COMMAND); // [Unsupported G38.x command]
-              }
-              gc_block.modal.motion += (mantissa / 10) + 100;
-              mantissa = 0; // Set to zero to indicate valid non-integer G command.
-            }
             break;
           case 90: case 91:
             if (mantissa == 0) {
@@ -180,13 +173,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
           case 93: case 94:
             word_bit = MODAL_GROUP_G5;
             gc_block.modal.feed_rate = 94 - int_value;
-            break;
-          case 61:
-            word_bit = MODAL_GROUP_G13;
-            if (mantissa != 0) {
-              FAIL(STATUS_GCODE_UNSUPPORTED_COMMAND);  // [G61.1 not supported]
-            }
-            // gc_block.modal.control = CONTROL_MODE_EXACT_PATH; // G61
             break;
           default: FAIL(STATUS_GCODE_UNSUPPORTED_COMMAND); // [Unsupported G command]
         }
@@ -321,7 +307,7 @@ uint8_t gc_execute_line(char *line, uint8_t client)
     }
   } else {
     if (gc_block.modal.feed_rate == FEED_RATE_MODE_INVERSE_TIME) { // = G93
-      // NOTE: G38 can also operate in inverse time, but is undefined as an error. Missing F word check added here.
+      // NOTE:  Missing F word check added here.
       if (axis_command == AXIS_COMMAND_MOTION_MODE) {
         if ((gc_block.modal.motion != MOTION_MODE_NONE) || (gc_block.modal.motion != MOTION_MODE_SEEK)) {
           if (bit_isfalse(value_words, bit(WORD_F))) {
@@ -439,15 +425,13 @@ uint8_t gc_execute_line(char *line, uint8_t client)
               gc_block.values.xyz[idx] = gc_state.position[idx]; // No axis word in block. Keep same axis position.
             } else {
               // Update specified value according to distance mode or ignore if absolute override is active.
-              // NOTE: G53 is never active with G28/30 since they are in the same modal group.
-              if (gc_block.non_modal_command != NON_MODAL_ABSOLUTE_OVERRIDE) {
                 // Apply coordinate offsets based on distance mode.
                 if (gc_block.modal.distance == DISTANCE_MODE_ABSOLUTE) {
                   gc_block.values.xyz[idx] +=  gc_state.coord_offset[idx];
                 } else {  // Incremental mode
                   gc_block.values.xyz[idx] += gc_state.position[idx];
                 }
-              }
+              
             }
           }
         }
@@ -457,13 +441,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
       switch (gc_block.non_modal_command) {
         case NON_MODAL_RESET_COORDINATE_OFFSET:
           // NOTE: If axis words are passed here, they are interpreted as an implicit motion mode.
-          break;
-        case NON_MODAL_ABSOLUTE_OVERRIDE:
-          // [G53 Errors]: G0 and G1 are not active. Cutter compensation is enabled.
-          // NOTE: All explicit axis word commands are in this modal group. So no implicit check necessary.
-          if (!(gc_block.modal.motion == MOTION_MODE_SEEK || gc_block.modal.motion == MOTION_MODE_LINEAR)) {
-            FAIL(STATUS_GCODE_G53_INVALID_MOTION_MODE); // [G53 G0/1 not active]
-          }
           break;
       }
   }
@@ -541,12 +518,12 @@ uint8_t gc_execute_line(char *line, uint8_t client)
   // targets are computed correctly. The final parser position after a jog is updated in
   // protocol_execute_realtime() when jogging completes or is canceled.
   if (gc_parser_flags & GC_PARSER_JOG_MOTION) {
-    // Only distance and unit modal commands and G53 absolute override command are allowed.
+    // Only distance and unit modal commands are allowed.
     // NOTE: Feed rate word and axis word checks have already been performed in STEP 3.
     if (command_words & ~(bit(MODAL_GROUP_G3) | bit(MODAL_GROUP_G0)))  {
       FAIL(STATUS_INVALID_JOG_COMMAND)
     };
-    if (!(gc_block.non_modal_command == NON_MODAL_ABSOLUTE_OVERRIDE || gc_block.non_modal_command == NON_MODAL_NO_ACTION)) {
+    if (!( gc_block.non_modal_command == NON_MODAL_NO_ACTION)) {
       FAIL(STATUS_INVALID_JOG_COMMAND);
     }
 

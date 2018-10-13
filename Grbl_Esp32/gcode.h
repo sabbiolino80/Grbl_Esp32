@@ -90,7 +90,23 @@ M1: Sleep or Conditional stop
 
 M2: Program End
 
-M30
+M30: Program End and Reset
+
+Coordinates
+Word Description
+X X-axe
+Y Y-axe
+Z Z-axe
+I X-offset
+J Y-offset
+K Z-offset
+R Radius
+Instruments (tools)
+Word Description
+T Tool Selection
+H Tool Length Offset
+F Feed Rate (X-Y-Z movement speed)
+S Spin (turning) Speed 
 
  */
 
@@ -105,7 +121,6 @@ M30
 #define MODAL_GROUP_G1 1 // [G0,G1,G2,G3,G80] Motion
 #define MODAL_GROUP_G3 3 // [G90,G91] Distance mode - absolute or relative
 #define MODAL_GROUP_G5 5 // [G93,G94] Feed rate mode - mm/min or inverse time
-//#define MODAL_GROUP_G13 10 // [G61] Control mode
 #define MODAL_GROUP_M4 11  // [M0,M1,M2,M30] Stopping
 
 
@@ -145,29 +160,22 @@ M30
 #define FEED_RATE_MODE_INVERSE_TIME   1 // G93 (Do not alter value)
 
 
-// Modal Group G13: Control mode
-//#define CONTROL_MODE_EXACT_PATH 0 // G61 (Default: Must be zero)
-
-
-// Modal Group G12: Active work coordinate system
-// N/A: Stores coordinate system value (54-59) to change to.
-
 // Define parameter word mapping.
 #define WORD_F  0
 #define WORD_I  1
 #define WORD_J  2
-#define WORD_K  3
+//#define WORD_K  3
 #define WORD_L  4
 #define WORD_P  6
 #define WORD_R  7
-#define WORD_S  8
-#define WORD_T  9
+//#define WORD_S  8
+//#define WORD_T  9
 #define WORD_X  10
 #define WORD_Y  11
-#define WORD_Z  12
-#define WORD_A  13
-#define WORD_B  14
-#define WORD_C  15
+//#define WORD_Z  12
+//#define WORD_A  13
+//#define WORD_B  14
+//#define WORD_C  15
 
 // Define g-code parser position updating flags
 #define GC_UPDATE_POS_TARGET   0 // Must be zero
@@ -190,10 +198,10 @@ typedef struct {
 
 typedef struct {
   float f;         // Feed
-  float ijk[N_AXIS];    // I,J,K Axis arc offsets
-  uint8_t l;       // G10 or canned cycles parameters
+  float ijk[N_AXIS];    // I,J Axis arc offsets
+  uint8_t l;       // G10  parameters
   float p;         // G10 or dwell parameters
-  float xyz[N_AXIS];    // X,Y,Z Translational axes
+  float xyz[N_AXIS];    // X,Y Translational axes
 } gc_values_t;
 
 

@@ -154,7 +154,6 @@ uint8_t gc_execute_line(char *line, uint8_t client)
             break;
           case 0: case 1: case 2: case 3: case 38:
             // Check for G0/1/2/3/38 being called with G10/28/30/92 on same block.
-            // * G43.1 is also an axis command but is not explicitly defined this way.
             if (axis_command) {
               FAIL(STATUS_GCODE_AXIS_COMMAND_CONFLICT);  // [Axis word/command conflict]
             }
@@ -240,7 +239,7 @@ uint8_t gc_execute_line(char *line, uint8_t client)
         }
         // Check for invalid negative values for words F, N, P, T, and S.
         // NOTE: Negative value check is done here simply for code-efficiency.
-        if ( bit(word_bit) & (bit(WORD_F) | bit(WORD_P) | bit(WORD_T) | bit(WORD_S)) ) {
+        if ( bit(word_bit) & (bit(WORD_F) | bit(WORD_P) ) ) {//| bit(WORD_S) | bit(WORD_T)
           if (value < 0.0) {
             FAIL(STATUS_NEGATIVE_VALUE);  // [Word value cannot be negative]
           }
@@ -492,11 +491,11 @@ uint8_t gc_execute_line(char *line, uint8_t client)
     // Jogging only uses the F feed rate and XYZ value words. N is valid, but S and T are invalid.
     bit_false(value_words, ( bit(WORD_F)));
   } else {
-    bit_false(value_words, ( bit(WORD_F) | bit(WORD_S) | bit(WORD_T))); // Remove single-meaning value words.
+    bit_false(value_words, ( bit(WORD_F)  )); // Remove single-meaning value words.//| bit(WORD_S)| bit(WORD_T)
   }
 
   if (axis_command) {
-    bit_false(value_words, (bit(WORD_X) | bit(WORD_Y) | bit(WORD_Z) | bit(WORD_A) | bit(WORD_B) | bit(WORD_C)));  // Remove axis words.
+    bit_false(value_words, (bit(WORD_X) | bit(WORD_Y)));  // Remove axis words.
   }
   if (value_words) {
     FAIL(STATUS_GCODE_UNUSED_WORDS);  // [Unused words]

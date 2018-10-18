@@ -58,12 +58,26 @@ void serialCheckTask(void *pvParameters)
 
   while (true) // run continuously
   {
-    while (Serial.available())
+    while (Serial.available()
+#ifdef ENABLE_BLUETOOTH
+           || (SerialBT.hasClient() && SerialBT.available())
+#endif
+          )
     {
       if (Serial.available())
       {
         client = CLIENT_SERIAL;
         data = Serial.read();
+      }
+      else
+      { //currently is wifi or BT but better to prepare both can be live
+#ifdef ENABLE_BLUETOOTH
+        if (SerialBT.hasClient() && SerialBT.available()) {
+          client = CLIENT_BT;
+          data = SerialBT.read();
+          //Serial.write(data);  // echo all data to serial
+        }
+#endif
       }
 
       client_idx = client - 1;  // for zero based array
@@ -124,12 +138,25 @@ void serialCheck()
   uint8_t client_idx = 0;  // index of data buffer
 
 
-  while (Serial.available())
+  while (Serial.available()
+#ifdef ENABLE_BLUETOOTH
+         || (SerialBT.hasClient() && SerialBT.available())
+#endif
+        )
   {
     if (Serial.available())
     {
       client = CLIENT_SERIAL;
       data = Serial.read();
+    }
+    else
+    { //currently is wifi or BT but better to prepare both can be live
+#ifdef ENABLE_BLUETOOTH
+      if (SerialBT.hasClient() && SerialBT.available()) {
+        client = CLIENT_BT;
+        data = SerialBT.read();
+      }
+#endif
     }
 
     client_idx = client - 1;  // for zero based array

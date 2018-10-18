@@ -108,6 +108,21 @@ H Tool Length Offset
 F Feed Rate (X-Y-Z movement speed)
 S Spin (turning) Speed 
 
+system commands
+$J jog $J=XnnYnnFnn usa sempre units/min [G90/G91]  abs/inc
+$H home
+$S sleep
+$X reset alarm
+...
+
+realtime commands
+0x18 (ctrl-x) : Soft-Reset
+? : Status Report Query
+~ : Cycle Start / Resume
+! : Feed Hold - cancel jog
+0x85 : Jog Cancel
+...
+
  */
 
 

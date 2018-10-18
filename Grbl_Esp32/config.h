@@ -25,6 +25,7 @@
 // Serial baud rate
 #define BAUD_RATE 115200
 
+//#define ENABLE_BLUETOOTH
 
 
 // Define realtime command special characters. These characters are 'picked-off' directly from the

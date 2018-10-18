@@ -37,7 +37,14 @@
 // this is a generic send function that everything should use, so interfaces could be added (Bluetooth, etc)
 void grbl_send(uint8_t client, char *text)
 {
+#ifdef ENABLE_BLUETOOTH
+  if (SerialBT.hasClient() && ( client == CLIENT_BT || client == CLIENT_ALL ) )
+  {
 
+    SerialBT.print(text);
+    //delay(10); // possible fix for dropped characters
+  }
+#endif
   if ( client == CLIENT_SERIAL || client == CLIENT_ALL )
     Serial.print(text);
 }
@@ -318,6 +325,9 @@ void report_build_info(char *line, uint8_t client)
 #endif
 #ifdef LIMITS_TWO_SWITCHES_ON_AXES
   strcat(build_info, "L");
+#endif
+#ifdef ENABLE_BLUETOOTH
+  strcat(build_info, "B");
 #endif
 #ifndef ENABLE_RESTORE_EEPROM_WIPE_ALL // NOTE: Shown when disabled.
   strcat(build_info, "*");

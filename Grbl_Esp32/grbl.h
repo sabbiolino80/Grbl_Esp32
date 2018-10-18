@@ -39,3 +39,7 @@
 #include "serial.h"
 #include "stepper.h"
 #include "jog.h"
+
+#ifdef ENABLE_BLUETOOTH
+  #include "grbl_bluetooth.h"
+#endif

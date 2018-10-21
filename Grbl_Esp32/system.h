@@ -84,6 +84,7 @@ extern volatile uint8_t sys_rt_exec_state;   // Global realtime executor bitflag
 extern volatile uint8_t sys_rt_exec_alarm;   // Global realtime executor bitflag variable for setting various alarms.
 extern volatile uint8_t sys_rt_exec_motion_override; // Global realtime executor bitflag variable for motion-based overrides.
 
+void system_ini(); // Renamed from system_init() due to conflict with esp32 files
 
 // Special handlers for setting and clearing Grbl's real-time execution flags.
 void system_set_exec_state_flag(uint8_t mask);

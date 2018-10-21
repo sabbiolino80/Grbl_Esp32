@@ -57,12 +57,14 @@ void protocol_main_loop()
   uint8_t line_flags = 0;
   uint8_t char_counter = 0;
   uint8_t c;
+  bool led;
 
   for (;;) {
 
     // serialCheck(); // un comment this if you do this here rather than in a separate task
 
-
+    digitalWrite(LED,led);
+    led = !led;
 
     // Process one line of incoming serial data, as the data becomes available. Performs an
     // initial filtering by removing spaces and comments and capitalizing all letters.

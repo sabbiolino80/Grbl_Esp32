@@ -1,7 +1,8 @@
 REPORT
 limits
 MOTION_MODE_seek
-coord_select
+
+
 
 
 coolant
@@ -24,6 +25,11 @@ line number
 arc
 tool
 plane_select
+G54 to G59 NCOORD coord_select
+G28 G30
 
-X 72/5 = 14,4ratio 1,8°/step 0,125 °/step = 360/72*5/200
-Y 68/5 = 13,6ratio 1,8°/step 0,1323529411764706 °/step = 360/68*5/200
+
+
+
+X 72/5 = 14,4ratio 1,8°/step 0,125 °/step = 360/72*5/200 max 600rpm = 15k°/min
+Y 68/5 = 13,6ratio 1,8°/step 0,1323529411764706 °/step = 360/68*5/200 max 600rpm = 15882°/min

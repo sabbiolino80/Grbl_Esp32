@@ -22,6 +22,12 @@
 #include "config.h"
 
 
+void system_ini() // Renamed from system_init() due to conflict with esp32 files
+{
+  pinMode(LED, OUTPUT);
+  pinMode(EV_H20, OUTPUT);
+}
+
 // Executes user startup script, if stored.
 void system_execute_startup(char *line)
 {

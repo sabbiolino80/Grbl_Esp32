@@ -25,6 +25,10 @@
 
 // This is the CPU Map for the ESP32 CNC Controller R2
 
+
+#define LED     GPIO_NUM_2
+#define EV_H20  GPIO_NUM_5
+
 // It is OK to comment out any step and direction pins. This
 // won't affect operation except that there will be no output
 // form the pins. Grbl will virtually move the axis. This could
@@ -38,9 +42,9 @@
 // OK to comment out to use pin for other features
 #define STEPPERS_DISABLE_PIN GPIO_NUM_22
 
+#define X_LIMIT_PIN        GPIO_NUM_25
+#define Y_LIMIT_PIN       GPIO_NUM_26
 
-#define X_LIMIT_PIN        GPIO_NUM_2
-#define Y_LIMIT_PIN       GPIO_NUM_4
      
 
 // These are some ESP32 CPU Settings that the program needs, but are generally not changed

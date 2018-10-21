@@ -24,7 +24,7 @@
 #define DEFAULT_STEPPING_INVERT_MASK 0 // uint8_t
 #define DEFAULT_DIRECTION_INVERT_MASK 0 // uint8_t
 #define DEFAULT_INVERT_ST_ENABLE 0 // boolean
-#define DEFAULT_INVERT_LIMIT_PINS 1 // boolean
+#define DEFAULT_INVERT_LIMIT_PINS 0 // boolean
 
 #define DEFAULT_STATUS_REPORT_MASK 2 // MPos enabled
 
@@ -34,10 +34,10 @@
 #define DEFAULT_SOFT_LIMIT_ENABLE 0 // false
 #define DEFAULT_HARD_LIMIT_ENABLE 0  // false
 
-#define DEFAULT_HOMING_ENABLE 0  // false
-#define DEFAULT_HOMING_DIR_MASK 3 // move positive dir Z, negative X,Y
-#define DEFAULT_HOMING_FEED_RATE 200.0 // mm/min
-#define DEFAULT_HOMING_SEEK_RATE 2000.0 // mm/min
+#define DEFAULT_HOMING_ENABLE 1  // false
+#define DEFAULT_HOMING_DIR_MASK 3 // move negative X,Y
+#define DEFAULT_HOMING_FEED_RATE 20.0 // mm/min
+#define DEFAULT_HOMING_SEEK_RATE 200.0 // mm/min
 #define DEFAULT_HOMING_DEBOUNCE_DELAY 250 // msec (0-65k)
 #define DEFAULT_HOMING_PULLOFF 1.0 // mm
 

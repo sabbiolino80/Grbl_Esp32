@@ -323,9 +323,6 @@ void report_build_info(char *line, uint8_t client)
 #ifdef HOMING_SINGLE_AXIS_COMMANDS
   strcat(build_info, "H");
 #endif
-#ifdef LIMITS_TWO_SWITCHES_ON_AXES
-  strcat(build_info, "L");
-#endif
 #ifdef ENABLE_BLUETOOTH
   strcat(build_info, "B");
 #endif

@@ -13,52 +13,42 @@
 G0 : Rapid linear Move
 G1 : Linear Move
 Usage
-G0 Xnnn Ynnn Znnn Ennn Fnnn Snnn
-G1 Xnnn Ynnn Znnn Ennn Fnnn Snnn
+G0 Xnnn Ynnn Fnnn
+G1 Xnnn Ynnn Fnnn
 Parameters
 Not all parameters need to be used, but at least one has to be used
 Xnnn The position to move to on the X axis
 Ynnn The position to move to on the Y axis
-Znnn The position to move to on the Z axis
-Ennn The amount to extrude between the starting point and ending point
 Fnnn The feedrate per minute of the move between the starting point and ending point (if supplied)
-Snnn Flag to check if an endstop was hit (S1 to check, S0 to ignore, S2 see note, default is S0)
 
 G2 & G3: Controlled Arc Move
 Usage
-G2 Xnnn Ynnn Innn Jnnn Ennn Fnnn (Clockwise Arc)
-G3 Xnnn Ynnn Innn Jnnn Ennn Fnnn (Counter-Clockwise Arc)
+G2 Xnnn Ynnn Innn Jnnn Fnnn (Clockwise Arc)
+G3 Xnnn Ynnn Innn Jnnn Fnnn (Counter-Clockwise Arc)
 Parameters
 Xnnn The position to move to on the X axis
 Ynnn The position to move to on the Y axis
 Innn The point in X space from the current X position to maintain a constant distance from
 Jnnn The point in Y space from the current Y position to maintain a constant distance from
-Ennn The amount to extrude between the starting point and ending point
 Fnnn The feedrate per minute of the move between the starting point and ending point (if supplied)
 
 G4: Dwell (pausa)
 Parameters
-Pnnn Time to wait, in milliseconds (In Teacup, P0, wait until all previous moves are finished)
-Snnn Time to wait, in seconds (Only on Repetier, Marlin, Smoothieware, and RepRapFirmware 1.16 and later)
+Pnnn Time to wait, in milliseconds
 
-G10: Tool Offset?
+G10: Set Coordinate Data
 Usage
-G10 Pnnn Xnnn Ynnn Znnn Rnnn Snnn1
+G10 L2/L20 Xnnn Ynnn 
 Parameters
-Pnnn Tool number
+L2/L20 to values / to current positions
 Xnnn X offset
 Ynnn Y offset
-U,V,Wnnn U, V and W axis offsets5
-Znnn Z offset2
-Rnnn Standby temperature(s)
-Snnn Active temperature(s)
 
 G28: Move to Origin (Home)
 Parameters
 This command can be used without any additional parameters.
 X Flag to go back to the X axis origin
 Y Flag to go back to the Y axis origin
-Z Flag to go back to the Z axis origin
 
 G80 stop canned cycle
 
@@ -66,13 +56,11 @@ G90: Set to Absolute Positioning
 
 G91: Set to Relative Positioning
 
-G92: Set Position (preset, senza paraetri = tutti a 0)
+G92: Set Position (preset, senza paraetri = tutti a 0) Set Coordinate Offsets
 Parameters
 This command can be used without any additional parameters.
 Xnnn new X axis position
 Ynnn new Y axis position
-Znnn new Z axis position
-Ennn new extruder position
 
 G92.1 - reset axis offsets to zero and set parameters 5211 - 5219 to zero.
 
@@ -84,7 +72,6 @@ M0: Stop or Unconditional stop
 Parameters
 This command can be used without any additional parameters.
 Pnnn Time to wait, in milliseconds1
-Snnn Time to wait, in seconds2
 
 M1: Sleep or Conditional stop
 
@@ -96,17 +83,9 @@ Coordinates
 Word Description
 X X-axe
 Y Y-axe
-Z Z-axe
 I X-offset
 J Y-offset
-K Z-offset
 R Radius
-Instruments (tools)
-Word Description
-T Tool Selection
-H Tool Length Offset
-F Feed Rate (X-Y-Z movement speed)
-S Spin (turning) Speed 
 
 system commands
 $J jog $J=XnnYnnFnn usa sempre units/min [G90/G91]  abs/inc

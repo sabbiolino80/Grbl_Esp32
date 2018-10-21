@@ -34,7 +34,5 @@ void protocol_auto_cycle_start();
 // Block until all buffered steps are executed
 void protocol_buffer_synchronize();
 
-// Executes the auto cycle feature, if enabled.
-void protocol_auto_cycle_start();
 
 #endif

@@ -115,16 +115,6 @@
 // #define LIMITS_TWO_SWITCHES_ON_AXES
 
 
-// Inverts pin logic of the control command pins based on a mask. This essentially means you can use
-// normally-closed switches on the specified pins, rather than the default normally-open switches.
-// NOTE: The top option will mask and invert all control pins. The bottom option is an example of
-// inverting only two control pins, the safety door and reset. See cpu_map.h for other bit definitions.
-//#define INVERT_CONTROL_PIN_MASK CONTROL_MASK // Default disabled. Uncomment to disable.
-
-// This allows control pins to be ignored.
-// Since these are typically used on the pins that don't have pullups, they will float and cause
-// problems if not externally pulled up. Ignoring will always return not activated when read.
-//#define IGNORE_CONTROL_PINS
 
 
 // Inverts select limit pin states based on the following mask. This effects all limit pin functions,
@@ -205,7 +195,7 @@
 // NOTE: All pins associated with the feature are disabled, i.e. XYZ limit pins, not individual axes.
 // WARNING: When the pull-ups are disabled, this requires additional wiring with pull-down resistors!
 //#define DISABLE_LIMIT_PIN_PULL_UP
-//#define DISABLE_CONTROL_PIN_PULL_UP
+
 
 
 

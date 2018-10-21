@@ -74,13 +74,6 @@ extern system_t sys;
 #define STEP_CONTROL_EXECUTE_SYS_MOTION   bit(2)
 
 
-// Define control pin index for Grbl internal use. Pin maps may change, but these values don't.
-#define N_CONTROL_PIN 3
-#define CONTROL_PIN_INDEX_RESET         bit(0)
-#define CONTROL_PIN_INDEX_FEED_HOLD     bit(1)
-#define CONTROL_PIN_INDEX_CYCLE_START   bit(2)
-
-
 
 
 // NOTE: These position variables may need to be declared as volatiles, if problems arise.
@@ -91,16 +84,6 @@ extern volatile uint8_t sys_rt_exec_state;   // Global realtime executor bitflag
 extern volatile uint8_t sys_rt_exec_alarm;   // Global realtime executor bitflag variable for setting various alarms.
 extern volatile uint8_t sys_rt_exec_motion_override; // Global realtime executor bitflag variable for motion-based overrides.
 
-
-
-
-void system_ini(); // Renamed from system_init() due to conflict with esp32 files
-
-// Returns bitfield of control pin states, organized by CONTROL_PIN_INDEX. (1=triggered, 0=not triggered).
-uint8_t system_control_get_state();
-
-
-void isr_control_inputs();
 
 // Special handlers for setting and clearing Grbl's real-time execution flags.
 void system_set_exec_state_flag(uint8_t mask);

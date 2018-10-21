@@ -21,40 +21,6 @@
 #include "grbl.h"
 #include "config.h"
 
-void system_ini() // Renamed from system_init() due to conflict with esp32 files
-{
-  // setup control inputs
-  pinMode(CONTROL_RESET_PIN, INPUT);
-  pinMode(CONTROL_FEED_HOLD_PIN, INPUT);
-  pinMode(CONTROL_CYCLE_START_PIN, INPUT);
-
-  // attach interrupt to them
-  attachInterrupt(digitalPinToInterrupt(CONTROL_RESET_PIN), isr_control_inputs, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(CONTROL_FEED_HOLD_PIN), isr_control_inputs, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(CONTROL_CYCLE_START_PIN), isr_control_inputs, CHANGE);
-}
-
-void IRAM_ATTR isr_control_inputs()
-{
-
-  uint8_t pin = system_control_get_state();
-  if (pin) {
-    if (bit_istrue(pin, CONTROL_PIN_INDEX_RESET))
-    {
-      mc_reset();
-    }
-    else if (bit_istrue(pin, CONTROL_PIN_INDEX_CYCLE_START))
-    {
-      bit_true(sys_rt_exec_state, EXEC_CYCLE_START);
-
-    }
-    else if (bit_istrue(pin, CONTROL_PIN_INDEX_FEED_HOLD))
-    {
-      bit_true(sys_rt_exec_state, EXEC_FEED_HOLD);
-
-    }
-  }
-}
 
 // Executes user startup script, if stored.
 void system_execute_startup(char *line)
@@ -382,34 +348,6 @@ uint8_t system_check_travel_limits(float *target)
 #endif
   }
   return (false);
-}
-
-// Returns control pin state as a uint8 bitfield. Each bit indicates the input pin state, where
-// triggered is 1 and not triggered is 0. Invert mask is applied. Bitfield organization is
-// defined by the CONTROL_PIN_INDEX in the header file.
-uint8_t system_control_get_state()
-{
-#ifdef IGNORE_CONTROL_PINS
-  return 0;
-#endif
-
-
-  uint8_t control_state = 0;
-  if (digitalRead(CONTROL_RESET_PIN)) {
-    control_state |= CONTROL_PIN_INDEX_RESET;
-  }
-  if (digitalRead(CONTROL_FEED_HOLD_PIN)) {
-    control_state |= CONTROL_PIN_INDEX_FEED_HOLD;
-  }
-  if (digitalRead(CONTROL_CYCLE_START_PIN)) {
-    control_state |= CONTROL_PIN_INDEX_CYCLE_START;
-  }
-
-#ifdef INVERT_CONTROL_PIN_MASK
-  control_state ^= INVERT_CONTROL_PIN_MASK;
-#endif
-
-  return (control_state);
 }
 
 // Returns limit pin mask according to Grbl internal axis indexing.

@@ -29,25 +29,22 @@
 // won't affect operation except that there will be no output
 // form the pins. Grbl will virtually move the axis. This could
 // be handy if you are using a servo, etc. for another axis.
-#define X_STEP_PIN      GPIO_NUM_12
-#define Y_STEP_PIN      GPIO_NUM_14
+#define X_STEP_PIN      GPIO_NUM_23
+#define Y_STEP_PIN      GPIO_NUM_19
 
-#define X_DIRECTION_PIN   GPIO_NUM_26
-#define Y_DIRECTION_PIN   GPIO_NUM_25
+#define X_DIRECTION_PIN   GPIO_NUM_21
+#define Y_DIRECTION_PIN   GPIO_NUM_18
 
 // OK to comment out to use pin for other features
-#define STEPPERS_DISABLE_PIN GPIO_NUM_13
+#define STEPPERS_DISABLE_PIN GPIO_NUM_22
 
 
-#define X_LIMIT_PIN      	GPIO_NUM_2
-#define Y_LIMIT_PIN      	GPIO_NUM_4
-
-#define CONTROL_RESET_PIN         GPIO_NUM_34  // needs external pullup
-#define CONTROL_FEED_HOLD_PIN     GPIO_NUM_36  // needs external pullup 
-#define CONTROL_CYCLE_START_PIN   GPIO_NUM_39  // needs external pullup    		
+#define X_LIMIT_PIN        GPIO_NUM_2
+#define Y_LIMIT_PIN       GPIO_NUM_4
+     
 
 // These are some ESP32 CPU Settings that the program needs, but are generally not changed
-#define F_TIMERS	80000000    // a reference to the speed of ESP32 timers
+#define F_TIMERS  80000000    // a reference to the speed of ESP32 timers
 #define F_STEPPER_TIMER 20000000  // frequency of step pulse timer
 #define STEPPER_OFF_TIMER_PRESCALE 8 // gives a frequency of 10MHz
 #define STEPPER_OFF_PERIOD_uSEC  3  // each tick is
@@ -65,12 +62,10 @@
 #define X_DIRECTION_BIT   0 // don't change
 #define Y_DIRECTION_BIT   1  // don't change
 
-#define X_LIMIT_BIT      	0  // don't change
-#define Y_LIMIT_BIT      	1  // don't change
-#define LIMIT_MASK      	B111  // don't change
+#define X_LIMIT_BIT       0  // don't change
+#define Y_LIMIT_BIT       1  // don't change
+#define LIMIT_MASK        B111  // don't change
 
-#define CONTROL_MASK      				B1111  	// don't change
-#define INVERT_CONTROL_PIN_MASK   B1110		// don't change
 
 // =======================================================================
 

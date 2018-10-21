@@ -443,7 +443,6 @@ void report_realtime_status(uint8_t client)
 
 #ifdef REPORT_FIELD_PIN_STATE
   uint8_t lim_pin_state = limits_get_state();
-  uint8_t ctrl_pin_state = system_control_get_state();
 
   if (lim_pin_state | ctrl_pin_state) {
     strcat(status, "|Pn:");
@@ -453,17 +452,6 @@ void report_realtime_status(uint8_t client)
       }
       if (bit_istrue(lim_pin_state, bit(Y_AXIS))) {
         strcat(status, "Y");
-      }
-    }
-    if (ctrl_pin_state) {
-      if (bit_istrue(ctrl_pin_state, CONTROL_PIN_INDEX_RESET)) {
-        strcat(status, "R");
-      }
-      if (bit_istrue(ctrl_pin_state, CONTROL_PIN_INDEX_FEED_HOLD)) {
-        strcat(status, "H");
-      }
-      if (bit_istrue(ctrl_pin_state, CONTROL_PIN_INDEX_CYCLE_START)) {
-        strcat(status, "S");
       }
     }
   }

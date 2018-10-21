@@ -26,6 +26,8 @@ void system_ini() // Renamed from system_init() due to conflict with esp32 files
 {
   pinMode(LED, OUTPUT);
   pinMode(EV_H20, OUTPUT);
+  digitalWrite(LED, LOW);
+  digitalWrite(EV_H20, LOW);
 }
 
 // Executes user startup script, if stored.
@@ -61,6 +63,26 @@ uint8_t system_execute_line(char *line, uint8_t client)
 
   switch ( line[char_counter] ) {
     case 0 : report_grbl_help(client); break;
+    case 'F':
+      switch (line[2])
+      {
+        case '0':
+          digitalWrite(LED, HIGH);
+          break;
+        case '1':
+          digitalWrite(LED, LOW);
+          break;
+        case '2':
+          digitalWrite(EV_H20, HIGH);
+          break;
+        case '3':
+          digitalWrite(EV_H20, LOW);
+          break;
+        default:
+          return (STATUS_INVALID_STATEMENT);
+          break;
+      }
+      break;
     case 'J' : // Jogging
       // Execute only if in IDLE or JOG states.
       if (sys.state != STATE_IDLE && sys.state != STATE_JOG) {

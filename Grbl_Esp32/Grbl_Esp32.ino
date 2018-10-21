@@ -25,7 +25,7 @@ void setup() {
   system_ini();   // Configure pinout pins and pin-change interrupt (Renamed due to conflict with esp32 files)
 
 #ifdef ENABLE_BLUETOOTH
-  char line[LINE_BUFFER_SIZE] = "grbl";
+  char line[LINE_BUFFER_SIZE] = "Waterino";
   Serial.printf("Starting Bluetooth");
   bluetooth_init(line);
 #endif

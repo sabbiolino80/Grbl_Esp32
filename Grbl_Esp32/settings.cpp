@@ -153,7 +153,7 @@ uint8_t settings_read_startup_line(uint8_t n, char *line)
 {
   uint32_t addr = n * (LINE_BUFFER_SIZE + 1) + EEPROM_ADDR_STARTUP_BLOCK;
   if (!(memcpy_from_eeprom_with_checksum((char*)line, addr, LINE_BUFFER_SIZE))) {
-    // Reset line with default value
+    // Reset line with default value if error
     line[0] = 0; // Empty line
     settings_store_startup_line(n, line);
     return (false);

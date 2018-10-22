@@ -250,6 +250,9 @@ uint8_t system_execute_line(char *line, uint8_t client)
             do {
               line[char_counter - helper_var] = line[char_counter];
             } while (line[char_counter++] != 0);
+            //TODO check length
+            if ((char_counter - helper_var) > LINE_BUFFER_SIZE + 1)
+              return (STATUS_INVALID_STATEMENT);
             // Execute gcode block to ensure block is valid.
             helper_var = gc_execute_line(line, CLIENT_SERIAL); // Set helper_var to returned status code.
             if (helper_var) {

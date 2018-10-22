@@ -1,0 +1,26 @@
+$X reset alarm
+$? status report
+$RST=$
+$RST=*
+$N print startup lines
+$Nn=...
+$N0= clear line
+
+$H home
+--G10 L2 X0 Y0
+G92 X0 Y0
+G0 Xnnn Ynnn rapid linear move
+G1 Xnnn Ynnn Fnnn linear move at speed
+G4 Pnnn pause ms
+F0 led on
+F1 led off
+F2 valve on
+F3 valve off
+
+$S sleep
+M2 program end
+
+G1 X359 F3000
+
+y da 30 a -30
+x da 0 a -359

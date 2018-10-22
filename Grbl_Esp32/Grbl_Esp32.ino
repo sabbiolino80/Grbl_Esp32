@@ -5,6 +5,7 @@
 */
 
 #include "grbl.h"
+#include "ntc.h"
 
 // Declare system global variable structure
 system_t sys;
@@ -14,7 +15,7 @@ volatile uint8_t sys_rt_exec_alarm;   // Global realtime executor bitflag variab
 volatile uint8_t sys_rt_exec_motion_override; // Global realtime executor bitflag variable for motion-based overrides.
 
 
-
+ntc timeserver;
 
 
 void setup() {
@@ -23,12 +24,16 @@ void setup() {
   settings_init(); // Load Grbl settings from EEPROM
   stepper_init();  // Configure stepper pins and interrupt timers
   system_ini();   // Configure pinout pins and pin-change interrupt (Renamed due to conflict with esp32 files)
+  timeserver.initLocalTime();
+  timeserver.printLocalTime();
 
 #ifdef ENABLE_BLUETOOTH
   char line[LINE_BUFFER_SIZE] = "Waterino";
   Serial.printf("Starting Bluetooth");
   bluetooth_init(line);
 #endif
+
+
 
   memset(sys_position, 0, sizeof(sys_position)); // Clear machine position.
 

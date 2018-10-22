@@ -38,24 +38,13 @@
 #endif
 
 // Define EEPROM memory address location values for Grbl settings and parameters
-// NOTE: The Atmega328p has 1KB EEPROM. The upper half is reserved for parameters and
-// the startup script. The lower half contains the global settings and space for future
-// developments.
 #define EEPROM_SIZE				          1024U
 #define EEPROM_ADDR_GLOBAL          1U
-#define EEPROM_ADDR_PARAMETERS      512U
-#define EEPROM_ADDR_STARTUP_BLOCK   768U
-#define EEPROM_ADDR_BUILD_INFO      942U
-
-//// Define EEPROM address indexing for coordinate parameters
-//#define N_COORDINATE_SYSTEM 6  // Number of supported work coordinate systems (from index 1)
-//#define SETTING_INDEX_NCOORD N_COORDINATE_SYSTEM+1 // Total number of system stored (from index 0)
-//// NOTE: Work coordinate indices are (0=G54, 1=G55, ... , 6=G59)
-//#define SETTING_INDEX_G28    N_COORDINATE_SYSTEM    // Home position 1
-//#define SETTING_INDEX_G30    N_COORDINATE_SYSTEM+1  // Home position 2
-//// #define SETTING_INDEX_G92    N_COORDINATE_SYSTEM+2  // Coordinate offset (G92.2,G92.3 not supported)
+#define EEPROM_ADDR_BUILD_INFO      59U
+#define EEPROM_ADDR_STARTUP_BLOCK   61U
 
 // Define Grbl axis settings numbering scheme. Starts at START_VAL, every INCREMENT, over N_SETTINGS.
+// from $100-101 to $130-131
 #define AXIS_N_SETTINGS          4
 #define AXIS_SETTINGS_START_VAL  100 // NOTE: Reserving settings values >= 100 for axis settings. Up to 255.
 #define AXIS_SETTINGS_INCREMENT  10  // Must be greater than the number of axis settings
@@ -76,7 +65,7 @@ typedef struct {
   uint8_t status_report_mask;     //$10 // Mask to indicate desired report data.
   float junction_deviation;       //$11
 
-  uint8_t flags;                  //$4,5,6  // Contains boolean settings
+  uint8_t flags;                  //$4,5,6,20,21,22  // Contains boolean settings
 
   uint8_t homing_dir_mask;        //$23
   float homing_feed_rate;         //$24
@@ -84,7 +73,7 @@ typedef struct {
   uint16_t homing_debounce_delay; //$26
   float homing_pulloff;           //$27
 } settings_t;
-extern settings_t settings;
+extern settings_t settings; // SIZE 12*float + 7*char + 1*int16 = 57 byte
 
 // Initialize the configuration subsystem (load settings from EEPROM)
 void settings_init();

@@ -1,0 +1,9 @@
+EEPROM MAP
+
+LINE_BUFFER_SIZE 80 + 1 => 29 + 1 check from app before download
+
+0 SETTINGS_VERSION
+1-58 settings
+59-60 build info
+61-1020 startup lines (32)
+1021-1023 free

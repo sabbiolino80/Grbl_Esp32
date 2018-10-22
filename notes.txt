@@ -2,11 +2,13 @@ TODOs:
 wifi for UTC
 time scheduler
 change settings to fixed values
-move program from sdcard to eeprom, like for startup block
+move program from sdcard to eeprom, like for startup block (system_execute_startup)
+G28?
 
 
 to be removed:
 REPORT?
+G10?
 
 removed features:
 ENABLE_SD

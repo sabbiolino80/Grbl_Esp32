@@ -41,11 +41,11 @@
 // NOTE: The Atmega328p has 1KB EEPROM. The upper half is reserved for parameters and
 // the startup script. The lower half contains the global settings and space for future
 // developments.
-#define EEPROM_SIZE				   1024U
-#define EEPROM_ADDR_GLOBAL         1U
-#define EEPROM_ADDR_PARAMETERS     512U
-#define EEPROM_ADDR_STARTUP_BLOCK  768U
-#define EEPROM_ADDR_BUILD_INFO     942U
+#define EEPROM_SIZE				          1024U
+#define EEPROM_ADDR_GLOBAL          1U
+#define EEPROM_ADDR_PARAMETERS      512U
+#define EEPROM_ADDR_STARTUP_BLOCK   768U
+#define EEPROM_ADDR_BUILD_INFO      942U
 
 //// Define EEPROM address indexing for coordinate parameters
 //#define N_COORDINATE_SYSTEM 6  // Number of supported work coordinate systems (from index 1)
@@ -69,20 +69,20 @@ typedef struct {
   float max_travel[N_AXIS];
 
   // Remaining Grbl settings
-  uint8_t pulse_microseconds;
-  uint8_t step_invert_mask;
-  uint8_t dir_invert_mask;
-  uint8_t stepper_idle_lock_time; // If max value 255, steppers do not disable.
-  uint8_t status_report_mask; // Mask to indicate desired report data.
-  float junction_deviation;
+  uint8_t pulse_microseconds;     //$0
+  uint8_t step_invert_mask;       //$2
+  uint8_t dir_invert_mask;        //$3
+  uint8_t stepper_idle_lock_time; //$1 // If max value 255, steppers do not disable.
+  uint8_t status_report_mask;     //$10 // Mask to indicate desired report data.
+  float junction_deviation;       //$11
 
-  uint8_t flags;  // Contains default boolean settings
+  uint8_t flags;                  //$4,5,6  // Contains boolean settings
 
-  uint8_t homing_dir_mask;
-  float homing_feed_rate;
-  float homing_seek_rate;
-  uint16_t homing_debounce_delay;
-  float homing_pulloff;
+  uint8_t homing_dir_mask;        //$23
+  float homing_feed_rate;         //$24
+  float homing_seek_rate;         //$25
+  uint16_t homing_debounce_delay; //$26
+  float homing_pulloff;           //$27
 } settings_t;
 extern settings_t settings;
 

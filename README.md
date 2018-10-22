@@ -1,3 +1,6 @@
+forked from https://github.com/bdring/Grbl_Esp32
+
+stripped down version of grbl to control a 2-axes programmable watering system
 
 
 ### Issues / Changes

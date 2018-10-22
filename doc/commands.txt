@@ -1,0 +1,80 @@
+G0 : Rapid linear Move
+G1 : Linear Move
+Usage
+G0 Xnnn Ynnn Fnnn
+G1 Xnnn Ynnn Fnnn
+Parameters
+Not all parameters need to be used, but at least one has to be used
+Xnnn The position to move to on the X axis
+Ynnn The position to move to on the Y axis
+Fnnn The feedrate per minute of the move between the starting point and ending point (if supplied)
+
+G4: Dwell (pause)
+Parameters
+Pnnn Time to wait, in milliseconds
+
+G10: Set Coordinate Data
+Usage
+G10 L2/L20 Xnnn Ynnn 
+Parameters
+L2/L20 to values / to current positions
+Xnnn X offset
+Ynnn Y offset
+
+G28: Move to Origin (Home)
+Parameters
+This command can be used without any additional parameters.
+X Flag to go back to the X axis origin
+Y Flag to go back to the Y axis origin
+
+G80 stop canned cycle
+
+G90: Set to Absolute Positioning
+
+G91: Set to Relative Positioning
+
+G92: Set Position (preset, senza paraetri = tutti a 0) Set Coordinate Offsets
+Parameters
+This command can be used without any additional parameters.
+Xnnn new X axis position
+Ynnn new Y axis position
+
+G92.1 - reset axis offsets to zero and set parameters 5211 - 5219 to zero.
+
+G93: Feed Rate Mode (Inverse Time Mode)
+
+G94: Feed Rate Mode (Units per Minute)
+
+M0: Stop or Unconditional stop
+Parameters
+This command can be used without any additional parameters.
+Pnnn Time to wait, in milliseconds1
+
+M1: Sleep or Conditional stop
+
+M2: Program End
+
+M30: Program End and Reset
+
+Coordinates
+Word Description
+X X-axe
+Y Y-axe
+I X-offset
+J Y-offset
+R Radius
+
+system commands
+$J jog $J=XnnYnnFnn uses always units/min [G90/G91]  abs/inc
+$H home
+$S sleep
+$X reset alarm
+...
+
+realtime commands
+0x18 (ctrl-x) : Soft-Reset
+? : Status Report Query
+~ : Cycle Start / Resume
+! : Feed Hold - cancel jog
+0x85 : Jog Cancel
+...

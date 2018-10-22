@@ -1,15 +1,18 @@
-REPORT
-limits
-MOTION_MODE_seek
+TODOs:
+wifi for UTC
+time scheduler
+change settings to fixed values
+move program from sdcard to eeprom, like for startup block
 
 
+to be removed:
+REPORT?
 
-
+removed features:
+ENABLE_SD
 coolant
 wifi http
 ENABLE_SERIAL2SOCKET_OUT
-ENABLE_BT
-ENABLE_SD
 parking
 SAFETY_DOOR
 retract

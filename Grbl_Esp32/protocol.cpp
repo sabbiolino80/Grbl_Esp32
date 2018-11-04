@@ -46,7 +46,7 @@ void protocol_main_loop()
   } else {
     sys.state = STATE_IDLE;
     // All systems go!
-    system_execute_startup(line); // Execute startup script.
+    //system_execute_startup(line); // Execute startup script.
   }
 
   // ---------------------------------------------------------------------------------

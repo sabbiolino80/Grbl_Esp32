@@ -31,11 +31,13 @@ void system_ini() // Renamed from system_init() due to conflict with esp32 files
 }
 
 // Executes user startup script, if stored.
-void system_execute_startup(char *line)
+void system_execute_startup()
 {
   uint8_t n;
+  char line[LINE_BUFFER_SIZE]; // Line to be executed. Zero-terminated.
   for (n = 0; n < N_STARTUP_LINE; n++) {
     if (!(settings_read_startup_line(n, line))) {
+      // reset stored command if error
       line[0] = 0;
       report_execute_startup_message(line, STATUS_SETTING_READ_FAIL, CLIENT_SERIAL);
     } else {
@@ -169,9 +171,9 @@ uint8_t system_execute_line(char *line, uint8_t client)
           if (!sys.abort) {  // Execute startup scripts after successful homing.
             sys.state = STATE_IDLE; // Set to IDLE when complete.
             st_go_idle(); // Set steppers to the settings idle state before returning.
-            if (line[2] == 0) {
-              system_execute_startup(line);
-            }
+            //if (line[2] == 0) {
+            //  system_execute_startup(line);
+            //}
           }
           break;
         case 'S' : // Puts Grbl to sleep [IDLE/ALARM]

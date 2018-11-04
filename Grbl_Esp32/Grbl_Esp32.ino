@@ -25,7 +25,6 @@ void setup() {
   stepper_init();  // Configure stepper pins and interrupt timers
   system_ini();   // Configure pinout pins and pin-change interrupt (Renamed due to conflict with esp32 files)
   timeserver.initLocalTime();
-  timeserver.printLocalTime();
 
 #ifdef ENABLE_BLUETOOTH
   char line[LINE_BUFFER_SIZE] = "Waterino";

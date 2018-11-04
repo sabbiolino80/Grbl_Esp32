@@ -95,7 +95,7 @@ void system_set_exec_motion_override_flag(uint8_t mask);
 void system_clear_exec_motion_overrides();
 
 // Execute the startup script lines stored in EEPROM upon initialization
-void system_execute_startup(char *line);
+void system_execute_startup();
 uint8_t system_execute_line(char *line, uint8_t client);
 
 void system_flag_wco_change();

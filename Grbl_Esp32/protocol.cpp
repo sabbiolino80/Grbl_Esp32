@@ -9,6 +9,7 @@
 
 #include "grbl.h"
 #include "config.h"
+#include "ntc.h"
 
 // Define line flags. Includes comment type tracking and line overflow detection.
 #define LINE_FLAG_OVERFLOW bit(0)
@@ -19,6 +20,9 @@
 static char line[LINE_BUFFER_SIZE]; // Line to be executed. Zero-terminated.
 
 static void protocol_exec_rt_suspend();
+
+extern ntc timeserver;
+extern uint8_t plan[4];
 
 
 /*
@@ -164,6 +168,11 @@ void protocol_main_loop()
     protocol_execute_realtime();  // Runtime command check point.
     if (sys.abort) {
       return;  // Bail to main() program loop to reset system.
+    }
+
+    if (timeserver.checkScheduler(plan))
+    {
+      system_execute_startup();
     }
 
     // check to see if we should disable the stepper drivers ... esp32 work around for disable in main loop.

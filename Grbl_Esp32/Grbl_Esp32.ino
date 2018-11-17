@@ -16,6 +16,7 @@ volatile uint8_t sys_rt_exec_motion_override; // Global realtime executor bitfla
 
 
 ntc timeserver;
+uint8_t plan[4];
 
 
 void setup() {

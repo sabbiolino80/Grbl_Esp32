@@ -2,7 +2,7 @@ EEPROM MAP
 
 LINE_BUFFER_SIZE 80 + 1 => 29 + 1 check from app before download
 #define N_STARTUP_LINE 2 in config.h
-system_execute_startup remove from startup and homing
+
 
 
 0 SETTINGS_VERSION

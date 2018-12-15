@@ -22,7 +22,7 @@
 #define DEFAULT_STEPPER_IDLE_LOCK_TIME 250 // msec (0-254, 255 keeps steppers enabled)
 
 #define DEFAULT_STEPPING_INVERT_MASK 0 // uint8_t
-#define DEFAULT_DIRECTION_INVERT_MASK 0 // uint8_t
+#define DEFAULT_DIRECTION_INVERT_MASK 2 // uint8_t
 #define DEFAULT_INVERT_ST_ENABLE 0 // boolean
 #define DEFAULT_INVERT_LIMIT_PINS 1 // boolean
 
@@ -39,7 +39,7 @@
 #define DEFAULT_HOMING_FEED_RATE 20.0 // mm/min
 #define DEFAULT_HOMING_SEEK_RATE 200.0 // mm/min
 #define DEFAULT_HOMING_DEBOUNCE_DELAY 250 // msec (0-65k)
-#define DEFAULT_HOMING_PULLOFF 1.0 // mm
+#define DEFAULT_HOMING_PULLOFF 3.0 // mm
 
 
 #define DEFAULT_X_STEPS_PER_MM 8.0

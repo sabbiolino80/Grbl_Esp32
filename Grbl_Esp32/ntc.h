@@ -12,7 +12,7 @@ class ntc{
     void initLocalTime();
     bool checkScheduler(uint8_t *plan);
   private:
-    const char* ssid       = "BARALDI_EXT";
+    const char* ssid       = "BARALDI_WIFI_EXT";
     const char* password   = "ambarabaciccicocco";
     const char* ntp_server = "pool.ntp.org";
     const float hourOffset = 1.0;

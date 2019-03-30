@@ -80,6 +80,12 @@ uint8_t system_execute_line(char *line, uint8_t client)
         case '3':
           digitalWrite(EV_H20, LOW);
           break;
+        case '4':
+          if (sys.state != STATE_IDLE) {
+              return (STATUS_IDLE_ERROR);  // only when idle.
+            }
+          system_execute_startup();
+          break;
         default:
           return (STATUS_INVALID_STATEMENT);
           break;
@@ -232,7 +238,7 @@ uint8_t system_execute_line(char *line, uint8_t client)
             if (sys.state != STATE_IDLE) {
               return (STATUS_IDLE_ERROR);  // Store only when idle.
             }
-            helper_var = true;  // Set helper_var to flag storing method.
+            helper_var = true;  // Set helper_var to flag storing method. ******
             // No break. Continues into default: to read remaining command characters.
           }
         case 'W':
@@ -246,13 +252,13 @@ uint8_t system_execute_line(char *line, uint8_t client)
           if (line[char_counter++] != '=') {
             return (STATUS_INVALID_STATEMENT);
           }
-          if (helper_var) { // Store startup line
+          if (helper_var) { // Store startup line ******
             // Prepare sending gcode block to gcode parser by shifting all characters
             helper_var = char_counter; // Set helper variable as counter to start of gcode block
             do {
               line[char_counter - helper_var] = line[char_counter];
             } while (line[char_counter++] != 0);
-            //TODO check length
+            //TODO check line length
             if ((char_counter - helper_var) > LINE_BUFFER_SIZE + 1)
               return (STATUS_INVALID_STATEMENT);
             // Execute gcode block to ensure block is valid.

@@ -16,6 +16,7 @@ F0 led on
 F1 led off
 F2 valve on
 F3 valve off
+F4 execute program
 
 $S sleep
 M2 program end

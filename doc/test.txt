@@ -16,7 +16,9 @@ F0 led on
 F1 led off
 F2 valve on
 F3 valve off
-F4 execute program
+F4 first step ...
+F5 last step => count cycles
+F6 execute program
 
 $S sleep
 M2 program end
@@ -25,3 +27,5 @@ G1 X359 F3000
 
 y da 30 a -30
 x da 0 a -359
+
+parser comandi in system.cpp

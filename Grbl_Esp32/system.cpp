@@ -81,9 +81,15 @@ uint8_t system_execute_line(char *line, uint8_t client)
           digitalWrite(EV_H20, LOW);
           break;
         case '4':
+//TODO motors on
+          break;
+        case '5':
+//TODO motors off
+          break;
+        case '6':
           if (sys.state != STATE_IDLE) {
-              return (STATUS_IDLE_ERROR);  // only when idle.
-            }
+            return (STATUS_IDLE_ERROR);  // only when idle.
+          }
           system_execute_startup();
           break;
         default:

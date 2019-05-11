@@ -1,9 +1,9 @@
 /*
-    system.h - Header for system level commands and real-time processes
-    Part of Grbl
-    Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
+ system.h - Header for system level commands and real-time processes
+ Part of Grbl
+ Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
 
-*/
+ */
 
 #ifndef system_h
 #define system_h
@@ -13,19 +13,16 @@
 // Define global system variables
 typedef struct
 {
-    uint8_t state;               // Tracks the current system state of Grbl.
-    uint8_t abort;               // System abort flag. Forces exit back to main loop for reset.
-    uint8_t suspend;             // System suspend bitflag variable that manages holds, cancels, and safety door.
-    uint8_t soft_limit;          // Tracks soft limit errors for the state machine. (boolean)
-    uint8_t step_control;        // Governs the step segment generator depending on system state.
-    uint8_t homing_axis_lock;    // Locks axes when limits engage. Used as an axis motion mask in the stepper ISR.
-    uint8_t report_wco_counter;  // Tracks when to add work coordinate offset data to status reports.
+	uint8_t state;               // Tracks the current system state of Grbl.
+	uint8_t abort;               // System abort flag. Forces exit back to main loop for reset.
+	uint8_t suspend;             // System suspend bitflag variable that manages holds, cancels, and safety door.
+	uint8_t soft_limit;          // Tracks soft limit errors for the state machine. (boolean)
+	uint8_t step_control;        // Governs the step segment generator depending on system state.
+	uint8_t homing_axis_lock;    // Locks axes when limits engage. Used as an axis motion mask in the stepper ISR.
+	uint8_t report_wco_counter;  // Tracks when to add work coordinate offset data to status reports.
 
 } system_t;
 extern system_t sys;
-
-
-
 
 // Define system executor bit map. Used internally by realtime protocol as realtime command flags,
 // which notifies the main program to execute the specified realtime command asynchronously.
@@ -48,7 +45,6 @@ extern system_t sys;
 #define EXEC_ALARM_HOMING_FAIL_DOOR     7
 #define EXEC_ALARM_HOMING_FAIL_PULLOFF  8
 #define EXEC_ALARM_HOMING_FAIL_APPROACH 9
-
 
 // Define system state bit map. The state variable primarily tracks the individual functions
 // of Grbl to manage each without overlapping. It is also used as a messaging flag for
@@ -74,12 +70,8 @@ extern system_t sys;
 #define STEP_CONTROL_EXECUTE_HOLD         bit(1)
 #define STEP_CONTROL_EXECUTE_SYS_MOTION   bit(2)
 
-
-
-
 // NOTE: These position variables may need to be declared as volatiles, if problems arise.
 extern int32_t sys_position[N_AXIS];      // Real-time machine (aka home) position vector in steps.
-
 
 extern volatile uint8_t sys_rt_exec_state;   // Global realtime executor bitflag variable for state management. See EXEC bitmasks.
 extern volatile uint8_t sys_rt_exec_alarm;   // Global realtime executor bitflag variable for setting various alarms.

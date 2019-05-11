@@ -6,10 +6,10 @@ BluetoothSerial SerialBT;
 
 void bluetooth_init(char *name)
 {
-    if (!SerialBT.begin(name))
-    {
-        report_status_message(STATUS_BT_FAIL_BEGIN, CLIENT_SERIAL);
-    }
+	if (!SerialBT.begin(name))
+	{
+		report_status_message(STATUS_BT_FAIL_BEGIN, CLIENT_SERIAL);
+	}
 }
 
 #endif

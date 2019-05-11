@@ -1,15 +1,14 @@
 /*
-    print.h - Functions for formatting output strings
-    Part of Grbl
+ print.h - Functions for formatting output strings
+ Part of Grbl
 
-    Copyright (c) 2011-2016 Sungeun K. Jeon for Gnea Research LLC
-    Copyright (c) 2009-2011 Simen Svale Skogsrud
+ Copyright (c) 2011-2016 Sungeun K. Jeon for Gnea Research LLC
+ Copyright (c) 2009-2011 Simen Svale Skogsrud
 
-*/
+ */
 
 #ifndef print_h
 #define print_h
-
 
 void printString(const char *s);
 
@@ -32,6 +31,5 @@ void printFloat(float n, uint8_t decimal_places);
 //  - RateValue: Handles feed rate and current velocity in  mm reporting.
 void printFloat_CoordValue(float n);
 void printFloat_RateValue(float n);
-
 
 #endif

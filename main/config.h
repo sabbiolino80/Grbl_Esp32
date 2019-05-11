@@ -1,18 +1,15 @@
 /*
-    config.h - compile time configuration
-    Part of Grbl
+ config.h - compile time configuration
+ Part of Grbl
 
-    Copyright (c) 2012-2016 Sungeun K. Jeon for Gnea Research LLC
-    Copyright (c) 2009-2011 Simen Svale Skogsrud
+ Copyright (c) 2012-2016 Sungeun K. Jeon for Gnea Research LLC
+ Copyright (c) 2009-2011 Simen Svale Skogsrud
 
-*/
-
+ */
 
 #ifndef config_h
 #define config_h
 #include "grbl.h" // For Arduino IDE compatibility.
-
-
 
 // Define CPU pin map and default settings.
 // NOTE: OEMs can avoid the need to maintain/update the defaults.h and cpu_map.h files and use only
@@ -26,7 +23,6 @@
 #define BAUD_RATE 115200
 
 #define ENABLE_BLUETOOTH
-
 
 // Define realtime command special characters. These characters are 'picked-off' directly from the
 // serial read data stream and are not passed to the grbl line execution parser. Select characters
@@ -49,7 +45,6 @@
 // #define CMD_CYCLE_START 0x82
 // #define CMD_FEED_HOLD 0x83
 #define CMD_JOG_CANCEL  0x85
-
 
 // If homing is enabled, homing init lock sets Grbl into an alarm state upon power up. This forces
 // the user to perform the homing cycle (or override the locks) before doing anything else. This is
@@ -106,7 +101,6 @@
 #define N_DECIMAL_SETTINGVALUE    3 // Decimals for floating point setting values
 #define N_DECIMAL_RPMVALUE        0 // RPM value in rotations per min.
 
-
 // Inverts select limit pin states based on the following mask. This effects all limit pin functions,
 // such as hard limits and homing. However, this is different from overall invert limits setting.
 // This build option will invert only the limit pins defined here, and then the invert limits setting
@@ -114,7 +108,6 @@
 // normally-open(NO) and normally-closed(NC) switches installed on their machine.
 // NOTE: PLEASE DO NOT USE THIS, unless you have a situation that needs it.
 // #define INVERT_LIMIT_PIN_MASK ((1<<X_LIMIT_BIT)|(1<<Y_LIMIT_BIT)) // Default disabled. Uncomment to enable.
-
 
 // At power-up or a reset, Grbl will check the limit switch states to ensure they are not active
 // before initialization. If it detects a problem and the hard limits setting is enabled, Grbl will
@@ -124,7 +117,6 @@
 
 // ---------------------------------------------------------------------------------------
 // ADVANCED CONFIGURATION OPTIONS:
-
 
 // Configure rapid, feed override settings. These values define the max and min
 // allowable override values and the coarse and fine increments per command received. Please
@@ -140,13 +132,10 @@
 #define RAPID_OVERRIDE_LOW       25 // Percent of rapid (1-99). Usually 25%.
 // #define RAPID_OVERRIDE_EXTRA_LOW 5 // *NOT SUPPORTED* Percent of rapid (1-99). Usually 5%.
 
-
 // When a M2 or M30 program end command is executed, most g-code states are restored to their defaults.
 // This compile-time option includes the restoring of the feed, rapid speed override values
 // to their default values at program end.
 #define RESTORE_OVERRIDES_AFTER_PROGRAM_END // Default enabled. Comment to disable.
-
-
 
 // The temporal resolution of the acceleration management subsystem. A higher number gives smoother
 // acceleration, particularly noticeable on machines that run at very high feedrates, but may negatively
@@ -186,7 +175,6 @@
 // WARNING: When the pull-ups are disabled, this requires additional wiring with pull-down resistors!
 //#define DISABLE_LIMIT_PIN_PULL_UP
 
-
 // Minimum planner junction speed. Sets the default minimum junction speed the planner plans to at
 // every buffer block junction, except for starting from rest and end of the buffer, which are always
 // zero. This value controls how fast the machine moves through junctions with no regard for acceleration
@@ -200,7 +188,6 @@
 // round-off errors. Although not recommended, a lower value than 1.0 mm/min will likely work in smaller
 // machines, perhaps to 0.1mm/min, but your success may vary based on multiple factors.
 #define MINIMUM_FEED_RATE 1.0 // (mm/min)
-
 
 // Time delay increments performed during a dwell. The default value is set at 50ms, which provides
 // a maximum time delay of roughly 55 minutes, more than enough for most any application. Increasing
@@ -268,7 +255,6 @@
 // work well and are cheap to find) and wire in a low-pass circuit into each limit pin.
 // #define ENABLE_SOFTWARE_DEBOUNCE // Default disabled. Uncomment to enable.
 
-
 // Force Grbl to check the state of the hard limit switches when the processor detects a pin
 // change inside the hard limit ISR routine. By default, Grbl will trigger the hard limits
 // alarm upon any pin change, since bouncing switches can cause a state check like this to
@@ -334,11 +320,5 @@
 // This is the simplest way to ensure `WPos:` is always correct. Fortunately, it's exceedingly rare
 // that any of these commands are used need continuous motions through them.
 #define FORCE_BUFFER_SYNC_DURING_WCO_CHANGE // Default enabled. Comment to disable.
-
-
-
-
-
-
 
 #endif

@@ -1,17 +1,16 @@
 /*
-    settings.h - eeprom configuration handling
-    Part of Grbl
+ settings.h - eeprom configuration handling
+ Part of Grbl
 
-    Copyright (c) 2011-2016 Sungeun K. Jeon for Gnea Research LLC
-    Copyright (c) 2009-2011 Simen Svale Skogsrud
+ Copyright (c) 2011-2016 Sungeun K. Jeon for Gnea Research LLC
+ Copyright (c) 2009-2011 Simen Svale Skogsrud
 
-*/
+ */
 
 #ifndef settings_h
 #define settings_h
 
 #include "grbl.h"
-
 
 // Version of the EEPROM data. Will be used to migrate existing data from older versions of Grbl
 // when firmware is upgraded. Always stored in byte 0 of eeprom
@@ -52,27 +51,27 @@
 // Global persistent settings (Stored from byte EEPROM_ADDR_GLOBAL onwards)
 typedef struct
 {
-    // Axis settings
-    float steps_per_mm[N_AXIS];
-    float max_rate[N_AXIS];
-    float acceleration[N_AXIS];
-    float max_travel[N_AXIS];
+	// Axis settings
+	float steps_per_mm[N_AXIS];
+	float max_rate[N_AXIS];
+	float acceleration[N_AXIS];
+	float max_travel[N_AXIS];
 
-    // Remaining Grbl settings
-    uint8_t pulse_microseconds;     //$0
-    uint8_t step_invert_mask;       //$2
-    uint8_t dir_invert_mask;        //$3
-    uint8_t stepper_idle_lock_time; //$1 // If max value 255, steppers do not disable.
-    uint8_t status_report_mask;     //$10 // Mask to indicate desired report data.
-    float junction_deviation;       //$11
+	// Remaining Grbl settings
+	uint8_t pulse_microseconds;     //$0
+	uint8_t step_invert_mask;       //$2
+	uint8_t dir_invert_mask;        //$3
+	uint8_t stepper_idle_lock_time; //$1 // If max value 255, steppers do not disable.
+	uint8_t status_report_mask;     //$10 // Mask to indicate desired report data.
+	float junction_deviation;       //$11
 
-    uint8_t flags;                  //$4,5,6,20,21,22  // Contains boolean settings
+	uint8_t flags;                  //$4,5,6,20,21,22  // Contains boolean settings
 
-    uint8_t homing_dir_mask;        //$23
-    float homing_feed_rate;         //$24
-    float homing_seek_rate;         //$25
-    uint16_t homing_debounce_delay; //$26
-    float homing_pulloff;           //$27
+	uint8_t homing_dir_mask;        //$23
+	float homing_feed_rate;         //$24
+	float homing_seek_rate;         //$25
+	uint16_t homing_debounce_delay; //$26
+	float homing_pulloff;           //$27
 } settings_t;
 extern settings_t settings; // SIZE 12*float + 7*char + 1*int16 = 57 byte
 
@@ -95,6 +94,5 @@ uint8_t get_step_pin_mask(uint8_t i);
 
 // Returns the direction pin mask according to Grbl's internal axis numbering
 uint8_t get_direction_pin_mask(uint8_t i);
-
 
 #endif

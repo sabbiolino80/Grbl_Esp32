@@ -1,9 +1,9 @@
 /*
-    report.h - Header for system level commands and real-time processes
-    Part of Grbl
-    Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
+ report.h - Header for system level commands and real-time processes
+ Part of Grbl
+ Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
 
-*/
+ */
 
 #ifndef report_h
 #define report_h
@@ -56,8 +56,6 @@
 
 #define STATUS_BT_FAIL_BEGIN 70  // Bluetooth failed to start
 
-
-
 // Define Grbl alarm codes. Valid values (1-255). 0 is reserved.
 #define ALARM_HARD_LIMIT_ERROR      EXEC_ALARM_HARD_LIMIT
 #define ALARM_SOFT_LIMIT_ERROR      EXEC_ALARM_SOFT_LIMIT
@@ -91,7 +89,6 @@ void grbl_sendf(uint8_t client, const char *format, ...);
 // Prints system status messages.
 void report_status_message(uint8_t status_code, uint8_t client);
 
-
 // Prints system alarm messages.
 void report_alarm_message(uint8_t alarm_code);
 
@@ -113,7 +110,6 @@ void report_echo_line_received(char *line, uint8_t client);
 // Prints realtime status report
 void report_realtime_status(uint8_t client);
 
-
 // Prints Grbl NGC parameters (coordinate offsets)
 void report_ngc_parameters(uint8_t client);
 
@@ -126,9 +122,5 @@ void report_execute_startup_message(char *line, uint8_t status_code, uint8_t cli
 
 // Prints build info and user info
 void report_build_info(char *line, uint8_t client);
-
-
-
-
 
 #endif

@@ -1,23 +1,42 @@
 /*
-    grbl.h - Header for system level commands and real-time processes
-    Part of Grbl
-    Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
+ grbl.h - Header for system level commands and real-time processes
+ Part of Grbl
+ Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
 
-*/
+ */
 
 // Grbl versioning system
 #define GRBL_VERSION "1.1f"
 #define GRBL_VERSION_BUILD "20180919"
 
-//#include <sdkconfig.h>
-#include <Arduino.h>
-#include <EEPROM.h>
+#include <sdkconfig.h>
+//TODO #include <Arduino.h>
+//TODO #include <EEPROM.h>
+#include "arduino/EEPROM/src/EEPROM.h"
+#include "nvs_flash.h"
+#include "nvs.h"
+#include "esp_system.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "driver/gpio.h"
+
 #include <driver/rmt.h>
 #include <esp_task_wdt.h>
-#include <freertos/task.h>
-#include <stdlib.h> // PSoc Required for labs
 
 #include "driver/timer.h"
+
+#include "esp_types.h"
+#include <stdint.h>
+#include "freertos/queue.h"
+#include "soc/timer_group_struct.h"
+#include "driver/periph_ctrl.h"
+#include <rom/ets_sys.h>
+
+#include <math.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h> // PSoc Required for labs
 
 // Define the Grbl system include files. NOTE: Do not alter organization.
 #include "config.h"
@@ -43,5 +62,7 @@
 
 #ifdef ENABLE_BLUETOOTH
 #include "grbl_bluetooth.h"
-#include "BluetoothSerial.h"
+#include "arduino/BluetoothSerial.h"
 #endif
+
+#define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))

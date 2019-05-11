@@ -1,11 +1,11 @@
 /*
-    stepper.h - stepper motor driver: executes motion plans of planner.c using the stepper motors
-    Part of Grbl
+ stepper.h - stepper motor driver: executes motion plans of planner.c using the stepper motors
+ Part of Grbl
 
-    Copyright (c) 2011-2016 Sungeun K. Jeon for Gnea Research LLC
-    Copyright (c) 2009-2011 Simen Svale Skogsrud
+ Copyright (c) 2011-2016 Sungeun K. Jeon for Gnea Research LLC
+ Copyright (c) 2009-2011 Simen Svale Skogsrud
 
-*/
+ */
 
 #ifndef stepper_h
 #define stepper_h
@@ -13,8 +13,6 @@
 #ifndef SEGMENT_BUFFER_SIZE
 #define SEGMENT_BUFFER_SIZE 6
 #endif
-
-
 
 #include "grbl.h"
 //#include "config.h"
@@ -61,7 +59,6 @@ extern uint64_t stepper_idle_counter;
 extern bool stepper_idle;
 
 // -- Task handles for use in the notifications
-
 
 void IRAM_ATTR onSteppertimer();
 void IRAM_ATTR onStepperOffTimer();

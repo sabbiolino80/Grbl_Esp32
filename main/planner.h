@@ -1,16 +1,14 @@
 /*
-    planner.h - buffers movement commands and manages the acceleration profile plan
-    Part of Grbl
+ planner.h - buffers movement commands and manages the acceleration profile plan
+ Part of Grbl
 
-    Copyright (c) 2011-2016 Sungeun K. Jeon for Gnea Research LLC
-    Copyright (c) 2009-2011 Simen Svale Skogsrud
+ Copyright (c) 2011-2016 Sungeun K. Jeon for Gnea Research LLC
+ Copyright (c) 2009-2011 Simen Svale Skogsrud
 
-*/
+ */
 
 #ifndef planner_h
 #define planner_h
-
-
 
 // The number of linear motions that can be in the plan at any give time
 #ifndef BLOCK_BUFFER_SIZE
@@ -27,45 +25,41 @@
 #define PL_COND_FLAG_INVERSE_TIME      bit(3) // Interprets feed rate value as inverse time when set.
 #define PL_COND_MOTION_MASK    (PL_COND_FLAG_RAPID_MOTION|PL_COND_FLAG_SYSTEM_MOTION)
 
-
-
 // This struct stores a linear movement of a g-code block motion with its critical "nominal" values
 // are as specified in the source g-code.
 typedef struct
 {
-    // Fields used by the bresenham algorithm for tracing the line
-    // NOTE: Used by stepper algorithm to execute the block correctly. Do not alter these values.
-    uint32_t steps[N_AXIS];    // Step count along each axis
-    uint32_t step_event_count; // The maximum step axis count and number of steps required to complete this block.
-    uint8_t direction_bits;    // The direction bit set for this block (refers to *_DIRECTION_BIT in config.h)
+	// Fields used by the bresenham algorithm for tracing the line
+	// NOTE: Used by stepper algorithm to execute the block correctly. Do not alter these values.
+	uint32_t steps[N_AXIS];    // Step count along each axis
+	uint32_t step_event_count; // The maximum step axis count and number of steps required to complete this block.
+	uint8_t direction_bits;    // The direction bit set for this block (refers to *_DIRECTION_BIT in config.h)
 
-    // Block condition data to ensure correct execution depending on states.
-    uint8_t condition;      // Block bitflag variable defining block run conditions. Copied from pl_line_data.
+	// Block condition data to ensure correct execution depending on states.
+	uint8_t condition;      // Block bitflag variable defining block run conditions. Copied from pl_line_data.
 
-    // Fields used by the motion planner to manage acceleration. Some of these values may be updated
-    // by the stepper module during execution of special motion cases for replanning purposes.
-    float entry_speed_sqr;     // The current planned entry speed at block junction in (mm/min)^2
-    float max_entry_speed_sqr; // Maximum allowable entry speed based on the minimum of junction limit and
-    //   neighboring nominal speeds with overrides in (mm/min)^2
-    float acceleration;        // Axis-limit adjusted line acceleration in (mm/min^2). Does not change.
-    float millimeters;         // The remaining distance for this block to be executed in (mm).
-    // NOTE: This value may be altered by stepper algorithm during execution.
+	// Fields used by the motion planner to manage acceleration. Some of these values may be updated
+	// by the stepper module during execution of special motion cases for replanning purposes.
+	float entry_speed_sqr;     // The current planned entry speed at block junction in (mm/min)^2
+	float max_entry_speed_sqr; // Maximum allowable entry speed based on the minimum of junction limit and
+	//   neighboring nominal speeds with overrides in (mm/min)^2
+	float acceleration;        // Axis-limit adjusted line acceleration in (mm/min^2). Does not change.
+	float millimeters;         // The remaining distance for this block to be executed in (mm).
+	// NOTE: This value may be altered by stepper algorithm during execution.
 
-    // Stored rate limiting data used by planner when changes occur.
-    float max_junction_speed_sqr; // Junction entry speed limit based on direction vectors in (mm/min)^2
-    float rapid_rate;             // Axis-limit adjusted maximum rate for this block direction in (mm/min)
-    float programmed_rate;        // Programmed rate of this block (mm/min).
+	// Stored rate limiting data used by planner when changes occur.
+	float max_junction_speed_sqr; // Junction entry speed limit based on direction vectors in (mm/min)^2
+	float rapid_rate;             // Axis-limit adjusted maximum rate for this block direction in (mm/min)
+	float programmed_rate;        // Programmed rate of this block (mm/min).
 
 } plan_block_t;
 
 // Planner data prototype. Must be used when passing new motions to the planner.
 typedef struct
 {
-    float feed_rate;          // Desired feed rate for line motion. Value is ignored, if rapid motion.
-    uint8_t condition;        // Bitflag variable to indicate planner conditions. See defines above.
+	float feed_rate;          // Desired feed rate for line motion. Value is ignored, if rapid motion.
+	uint8_t condition;        // Bitflag variable to indicate planner conditions. See defines above.
 } plan_line_data_t;
-
-
 
 // Initialize and reset the motion plan subsystem
 void plan_reset(); // Reset all
@@ -115,6 +109,5 @@ uint8_t plan_get_block_buffer_count();
 uint8_t plan_check_full_buffer();
 
 void plan_get_planner_mpos(float *target);
-
 
 #endif

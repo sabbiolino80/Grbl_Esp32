@@ -1,9 +1,9 @@
 /*
-  motion_control.h - high level interface for issuing motion commands
-  Part of Grbl
+    motion_control.h - high level interface for issuing motion commands
+    Part of Grbl
 
-  Copyright (c) 2011-2015 Sungeun K. Jeon
-  Copyright (c) 2009-2011 Simen Svale Skogsrud
+    Copyright (c) 2011-2015 Sungeun K. Jeon
+    Copyright (c) 2009-2011 Simen Svale Skogsrud
 
 */
 

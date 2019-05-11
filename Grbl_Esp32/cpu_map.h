@@ -1,7 +1,7 @@
 /*
-  cpu_map.h - Header for system level commands and real-time processes
-  Part of Grbl
-  Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
+    cpu_map.h - Header for system level commands and real-time processes
+    Part of Grbl
+    Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
 
 */
 
@@ -9,17 +9,17 @@
 #define cpu_map_h
 
 /*
-  Not all pins can can work for all functions.
-  Check features like pull-ups, pwm, etc before
-  re-assigning numbers
+    Not all pins can can work for all functions.
+    Check features like pull-ups, pwm, etc before
+    re-assigning numbers
 
-  (gpio34-39) are inputs only and don't have software pullup/down functions
-  You MUST use external pullups or noise WILL cause problems.
+    (gpio34-39) are inputs only and don't have software pullup/down functions
+    You MUST use external pullups or noise WILL cause problems.
 
-  Unlike the AVR version certain pins are not forced into the same port.
-  Therefore, bit masks are not use the same way and typically should not be
-  changed. They are just preserved right now to make it easy to stay in sync
-  with AVR grbl
+    Unlike the AVR version certain pins are not forced into the same port.
+    Therefore, bit masks are not use the same way and typically should not be
+    changed. They are just preserved right now to make it easy to stay in sync
+    with AVR grbl
 
 */
 
@@ -45,7 +45,7 @@
 #define X_LIMIT_PIN        GPIO_NUM_25
 #define Y_LIMIT_PIN       GPIO_NUM_26
 
-     
+
 
 // These are some ESP32 CPU Settings that the program needs, but are generally not changed
 #define F_TIMERS  80000000    // a reference to the speed of ESP32 timers

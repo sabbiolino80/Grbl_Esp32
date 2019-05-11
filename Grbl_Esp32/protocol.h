@@ -1,9 +1,9 @@
 /*
-  protocol.h - controls Grbl execution protocol and procedures
-  Part of Grbl
+    protocol.h - controls Grbl execution protocol and procedures
+    Part of Grbl
 
-  Copyright (c) 2011-2016 Sungeun K. Jeon for Gnea Research LLC
-  Copyright (c) 2009-2011 Simen Svale Skogsrud
+    Copyright (c) 2011-2016 Sungeun K. Jeon for Gnea Research LLC
+    Copyright (c) 2009-2011 Simen Svale Skogsrud
 
 */
 

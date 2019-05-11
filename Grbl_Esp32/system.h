@@ -1,7 +1,7 @@
 /*
-  system.h - Header for system level commands and real-time processes
-  Part of Grbl
-  Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
+    system.h - Header for system level commands and real-time processes
+    Part of Grbl
+    Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
 
 */
 
@@ -11,14 +11,15 @@
 #include "grbl.h"
 
 // Define global system variables
-typedef struct {
-  uint8_t state;               // Tracks the current system state of Grbl.
-  uint8_t abort;               // System abort flag. Forces exit back to main loop for reset.
-  uint8_t suspend;             // System suspend bitflag variable that manages holds, cancels, and safety door.
-  uint8_t soft_limit;          // Tracks soft limit errors for the state machine. (boolean)
-  uint8_t step_control;        // Governs the step segment generator depending on system state.
-  uint8_t homing_axis_lock;    // Locks axes when limits engage. Used as an axis motion mask in the stepper ISR.
-  uint8_t report_wco_counter;  // Tracks when to add work coordinate offset data to status reports.
+typedef struct
+{
+    uint8_t state;               // Tracks the current system state of Grbl.
+    uint8_t abort;               // System abort flag. Forces exit back to main loop for reset.
+    uint8_t suspend;             // System suspend bitflag variable that manages holds, cancels, and safety door.
+    uint8_t soft_limit;          // Tracks soft limit errors for the state machine. (boolean)
+    uint8_t step_control;        // Governs the step segment generator depending on system state.
+    uint8_t homing_axis_lock;    // Locks axes when limits engage. Used as an axis motion mask in the stepper ISR.
+    uint8_t report_wco_counter;  // Tracks when to add work coordinate offset data to status reports.
 
 } system_t;
 extern system_t sys;

@@ -1,7 +1,7 @@
 /*
-  grbl.h - Header for system level commands and real-time processes
-  Part of Grbl
-  Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
+    grbl.h - Header for system level commands and real-time processes
+    Part of Grbl
+    Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
 
 */
 
@@ -15,6 +15,7 @@
 #include <driver/rmt.h>
 #include <esp_task_wdt.h>
 #include <freertos/task.h>
+#include <stdlib.h> // PSoc Required for labs
 
 #include "driver/timer.h"
 
@@ -41,5 +42,6 @@
 #include "jog.h"
 
 #ifdef ENABLE_BLUETOOTH
-  #include "grbl_bluetooth.h"
+#include "grbl_bluetooth.h"
+#include "BluetoothSerial.h"
 #endif

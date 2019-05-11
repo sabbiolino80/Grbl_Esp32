@@ -1,9 +1,9 @@
 /*
-  config.h - compile time configuration
-  Part of Grbl
+    config.h - compile time configuration
+    Part of Grbl
 
-  Copyright (c) 2012-2016 Sungeun K. Jeon for Gnea Research LLC
-  Copyright (c) 2009-2011 Simen Svale Skogsrud
+    Copyright (c) 2012-2016 Sungeun K. Jeon for Gnea Research LLC
+    Copyright (c) 2009-2011 Simen Svale Skogsrud
 
 */
 
@@ -71,8 +71,8 @@
 // on separate pin, but homed in one cycle. Also, it should be noted that the function of hard limits
 // will not be affected by pin sharing.
 
- #define HOMING_CYCLE_0 (1<<X_AXIS)  // First home X
- #define HOMING_CYCLE_1 (1<<Y_AXIS)  //Then home Y
+#define HOMING_CYCLE_0 (1<<X_AXIS)  // First home X
+#define HOMING_CYCLE_1 (1<<Y_AXIS)  //Then home Y
 
 // Number of homing cycles performed after when the machine initially jogs to limit switches.
 // This help in preventing overshoot and should improve repeatability. This value should be one or

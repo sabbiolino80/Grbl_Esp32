@@ -1,17 +1,17 @@
 /*
-  defaults.h - defaults settings configuration file
-  Part of Grbl
+    defaults.h - defaults settings configuration file
+    Part of Grbl
 
-  Copyright (c) 2012-2016 Sungeun K. Jeon for Gnea Research LLC
+    Copyright (c) 2012-2016 Sungeun K. Jeon for Gnea Research LLC
 
 */
 
-/* The defaults.h file serves as a central default settings selector for different machine
-   types, from DIY CNC mills to CNC conversions of off-the-shelf machines. The settings
-   files listed here are supplied by users, so your results may vary. However, this should
-   give you a good starting point as you get to know your machine and tweak the settings for
-   your nefarious needs.
-   NOTE: Ensure one and only one of these DEFAULTS_XXX values is defined in config.h */
+/*  The defaults.h file serves as a central default settings selector for different machine
+    types, from DIY CNC mills to CNC conversions of off-the-shelf machines. The settings
+    files listed here are supplied by users, so your results may vary. However, this should
+    give you a good starting point as you get to know your machine and tweak the settings for
+    your nefarious needs.
+    NOTE: Ensure one and only one of these DEFAULTS_XXX values is defined in config.h */
 
 #ifndef defaults_h
 

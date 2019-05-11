@@ -1,8 +1,8 @@
 /*
-  jog.h - Jogging methods
-  Part of Grbl
+    jog.h - Jogging methods
+    Part of Grbl
 
-  Copyright (c) 2016 Sungeun K. Jeon for Gnea Research LLC
+    Copyright (c) 2016 Sungeun K. Jeon for Gnea Research LLC
 
 */
 

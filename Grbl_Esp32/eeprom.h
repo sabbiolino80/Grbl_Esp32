@@ -1,7 +1,7 @@
 /*
-  eeprom.h - Header for system level commands and real-time processes
-  Part of Grbl
-  Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
+    eeprom.h - Header for system level commands and real-time processes
+    Part of Grbl
+    Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
 
 */
 

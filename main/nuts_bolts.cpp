@@ -125,8 +125,8 @@ uint8_t read_float(char *line, uint8_t *char_counter, float *float_ptr)
 
 void delay_ms(uint16_t ms)
 {
-	//delay(ms);
-	ets_delay_us(ms * 1000);
+	delay(ms);
+	//ets_delay_us(ms * 1000);
 }
 
 // Non-blocking delay function used for general operation and suspend features.
@@ -148,8 +148,8 @@ void delay_sec(float seconds, uint8_t mode)
 			// Execute rt_system() only to avoid nesting suspend loops.
 			protocol_exec_rt_system();
 		}
-		//delay(DWELL_TIME_STEP); // Delay DWELL_TIME_STEP increment
-		ets_delay_us(DWELL_TIME_STEP * 1000);
+		delay(DWELL_TIME_STEP); // Delay DWELL_TIME_STEP increment
+		//ets_delay_us(DWELL_TIME_STEP * 1000);
 	}
 }
 

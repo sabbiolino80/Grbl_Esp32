@@ -45,6 +45,8 @@ void app_main(void)
 	//gpio_set_direction(GPIO_NUM_4, GPIO_MODE_OUTPUT);
 	//int level = 0;
 
+	initArduino();
+
 	serial_init();   // Setup serial baud rate and interrupts
 	settings_init(); // Load Grbl settings from EEPROM
 	stepper_init();  // Configure stepper pins and interrupt timers
@@ -109,6 +111,7 @@ void app_main(void)
 		// Start Grbl main loop. Processes program inputs and executes them.
 		protocol_main_loop();
 
+		vTaskDelay(1 / portTICK_PERIOD_MS);
 	}
 }
 

@@ -10,7 +10,8 @@
 #define GRBL_VERSION_BUILD "20180919"
 
 #include <sdkconfig.h>
-//TODO #include <Arduino.h>
+//TODO
+#include "arduino/Arduino.h"
 //TODO #include <EEPROM.h>
 #include "arduino/EEPROM/src/EEPROM.h"
 #include "nvs_flash.h"

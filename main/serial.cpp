@@ -36,12 +36,12 @@ void serial_init()
 
 	// create a task to check for incoming data
 	xTaskCreatePinnedToCore(serialCheckTask,    // task
-			"servoSyncTask", // name for task
+			"serialCheckTask", // name for task
 			2048,   // size of task stack
 			NULL,   // parameters
 			1, // priority
-                                &serialCheckTaskHandle,
-                                0 // core
+            &serialCheckTaskHandle,
+            0 // core
 			);
 
 }

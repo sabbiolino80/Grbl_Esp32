@@ -202,6 +202,7 @@ void protocol_main_loop()
 			return;  // Bail to main() program loop to reset system.
 		}
 
+		//ToDo scheduler
 //    if (timeserver.checkScheduler(plan))
 //    {
 //      system_execute_startup();
@@ -215,6 +216,9 @@ void protocol_main_loop()
 				set_stepper_disable(true);
 			}
 		}
+
+		vTaskDelay(1 / portTICK_PERIOD_MS);
+
 	}
 
 	return; /* Never reached */

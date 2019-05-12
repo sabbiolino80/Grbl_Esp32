@@ -41,15 +41,23 @@ void ntc::printLocalTime()
 void ntc::initLocalTime()
 {
 	//Serial.begin(115200);
-	WiFi.begin(ssid, password);
-	while (WiFi.status() != WL_CONNECTED)
+	wl_status_t ret = WiFi.begin(ssid, password);
+	Serial.print(ret);
+	int cont = 0;
+	//while (WiFi.status() != WL_CONNECTED && cont < 20)
+	while (WiFi.localIP().toString() == "0.0.0.0" && cont < 20)
 	{
 		delay(500);
+		Serial.print(WiFi.status());
 		Serial.print(".");
+		cont++;
 	}
 
-	configTime(hourOffset * 3600, 3600, ntp_server);
-	printLocalTime();
+	if(cont < 20)
+	{
+		configTime(hourOffset * 3600, 3600, ntp_server);
+		printLocalTime();
+	}
 
 	WiFi.disconnect(true);
 	WiFi.mode(WIFI_OFF);

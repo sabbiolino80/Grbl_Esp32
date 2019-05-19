@@ -40,14 +40,14 @@ void system_execute_startup()
 		{
 			// reset stored command if error
 			line[0] = 0;
-            report_execute_startup_message(line, STATUS_SETTING_READ_FAIL, CLIENT_SERIAL);
+			report_execute_startup_message(line, STATUS_SETTING_READ_FAIL, CLIENT_SERIAL);
 		}
 		else
 		{
 			if (line[0] != 0)
 			{
-                uint8_t status_code = gc_execute_line(line, CLIENT_SERIAL);
-                report_execute_startup_message(line, status_code, CLIENT_SERIAL);
+				uint8_t status_code = gc_execute_line(line, CLIENT_SERIAL);
+				report_execute_startup_message(line, status_code, CLIENT_SERIAL);
 			}
 		}
 	}
@@ -99,6 +99,12 @@ uint8_t system_execute_line(char *line, uint8_t client)
 				return (STATUS_IDLE_ERROR);  // only when idle.
 			}
 			system_execute_startup();
+			break;
+		case '7':
+//ToDo start loop
+			break;
+		case '8':
+//ToDo end loop
 			break;
 		default:
 			return (STATUS_INVALID_STATEMENT);
@@ -218,8 +224,8 @@ uint8_t system_execute_line(char *line, uint8_t client)
 			{
 				return (STATUS_INVALID_STATEMENT);
 			}
-                    if (!sys.abort)    // Execute startup scripts after successful homing.
-                    {
+			if (!sys.abort)    // Execute startup scripts after successful homing.
+			{
 				sys.state = STATE_IDLE; // Set to IDLE when complete.
 				st_go_idle(); // Set steppers to the settings idle state before returning.
 				//if (line[2] == 0) {
@@ -241,8 +247,8 @@ uint8_t system_execute_line(char *line, uint8_t client)
 				report_build_info(line, client);
 #ifdef ENABLE_BUILD_INFO_WRITE_COMMAND
 			}
-                    else     // Store startup line [IDLE/ALARM]
-                    {
+			else     // Store startup line [IDLE/ALARM]
+			{
 				if (line[char_counter++] != '=')
 				{
 					return (STATUS_INVALID_STATEMENT);
@@ -285,13 +291,13 @@ uint8_t system_execute_line(char *line, uint8_t client)
 			mc_reset(); // Force reset to ensure settings are initialized correctly.
 			break;
 		case 'N': // Startup lines. [IDLE/ALARM]
-                    if ( line[++char_counter] == 0 )   // Print startup lines
-                    {
+			if (line[++char_counter] == 0)   // Print startup lines
+			{
 				for (helper_var = 0; helper_var < N_STARTUP_LINE; helper_var++)
 				{
 					if (!(settings_read_startup_line(helper_var, line)))
 					{
-                                report_status_message(STATUS_SETTING_READ_FAIL, CLIENT_SERIAL);
+						report_status_message(STATUS_SETTING_READ_FAIL, CLIENT_SERIAL);
 					}
 					else
 					{
@@ -300,8 +306,8 @@ uint8_t system_execute_line(char *line, uint8_t client)
 				}
 				break;
 			}
-                    else     // Store startup line [IDLE Only] Prevents motion during ALARM.
-                    {
+			else     // Store startup line [IDLE Only] Prevents motion during ALARM.
+			{
 				if (sys.state != STATE_IDLE)
 				{
 					return (STATUS_IDLE_ERROR);  // Store only when idle.
@@ -309,9 +315,7 @@ uint8_t system_execute_line(char *line, uint8_t client)
 				helper_var = true; // Set helper_var to flag storing method. ******
 				// No break. Continues into default: to read remaining command characters.
 			}
-		case 'W':
-			//TODO
-			break;
+			/* no break */
 
 		default:  // Storing setting methods [IDLE/ALARM]
 			if (!read_float(line, &char_counter, &parameter))
@@ -322,9 +326,9 @@ uint8_t system_execute_line(char *line, uint8_t client)
 			{
 				return (STATUS_INVALID_STATEMENT);
 			}
-                    if (helper_var)   // Store startup line ******
-                    {
-			  // Prepare sending gcode block to gcode parser by shifting all characters
+			if (helper_var)   // Store startup line ******
+			{
+				// Prepare sending gcode block to gcode parser by shifting all characters
 				helper_var = char_counter; // Set helper variable as counter to start of gcode block
 				do
 				{
@@ -334,7 +338,10 @@ uint8_t system_execute_line(char *line, uint8_t client)
 				if ((char_counter - helper_var) > LINE_BUFFER_SIZE + 1)
 					return (STATUS_INVALID_STATEMENT);
 				// Execute gcode block to ensure block is valid.
-				helper_var = gc_execute_line(line, CLIENT_SERIAL); // Set helper_var to returned status code.
+				if(line[0] == '$' && line[1] == 'H' && line[2] == 0)
+					helper_var = STATUS_OK;
+				else
+					helper_var = gc_execute_line(line, CLIENT_SERIAL); // Set helper_var to returned status code.
 				if (helper_var)
 				{
 					return (helper_var);
@@ -345,8 +352,8 @@ uint8_t system_execute_line(char *line, uint8_t client)
 					settings_store_startup_line(helper_var, line);
 				}
 			}
-                    else     // Store global setting.
-                    {
+			else     // Store global setting.
+			{
 				if (!read_float(line, &char_counter, &value))
 				{
 					return (STATUS_BAD_NUMBER_FORMAT);

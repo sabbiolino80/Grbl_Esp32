@@ -37,7 +37,7 @@
 #endif
 
 // Define EEPROM memory address location values for Grbl settings and parameters
-#define EEPROM_SIZE				          1024U
+#define EEPROM_SIZE				    1024U
 #define EEPROM_ADDR_GLOBAL          1U
 #define EEPROM_ADDR_BUILD_INFO      59U
 #define EEPROM_ADDR_STARTUP_BLOCK   61U

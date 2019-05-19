@@ -89,7 +89,7 @@
 // and addresses are defined in settings.h. With the current settings, up to 2 startup blocks may
 // be stored and executed in order. These startup blocks would typically be used to set the g-code
 // parser state depending on user preferences.
-#define N_STARTUP_LINE 10 // Integer (1-2)
+#define N_STARTUP_LINE 32 // Integer (1-2)
 
 // Number of floating decimal points printed by Grbl for certain value types. These settings are
 // determined by realistic and commonly observed values in CNC machines. For example, position

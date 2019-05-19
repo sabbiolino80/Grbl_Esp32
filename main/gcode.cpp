@@ -299,7 +299,7 @@ uint8_t gc_execute_line(char *line, uint8_t client)
 			}
 			// Check for invalid negative values for words F, N, P, T, and S.
 			// NOTE: Negative value check is done here simply for code-efficiency.
-                if ( bit(word_bit) & (bit(WORD_F) | bit(WORD_P) ) )  //| bit(WORD_S) | bit(WORD_T)
+			if ( bit(word_bit) & (bit(WORD_F) | bit(WORD_P) ) )  //| bit(WORD_S) | bit(WORD_T)
                 {
 				if (value < 0.0)
 				{

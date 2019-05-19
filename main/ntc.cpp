@@ -44,16 +44,16 @@ void ntc::initLocalTime()
 	wl_status_t ret = WiFi.begin(ssid, password);
 	Serial.print(ret);
 	int cont = 0;
-	//while (WiFi.status() != WL_CONNECTED && cont < 20)
-	while (WiFi.localIP().toString() == "0.0.0.0" && cont < 20)
+	//while (WiFi.status() != WL_CONNECTED && cont < 30)
+	while (WiFi.localIP().toString() == "0.0.0.0" && cont < 30)
 	{
 		delay(500);
-		Serial.print(WiFi.status());
+		//Serial.print(WiFi.status());
 		Serial.print(".");
 		cont++;
 	}
 
-	if(cont < 20)
+	if(cont < 30)
 	{
 		configTime(hourOffset * 3600, 3600, ntp_server);
 		printLocalTime();
